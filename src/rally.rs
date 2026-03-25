@@ -43,6 +43,31 @@ pub struct RallyResult {
     pub reward: f64,
 }
 
+/// Subsampled trajectory point for replay visualization
+#[derive(Debug, Clone)]
+pub struct ReplayPoint {
+    pub t: f64,
+    pub pos: Vec3,
+    pub vel: Vec3,
+    pub omega: Vec3,
+}
+
+/// Full replay data for visualization (serve + return trajectories)
+#[derive(Debug)]
+pub struct ReplayData {
+    pub serve_trajectory: Vec<ReplayPoint>,
+    pub serve_bounces: Vec<(f64, Vec3)>,
+    pub return_trajectory: Vec<ReplayPoint>,
+    pub return_bounces: Vec<(f64, Vec3)>,
+    pub paddle_action: PaddleAction,
+    pub paddle_contact_pos: Option<Vec3>,
+    pub outcome: RallyOutcome,
+    pub reward: f64,
+}
+
+/// Subsample interval for replay trajectories (~3ms = every 6 DT steps)
+const REPLAY_DT: f64 = 0.003;
+
 /// Run one rally episode:
 /// 1. Simulate the serve (ball flight + first bounce on receiver's half)
 /// 2. Sample observation frames as the ball approaches the paddle zone
@@ -202,6 +227,207 @@ pub fn run_rally(
                         reward: 0.3 + 0.2, // contact + net cleared
                     }
                 }
+            }
+        }
+    }
+}
+
+/// Run one rally and return full replay data for visualization.
+///
+/// Same logic as `run_rally()`, but records complete trajectories (subsampled)
+/// for both the serve and return ball flight.
+pub fn run_rally_replay(
+    serve_state: BallState,
+    action: &PaddleAction,
+    table: &Table,
+) -> ReplayData {
+    let empty_replay = |outcome: RallyOutcome| ReplayData {
+        serve_trajectory: Vec::new(),
+        serve_bounces: Vec::new(),
+        return_trajectory: Vec::new(),
+        return_bounces: Vec::new(),
+        paddle_action: action.clone(),
+        paddle_contact_pos: None,
+        outcome,
+        reward: 0.0,
+    };
+
+    // Phase 1: simulate serve until first bounce
+    let serve_result = simulate_full(serve_state, table, 1);
+
+    // Subsample the serve trajectory
+    let mut serve_traj: Vec<ReplayPoint> = Vec::new();
+    let mut next_sample = 0.0;
+    for (t, st) in &serve_result.trajectory {
+        if *t >= next_sample {
+            serve_traj.push(ReplayPoint {
+                t: *t,
+                pos: st.pos,
+                vel: st.vel,
+                omega: st.omega,
+            });
+            next_sample = *t + REPLAY_DT;
+        }
+    }
+
+    let serve_bounces: Vec<(f64, Vec3)> = serve_result
+        .bounces
+        .iter()
+        .map(|b| (b.time, b.landing))
+        .collect();
+
+    let serve_bounce = match serve_result.bounces.first() {
+        Some(b) => b.clone(),
+        None => {
+            return empty_replay(RallyOutcome::BadServe(
+                "Serve never bounced".to_string(),
+            ));
+        }
+    };
+
+    // Phase 2: post-bounce flight to paddle plane, recording trajectory
+    let mut state = serve_bounce.post_bounce;
+    let mut t = serve_bounce.time;
+    let mut obs_frames: Vec<ObsFrame> = Vec::new();
+    let mut next_obs_time = t;
+    let mut next_sample_time = t;
+
+    obs_frames.push([state.pos.x, state.pos.y, state.pos.z]);
+    next_obs_time += OBS_DT;
+
+    loop {
+        if t >= next_obs_time {
+            obs_frames.push([state.pos.x, state.pos.y, state.pos.z]);
+            next_obs_time += OBS_DT;
+        }
+        if t >= next_sample_time {
+            serve_traj.push(ReplayPoint {
+                t,
+                pos: state.pos,
+                vel: state.vel,
+                omega: state.omega,
+            });
+            next_sample_time = t + REPLAY_DT;
+        }
+        if state.pos.y >= table.length {
+            break;
+        }
+        if state.pos.z < 0.0 || t > 5.0 {
+            return ReplayData {
+                serve_trajectory: serve_traj,
+                serve_bounces,
+                return_trajectory: Vec::new(),
+                return_bounces: Vec::new(),
+                paddle_action: action.clone(),
+                paddle_contact_pos: None,
+                outcome: RallyOutcome::BadServe(
+                    "Ball never reached receiver".to_string(),
+                ),
+                reward: 0.0,
+            };
+        }
+        state = rk4_step(&state, DT);
+        t += DT;
+    }
+
+    // Phase 3: paddle contact
+    let paddle_result = apply_paddle_hit(&state, action, table.length, PADDLE_RADIUS);
+
+    match paddle_result {
+        PaddleResult::Miss { miss_distance } => {
+            let reward = -0.1 - miss_distance.min(1.0) * 0.2;
+            ReplayData {
+                serve_trajectory: serve_traj,
+                serve_bounces,
+                return_trajectory: Vec::new(),
+                return_bounces: Vec::new(),
+                paddle_action: action.clone(),
+                paddle_contact_pos: Some(state.pos),
+                outcome: RallyOutcome::PaddleMiss { miss_distance },
+                reward,
+            }
+        }
+        PaddleResult::Hit(hit_state) => {
+            let contact_pos = hit_state.pos;
+
+            // Phase 4: simulate return
+            let return_result = simulate_full(hit_state, table, 1);
+
+            // Subsample return trajectory
+            let mut return_traj: Vec<ReplayPoint> = Vec::new();
+            let mut next_sample = 0.0;
+            let time_offset = t; // continue time from serve
+            for (rt, st) in &return_result.trajectory {
+                if *rt >= next_sample {
+                    return_traj.push(ReplayPoint {
+                        t: time_offset + *rt,
+                        pos: st.pos,
+                        vel: st.vel,
+                        omega: st.omega,
+                    });
+                    next_sample = *rt + REPLAY_DT;
+                }
+            }
+
+            let return_bounces: Vec<(f64, Vec3)> = return_result
+                .bounces
+                .iter()
+                .map(|b| (time_offset + b.time, b.landing))
+                .collect();
+
+            // Evaluate outcome (same logic as run_rally)
+            let crossed_net = return_result.trajectory.windows(2).any(|w| {
+                let prev_y = w[0].1.pos.y;
+                let curr_y = w[1].1.pos.y;
+                prev_y > table.length / 2.0 && curr_y <= table.length / 2.0
+            });
+
+            let net_top_z = table.surface_z() + table.net_height;
+            let hit_net = return_result.trajectory.windows(2).any(|w| {
+                let prev = &w[0].1;
+                let curr = &w[1].1;
+                if (prev.pos.y > table.length / 2.0) && (curr.pos.y <= table.length / 2.0) {
+                    let frac = (table.length / 2.0 - prev.pos.y) / (curr.pos.y - prev.pos.y);
+                    let z_at_net = prev.pos.z + frac * (curr.pos.z - prev.pos.z);
+                    z_at_net < net_top_z
+                } else {
+                    false
+                }
+            });
+
+            let (outcome, reward) = if hit_net {
+                (RallyOutcome::ReturnHitNet, 0.3 + 0.1)
+            } else if !crossed_net {
+                (RallyOutcome::ReturnMissedTable, 0.3)
+            } else {
+                match return_result.bounces.first() {
+                    Some(b) if b.landing.y < table.length / 2.0 => {
+                        let lx = b.landing.x;
+                        let ly = b.landing.y;
+                        let edge_x = (lx / table.width - 0.5).abs() * 2.0;
+                        let edge_y = (1.0 - ly / (table.length / 2.0)).abs();
+                        let placement_bonus = (edge_x + edge_y) * 0.1;
+                        (
+                            RallyOutcome::Success {
+                                landing_x: lx,
+                                landing_y: ly,
+                            },
+                            0.3 + 0.2 + 0.5 + placement_bonus,
+                        )
+                    }
+                    _ => (RallyOutcome::ReturnMissedTable, 0.3 + 0.2),
+                }
+            };
+
+            ReplayData {
+                serve_trajectory: serve_traj,
+                serve_bounces,
+                return_trajectory: return_traj,
+                return_bounces,
+                paddle_action: action.clone(),
+                paddle_contact_pos: Some(contact_pos),
+                outcome,
+                reward,
             }
         }
     }

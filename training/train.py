@@ -63,19 +63,26 @@ def train(args):
         [make_env(seed=i, difficulty=args.difficulty) for i in range(args.n_envs)]
     )
 
-    model = PPO(
-        "MlpPolicy",
-        env,
-        learning_rate=args.lr,
-        n_steps=args.n_steps,
-        batch_size=args.batch_size,
-        n_epochs=args.n_epochs,
-        gamma=0.99,
-        ent_coef=args.ent_coef,
-        policy_kwargs={"net_arch": args.net_arch},
-        verbose=0,
-        device="cpu",
-    )
+    if args.load:
+        print(f"  Loading pretrained model: {args.load}")
+        model = PPO.load(args.load, env=env, device="cpu")
+        # Allow overriding lr and ent_coef for fine-tuning
+        model.learning_rate = args.lr
+        model.ent_coef = args.ent_coef
+    else:
+        model = PPO(
+            "MlpPolicy",
+            env,
+            learning_rate=args.lr,
+            n_steps=args.n_steps,
+            batch_size=args.batch_size,
+            n_epochs=args.n_epochs,
+            gamma=0.99,
+            ent_coef=args.ent_coef,
+            policy_kwargs={"net_arch": args.net_arch},
+            verbose=0,
+            device="cpu",
+        )
 
     print(f"  model params: {sum(p.numel() for p in model.policy.parameters()):,}")
     print()
@@ -132,6 +139,8 @@ if __name__ == "__main__":
     parser.add_argument("--ent-coef", type=float, default=0.01)
     parser.add_argument("--net-arch", type=int, nargs="+", default=[128, 128])
     parser.add_argument("--log-interval", type=int, default=10000)
+    parser.add_argument("--load", type=str, default=None,
+                        help="Load pretrained model for fine-tuning (curriculum)")
     parser.add_argument("--output", type=str, default="models/ppo_stage1")
     args = parser.parse_args()
 

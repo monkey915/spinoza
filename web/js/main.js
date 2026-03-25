@@ -614,6 +614,255 @@ function animate(time) {
   renderer.render(scene, camera);
 }
 
+// ===== AI Replay Mode =====
+
+let replayData = null;
+let replayIndex = 0;
+let replayMode = false;
+let returnTrajectoryLine = null;
+let paddleMesh = null;
+
+// Paddle mesh (flat disc)
+function createPaddleMesh() {
+  const group = new THREE.Group();
+  const discGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.005, 32);
+  const discMat = new THREE.MeshStandardMaterial({
+    color: 0xcc2222,
+    roughness: 0.6,
+    metalness: 0.1,
+  });
+  const disc = new THREE.Mesh(discGeo, discMat);
+  disc.castShadow = true;
+  group.add(disc);
+
+  // Handle
+  const handleGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.12, 8);
+  const handleMat = new THREE.MeshStandardMaterial({
+    color: 0x664422,
+    roughness: 0.8,
+  });
+  const handle = new THREE.Mesh(handleGeo, handleMat);
+  handle.position.y = -0.065;
+  group.add(handle);
+
+  group.visible = false;
+  scene.add(group);
+  return group;
+}
+
+paddleMesh = createPaddleMesh();
+
+function clearReturnVisualization() {
+  if (returnTrajectoryLine) {
+    scene.remove(returnTrajectoryLine);
+    returnTrajectoryLine.geometry.dispose();
+    returnTrajectoryLine = null;
+  }
+  paddleMesh.visible = false;
+}
+
+function loadReplay(replay) {
+  clearVisualization();
+  clearReturnVisualization();
+  replayMode = true;
+
+  // Convert replay JSON arrays to internal trajectory format
+  // Serve trajectory: [t, x, y, z, vx, vy, vz, ox, oy, oz]
+  const serveTraj = replay.serve_trajectory.map((p) => ({
+    t: p[0],
+    state: {
+      pos: { x: p[1], y: p[2], z: p[3] },
+      vel: { x: p[4], y: p[5], z: p[6] },
+      omega: { x: p[7], y: p[8], z: p[9] },
+    },
+  }));
+
+  // Return trajectory (time continues from serve end)
+  const returnTraj = replay.return_trajectory.map((p) => ({
+    t: p[0],
+    state: {
+      pos: { x: p[1], y: p[2], z: p[3] },
+      vel: { x: p[4], y: p[5], z: p[6] },
+      omega: { x: p[7], y: p[8], z: p[9] },
+    },
+  }));
+
+  // Merge into unified timeline for animation
+  const mergedTraj = [...serveTraj, ...returnTraj];
+  const serveBounces = (replay.serve_bounces || []).map((b) => ({
+    landing: { x: b[1], y: b[2], z: b[3] },
+    time: b[0],
+  }));
+  const returnBounces = (replay.return_bounces || []).map((b) => ({
+    landing: { x: b[1], y: b[2], z: b[3] },
+    time: b[0],
+  }));
+
+  // Build serve trajectory line (yellow → orange)
+  const servePoints = serveTraj.map((p) =>
+    s2t(p.state.pos.x, p.state.pos.y, p.state.pos.z)
+  );
+
+  if (servePoints.length >= 2) {
+    const serveColors = [];
+    for (let i = 0; i < serveTraj.length; i++) {
+      const f = i / (serveTraj.length - 1);
+      serveColors.push(1.0, 0.9 - f * 0.4, 0.2 - f * 0.2); // yellow → orange
+    }
+    const serveGeo = new THREE.BufferGeometry().setFromPoints(servePoints);
+    serveGeo.setAttribute("color", new THREE.Float32BufferAttribute(serveColors, 3));
+    trajectoryLine = new THREE.Line(
+      serveGeo,
+      new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 2 })
+    );
+    scene.add(trajectoryLine);
+  }
+
+  // Build return trajectory line (green for success, red-ish otherwise)
+  if (returnTraj.length >= 2) {
+    const returnPoints = returnTraj.map((p) =>
+      s2t(p.state.pos.x, p.state.pos.y, p.state.pos.z)
+    );
+    const isSuccess = replay.outcome === "success";
+    const returnColors = [];
+    for (let i = 0; i < returnTraj.length; i++) {
+      const f = i / (returnTraj.length - 1);
+      if (isSuccess) {
+        returnColors.push(0.2, 0.9 - f * 0.3, 0.3 - f * 0.1); // green
+      } else {
+        returnColors.push(0.9, 0.3 - f * 0.2, 0.2); // red
+      }
+    }
+    const returnGeo = new THREE.BufferGeometry().setFromPoints(returnPoints);
+    returnGeo.setAttribute("color", new THREE.Float32BufferAttribute(returnColors, 3));
+    returnTrajectoryLine = new THREE.Line(
+      returnGeo,
+      new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 2 })
+    );
+    scene.add(returnTrajectoryLine);
+  }
+
+  // Bounce markers
+  for (const bounce of [...serveBounces, ...returnBounces]) {
+    const isReturn = returnBounces.includes(bounce);
+    const ringGeo = new THREE.RingGeometry(0.02, 0.035, 32);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: isReturn ? (replay.outcome === "success" ? 0x44ff66 : 0xff4444) : 0xff6644,
+      transparent: true,
+      opacity: 0.8,
+      side: THREE.DoubleSide,
+    });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.position.copy(s2t(bounce.landing.x, bounce.landing.y, bounce.landing.z + 0.001));
+    ring.rotation.x = -Math.PI / 2;
+    scene.add(ring);
+    bounceMarkers.push(ring);
+  }
+
+  // Paddle position
+  if (replay.contact_pos && replay.contact_pos.length === 3) {
+    const cp = replay.contact_pos;
+    paddleMesh.position.copy(s2t(cp[0], cp[1], cp[2]));
+    // Orient paddle based on tilt
+    const pa = replay.paddle;
+    paddleMesh.rotation.set(0, 0, 0);
+    paddleMesh.rotateX(-Math.PI / 2); // face forward (along Y)
+    paddleMesh.rotateX(pa.tilt_x || 0);
+    paddleMesh.rotateZ(pa.tilt_z || 0);
+    paddleMesh.visible = true;
+  }
+
+  // Use merged trajectory for ball animation
+  trajectoryData = {
+    trajectory: mergedTraj,
+    bounces: [...serveBounces, ...returnBounces],
+    hitNet: replay.outcome === "return_hit_net",
+  };
+
+  // Set ball at start
+  if (mergedTraj.length > 0) {
+    const p0 = mergedTraj[0].state.pos;
+    ballMesh.position.copy(s2t(p0.x, p0.y, p0.z));
+    ballMesh.visible = true;
+  }
+
+  animTime = 0;
+  updateTimeline();
+  updateReplayInfo(replay);
+}
+
+function updateReplayInfo(replay) {
+  const info = document.getElementById("replay-info");
+  const outcomeColors = {
+    success: "#44ff66",
+    paddle_miss: "#ff6644",
+    return_hit_net: "#ffaa44",
+    return_missed_table: "#ff8844",
+    bad_serve: "#888888",
+  };
+  const color = outcomeColors[replay.outcome] || "#ffffff";
+  const outcomeLabel = replay.outcome.replace(/_/g, " ");
+
+  let html = `
+    <div class="info-row">
+      <span>Outcome</span>
+      <span style="color:${color}; font-weight:bold;">${outcomeLabel}</span>
+    </div>
+    <div class="info-row"><span>Reward</span><span>${replay.reward.toFixed(3)}</span></div>
+  `;
+
+  const pa = replay.paddle;
+  html += `
+    <div class="info-row"><span>Paddle X</span><span>${pa.paddle_x.toFixed(3)} m</span></div>
+    <div class="info-row"><span>Paddle Z</span><span>${pa.paddle_z.toFixed(3)} m</span></div>
+    <div class="info-row"><span>Swing</span><span>${pa.swing_speed.toFixed(1)} m/s</span></div>
+  `;
+
+  if (replay.landing && replay.landing.length === 2) {
+    html += `<div class="info-row"><span>Landing</span><span>x=${replay.landing[0].toFixed(3)} y=${replay.landing[1].toFixed(3)}</span></div>`;
+  }
+
+  info.innerHTML = html;
+}
+
+function showReplay(index) {
+  if (!replayData || !replayData.replays) return;
+  const replays = replayData.replays;
+  replayIndex = ((index % replays.length) + replays.length) % replays.length;
+  document.getElementById("replay-index").textContent =
+    `${replayIndex + 1} / ${replays.length}`;
+  loadReplay(replays[replayIndex]);
+}
+
+document.getElementById("replay-load").addEventListener("click", async () => {
+  try {
+    const resp = await fetch("replays.json");
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}: replays.json not found`);
+    replayData = await resp.json();
+    document.getElementById("replay-controls").style.display = "block";
+    document.getElementById("replay-load").textContent = "✓ Loaded";
+    document.getElementById("replay-load").style.opacity = "0.5";
+    showReplay(0);
+    // Switch to receiver camera for best view of returns
+    camera.position.copy(s2t(-1.5, 1.37, 1.2));
+    controls.target.copy(s2t(0.76, 1.37, 0.76));
+    controls.update();
+  } catch (e) {
+    document.getElementById("replay-info").innerHTML =
+      `<div class="info-row warn"><span>⚠ ${e.message}</span></div>
+       <div class="info-row"><span style="color:var(--text-dim)">Run export_replays.py first</span></div>`;
+    document.getElementById("replay-controls").style.display = "block";
+  }
+});
+
+document.getElementById("replay-prev").addEventListener("click", () => {
+  showReplay(replayIndex - 1);
+});
+
+document.getElementById("replay-next").addEventListener("click", () => {
+  showReplay(replayIndex + 1);
+});
+
 // ===== Init =====
 
 onResize();
