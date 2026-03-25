@@ -4,6 +4,10 @@ A physics-based table tennis ball flight & bounce simulator, written in Rust. Sp
 
 Includes a **3D web visualization** built with Three.js for interactive exploration of trajectories.
 
+<p align="center">
+  <img src="docs/demo.gif" alt="Topspin serve simulation – side view" width="720">
+</p>
+
 ## Quick Start
 
 ### CLI
