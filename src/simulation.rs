@@ -26,6 +26,8 @@ pub enum SimOutcome {
     MissedTable(String),
     /// Ball flew far from the table (beyond play area)
     LeftPlayArea,
+    /// Ball hit the net
+    HitNet,
     /// Time limit exceeded
     Timeout,
 }
@@ -74,11 +76,11 @@ pub fn simulate_full(
             break SimOutcome::LeftPlayArea;
         }
 
-        // Check for table surface crossing
-        if state.vel.z < 0.0 && state.pos.z > table.surface_z() {
+        // Check for table surface crossing (ball center vs contact_z = surface + radius)
+        if state.vel.z < 0.0 && state.pos.z > table.contact_z() {
             if let Some(t_hit) = table.time_to_surface(state.pos, state.vel) {
                 if t_hit <= DT {
-                    // Step exactly to the surface
+                    // Step exactly to the contact height
                     if t_hit > 1e-9 {
                         state = rk4_step(&state, t_hit);
                         t += t_hit;
@@ -97,7 +99,7 @@ pub fn simulate_full(
 
                     // Apply bounce model
                     state = apply_bounce(&state, table);
-                    state.pos.z = table.surface_z();
+                    state.pos.z = table.contact_z();
                     if state.vel.z < 0.0 {
                         state.vel.z = 0.001;
                     }
@@ -121,8 +123,30 @@ pub fn simulate_full(
         }
 
         // Normal RK4 step
+        let prev_state = state;
         state = rk4_step(&state, DT);
         t += DT;
+
+        // Net collision: check if ball crossed the net plane this step
+        let net_y = table.net_y();
+        let crossed_net = (prev_state.pos.y < net_y && state.pos.y >= net_y)
+            || (prev_state.pos.y > net_y && state.pos.y <= net_y);
+        if crossed_net {
+            // Interpolate to find ball height at net plane
+            let dy = state.pos.y - prev_state.pos.y;
+            if dy.abs() > 1e-12 {
+                let frac = (net_y - prev_state.pos.y) / dy;
+                let z_at_net = prev_state.pos.z + frac * (state.pos.z - prev_state.pos.z);
+                let x_at_net = prev_state.pos.x + frac * (state.pos.x - prev_state.pos.x);
+                // Net spans the table width; ball must clear net_top_z
+                if x_at_net >= -0.05 && x_at_net <= table.width + 0.05
+                    && z_at_net < table.net_top_z()
+                {
+                    break SimOutcome::HitNet;
+                }
+            }
+        }
+
         trajectory.push((t, state));
     };
 
@@ -169,6 +193,9 @@ pub fn simulate(initial: BallState, table: &Table) -> Result<LegacySimResult, Si
             SimOutcome::HitFloor => Err(SimError::HitFloor),
             SimOutcome::Timeout => Err(SimError::Timeout),
             SimOutcome::MissedTable(msg) => Err(SimError::MissedTable(msg)),
+            SimOutcome::HitNet => Err(SimError::MissedTable(
+                "Ball hit the net".to_string(),
+            )),
             SimOutcome::LeftPlayArea => Err(SimError::MissedTable(
                 "Ball left the play area without hitting the table".to_string(),
             )),

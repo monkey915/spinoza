@@ -25,10 +25,10 @@ class TableTennisEnv(gym.Env):
             low=-5.0, high=5.0, shape=(30,), dtype=np.float32
         )
 
-        # Action: [paddle_x, paddle_z, tilt_x, tilt_z, swing_speed, swing_elevation]
+        # Action: [paddle_x, paddle_y, paddle_z, tilt_x, tilt_z, swing_speed, swing_elevation]
         self.action_space = spaces.Box(
-            low=np.array([0.0, 0.70, -0.5, -0.5, 1.0, -0.3], dtype=np.float32),
-            high=np.array([1.525, 1.20, 0.5, 0.5, 12.0, 0.8], dtype=np.float32),
+            low=np.array([0.0, 1.8, 0.78, -0.5, -0.5, 1.0, -0.3], dtype=np.float32),
+            high=np.array([1.525, 3.5, 1.40, 0.5, 0.5, 12.0, 0.8], dtype=np.float32),
             dtype=np.float32,
         )
 
@@ -39,9 +39,9 @@ class TableTennisEnv(gym.Env):
 
     def step(self, action):
         action_list = [float(a) for a in action]
-        obs, reward, done, info = self.sim.step(action_list)
-        obs_np = np.array(obs, dtype=np.float32)
-        return obs_np, reward, done, False, info
+        next_obs, reward, done, info = self.sim.step(action_list)
+        next_obs_np = np.array(next_obs, dtype=np.float32)
+        return next_obs_np, reward, done, False, info
 
     def set_difficulty(self, difficulty):
         self.sim.set_difficulty(difficulty)

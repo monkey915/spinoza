@@ -9,14 +9,17 @@ const PADDLE_MU: f64 = 0.45;
 
 /// A simplified paddle: flat disc with position, orientation, and swing velocity.
 ///
-/// The agent controls 6 parameters:
-///   - paddle_x, paddle_z: lateral and height position at the receiver end
+/// The agent controls 7 parameters:
+///   - paddle_x: lateral position (m)
+///   - paddle_y: depth position — where the player stands (m, along table axis)
+///   - paddle_z: height position (m, clamped to above table surface)
 ///   - tilt_x, tilt_z: paddle face angles (radians)
 ///   - swing_speed: how hard to hit (m/s)
 ///   - swing_elevation: swing angle in radians (0 = horizontal, positive = upward)
 #[derive(Debug, Clone)]
 pub struct PaddleAction {
     pub paddle_x: f64,
+    pub paddle_y: f64,
     pub paddle_z: f64,
     pub tilt_x: f64,
     pub tilt_z: f64,
@@ -60,20 +63,20 @@ pub enum PaddleResult {
 
 /// Check if the ball passes close enough to the paddle and apply contact physics.
 ///
-/// The paddle is positioned at (paddle_x, table.length, paddle_z) — at the
-/// receiver's end of the table. We check the ball's closest approach to this
-/// point as it crosses y = table_length.
-///
+/// The paddle is positioned at (paddle_x, paddle_y, paddle_z).
 /// `ball_at_paddle_y` is the ball state when it reaches the paddle's y-plane.
 /// `paddle_radius` is the effective reach of the paddle (default: ~0.15 m).
+/// `table_surface_z` is used to clamp the paddle above the table.
 pub fn apply_paddle_hit(
     ball: &BallState,
     action: &PaddleAction,
-    table_length: f64,
+    table_surface_z: f64,
     paddle_radius: f64,
 ) -> PaddleResult {
-    // Paddle center position at the receiver end
-    let paddle_pos = Vec3::new(action.paddle_x, table_length, action.paddle_z);
+    // Clamp paddle_z to be at or above the table surface
+    let paddle_z = action.paddle_z.max(table_surface_z);
+
+    let paddle_pos = Vec3::new(action.paddle_x, action.paddle_y, paddle_z);
 
     // Distance from ball to paddle center (in xz plane, since y is matched)
     let dx = ball.pos.x - paddle_pos.x;
@@ -166,13 +169,14 @@ mod tests {
         );
         let action = PaddleAction {
             paddle_x: 0.76,
+            paddle_y: 2.74,
             paddle_z: 0.90,
             tilt_x: 0.0,
             tilt_z: 0.0,
             swing_speed: 5.0,
             swing_elevation: 0.15,
         };
-        match apply_paddle_hit(&ball, &action, 2.74, 0.15) {
+        match apply_paddle_hit(&ball, &action, 0.76, 0.15) {
             PaddleResult::Hit(result) => {
                 // Ball should now be heading back toward server (vy < 0)
                 assert!(result.vel.y < 0.0, "Ball should head back, got vy={}", result.vel.y);
@@ -190,13 +194,14 @@ mod tests {
         );
         let action = PaddleAction {
             paddle_x: 1.5,
+            paddle_y: 2.74,
             paddle_z: 0.90,
             tilt_x: 0.0,
             tilt_z: 0.0,
             swing_speed: 5.0,
             swing_elevation: 0.15,
         };
-        match apply_paddle_hit(&ball, &action, 2.74, 0.15) {
+        match apply_paddle_hit(&ball, &action, 0.76, 0.15) {
             PaddleResult::Miss { miss_distance } => {
                 assert!(miss_distance > 0.0);
             }

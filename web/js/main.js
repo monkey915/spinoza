@@ -710,7 +710,20 @@ function loadReplay(replay) {
   }));
 
   // Merge into unified timeline for animation
-  const mergedTraj = [...serveTraj, ...returnTraj];
+  // Trim serve trajectory at paddle contact point so ball doesn't fly through paddle
+  let trimmedServeTraj = serveTraj;
+  if (replay.contact_pos && replay.contact_pos.length === 3 && serveTraj.length > 1) {
+    const contactY = replay.contact_pos[1]; // paddle Y position
+    let cutIdx = serveTraj.length;
+    for (let i = 1; i < serveTraj.length; i++) {
+      if (serveTraj[i].state.pos.y >= contactY) {
+        cutIdx = i;
+        break;
+      }
+    }
+    trimmedServeTraj = serveTraj.slice(0, cutIdx + 1);
+  }
+  const mergedTraj = [...trimmedServeTraj, ...returnTraj];
   const serveBounces = (replay.serve_bounces || []).map((b) => ({
     landing: { x: b[1], y: b[2], z: b[3] },
     time: b[0],
@@ -720,15 +733,15 @@ function loadReplay(replay) {
     time: b[0],
   }));
 
-  // Build serve trajectory line (yellow → orange)
-  const servePoints = serveTraj.map((p) =>
+  // Build serve trajectory line (yellow → orange) — trimmed at paddle contact
+  const servePoints = trimmedServeTraj.map((p) =>
     s2t(p.state.pos.x, p.state.pos.y, p.state.pos.z)
   );
 
   if (servePoints.length >= 2) {
     const serveColors = [];
-    for (let i = 0; i < serveTraj.length; i++) {
-      const f = i / (serveTraj.length - 1);
+    for (let i = 0; i < trimmedServeTraj.length; i++) {
+      const f = i / (trimmedServeTraj.length - 1);
       serveColors.push(1.0, 0.9 - f * 0.4, 0.2 - f * 0.2); // yellow → orange
     }
     const serveGeo = new THREE.BufferGeometry().setFromPoints(servePoints);
@@ -836,6 +849,7 @@ function updateReplayInfo(replay) {
   const pa = replay.paddle;
   html += `
     <div class="info-row"><span>Paddle X</span><span>${pa.paddle_x.toFixed(3)} m</span></div>
+    <div class="info-row"><span>Paddle Y</span><span>${(pa.paddle_y || 0).toFixed(3)} m</span></div>
     <div class="info-row"><span>Paddle Z</span><span>${pa.paddle_z.toFixed(3)} m</span></div>
     <div class="info-row"><span>Swing</span><span>${pa.swing_speed.toFixed(1)} m/s</span></div>
   `;
@@ -898,11 +912,12 @@ document.getElementById("replay-autoplay").addEventListener("click", () => {
 
 document.getElementById("replay-filter").addEventListener("click", () => {
   const btn = document.getElementById("replay-filter");
-  const filters = ["all", "success", "paddle_miss"];
+  const filters = ["all", "success", "paddle_miss", "return_missed_table"];
   const current = btn.dataset.filter;
   const next = filters[(filters.indexOf(current) + 1) % filters.length];
   btn.dataset.filter = next;
-  btn.textContent = next === "all" ? "All" : next === "success" ? "✓ Success" : "✗ Miss";
+  const labels = { all: "All", success: "✓ Success", paddle_miss: "✗ Miss", return_missed_table: "↗ Off Table" };
+  btn.textContent = labels[next] || next;
   // Re-show current filtered replay
   if (replayData) showReplay(0);
 });

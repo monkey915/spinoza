@@ -16,6 +16,7 @@ class ProgressCallback(BaseCallback):
         self.log_interval = log_interval
         self.start_time = None
         self.outcomes = {"success": 0, "paddle_miss": 0, "other": 0}
+        self._next_log = log_interval
 
     def _on_training_start(self):
         self.start_time = time.time()
@@ -30,7 +31,8 @@ class ProgressCallback(BaseCallback):
             else:
                 self.outcomes["other"] += 1
 
-        if self.num_timesteps % self.log_interval == 0:
+        if self.num_timesteps >= self._next_log:
+            self._next_log = self.num_timesteps + self.log_interval
             elapsed = time.time() - self.start_time
             total = sum(self.outcomes.values())
             if total > 0:
@@ -45,7 +47,8 @@ class ProgressCallback(BaseCallback):
                 f"eps/s={eps_per_sec:>6.0f} | "
                 f"success={success_rate:>5.1f}% | "
                 f"miss={miss_rate:>5.1f}% | "
-                f"elapsed={elapsed:>5.1f}s"
+                f"elapsed={elapsed:>5.1f}s",
+                flush=True
             )
             self.outcomes = {"success": 0, "paddle_miss": 0, "other": 0}
 
@@ -53,11 +56,11 @@ class ProgressCallback(BaseCallback):
 
 
 def train(args):
-    print(f"=== spinoza RL Training ===")
-    print(f"  n_envs={args.n_envs}, difficulty={args.difficulty}")
-    print(f"  total_timesteps={args.total_timesteps}")
-    print(f"  policy=MLP {args.net_arch}")
-    print()
+    print(f"=== spinoza RL Training ===", flush=True)
+    print(f"  n_envs={args.n_envs}, difficulty={args.difficulty}", flush=True)
+    print(f"  total_timesteps={args.total_timesteps}", flush=True)
+    print(f"  policy=MLP {args.net_arch}", flush=True)
+    print(flush=True)
 
     env = SubprocVecEnv(
         [make_env(seed=i, difficulty=args.difficulty) for i in range(args.n_envs)]
@@ -84,8 +87,8 @@ def train(args):
             device="cpu",
         )
 
-    print(f"  model params: {sum(p.numel() for p in model.policy.parameters()):,}")
-    print()
+    print(f"  model params: {sum(p.numel() for p in model.policy.parameters()):,}", flush=True)
+    print(flush=True)
 
     callback = ProgressCallback(log_interval=args.log_interval)
     t0 = time.time()
