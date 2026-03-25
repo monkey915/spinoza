@@ -57,20 +57,9 @@ pub fn run_rally(
     // toward the receiver (past the net, y > table.length/2)
     let serve_result = simulate_full(serve_state, table, 1);
 
-    // Check serve validity: must have bounced on opponent's half
+    // Check serve validity: must have bounced on the table
     let serve_bounce = match serve_result.bounces.first() {
-        Some(b) if b.landing.y > table.length / 2.0 => b.clone(),
-        Some(b) => {
-            return RallyResult {
-                outcome: RallyOutcome::BadServe(format!(
-                    "Serve bounced on own half (y={:.3})",
-                    b.landing.y
-                )),
-                observations: Vec::new(),
-                action: action.clone(),
-                reward: 0.0,
-            };
-        }
+        Some(b) => b.clone(),
         None => {
             return RallyResult {
                 outcome: RallyOutcome::BadServe(format!(

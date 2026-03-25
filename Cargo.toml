@@ -5,6 +5,7 @@ edition = "2024"
 
 [lib]
 name = "spinoza"
+crate-type = ["cdylib", "rlib"]
 
 [features]
 default = []
