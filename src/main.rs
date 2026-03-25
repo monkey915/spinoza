@@ -1,11 +1,7 @@
-mod physics;
-mod table;
-mod simulation;
-
 use clap::Parser;
-use physics::state::{BallState, Vec3};
-use simulation::{simulate, SimError};
-use table::Table;
+use spinoza::physics::state::{BallState, Vec3};
+use spinoza::simulation::{simulate, SimError};
+use spinoza::table::Table;
 
 /// Simulate a table tennis ball trajectory.
 ///

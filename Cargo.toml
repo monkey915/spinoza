@@ -3,5 +3,13 @@ name = "spinoza"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "spinoza"
+
+[features]
+default = []
+python = ["dep:pyo3"]
+
 [dependencies]
 clap = { version = "4", features = ["derive"] }
+pyo3 = { version = "0.24", features = ["extension-module"], optional = true }
