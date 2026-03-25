@@ -618,13 +618,13 @@ function animate(time) {
 
   // Autoplay: pause between replays then advance
   if (replayAutoplay && !animPlaying && replayPauseTimer > 0) {
-    replayPauseTimer -= (time - lastFrameTime) / 1000;
-    lastFrameTime = time;
+    replayPauseTimer -= 0.016; // ~60fps frame time
     if (replayPauseTimer <= 0) {
       replayPauseTimer = 0;
       showReplay(replayIndex + 1);
+      animTime = 0;
       animPlaying = true;
-      lastFrameTime = performance.now();
+      lastFrameTime = time;
       document.getElementById("btn-play").textContent = "⏸";
     }
   }
@@ -881,7 +881,9 @@ document.getElementById("replay-autoplay").addEventListener("click", () => {
   const btn = document.getElementById("replay-autoplay");
   if (replayAutoplay) {
     btn.textContent = "⏹ Stop";
-    // Start playing current replay
+    // Restart current replay from beginning
+    showReplay(replayIndex);
+    animTime = 0;
     animPlaying = true;
     animSpeed = 0.4;
     document.getElementById("anim-speed").value = "0.40";
