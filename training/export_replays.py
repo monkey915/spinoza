@@ -42,12 +42,16 @@ def export_replays(model_path, output_path, n_replays=20, difficulty=1, seed=123
             "landing": [round(v, 4) for v in replay.get("landing", [])],
         })
 
-    # Select a good mix: prioritize successes, then misses, limit total
+    # Select a good mix: ~60% successes, ~30% misses, ~10% other
     successes = [r for r in replays if r["outcome"] == "success"]
     misses = [r for r in replays if r["outcome"] == "paddle_miss"]
     others = [r for r in replays if r["outcome"] not in ("success", "paddle_miss")]
 
-    selected = successes[:12] + misses[:5] + others[:3]
+    n_success = max(1, int(n_replays * 0.6))
+    n_miss = max(1, int(n_replays * 0.3))
+    n_other = n_replays - n_success - n_miss
+
+    selected = successes[:n_success] + misses[:n_miss] + others[:n_other]
     selected = selected[:n_replays]
 
     # Re-index

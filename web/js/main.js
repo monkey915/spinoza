@@ -593,8 +593,14 @@ function animate(time) {
       trajectoryData.trajectory[trajectoryData.trajectory.length - 1].t;
     if (animTime >= tMax) {
       animTime = tMax;
-      animPlaying = false;
-      document.getElementById("btn-play").textContent = "▶";
+      if (replayAutoplay && replayData) {
+        // Brief pause, then auto-advance
+        animPlaying = false;
+        replayPauseTimer = replayPauseBetween;
+      } else {
+        animPlaying = false;
+        document.getElementById("btn-play").textContent = "▶";
+      }
     }
 
     updateBallPosition(animTime);
@@ -610,6 +616,19 @@ function animate(time) {
     }
   }
 
+  // Autoplay: pause between replays then advance
+  if (replayAutoplay && !animPlaying && replayPauseTimer > 0) {
+    replayPauseTimer -= (time - lastFrameTime) / 1000;
+    lastFrameTime = time;
+    if (replayPauseTimer <= 0) {
+      replayPauseTimer = 0;
+      showReplay(replayIndex + 1);
+      animPlaying = true;
+      lastFrameTime = performance.now();
+      document.getElementById("btn-play").textContent = "⏸";
+    }
+  }
+
   controls.update();
   renderer.render(scene, camera);
 }
@@ -619,6 +638,9 @@ function animate(time) {
 let replayData = null;
 let replayIndex = 0;
 let replayMode = false;
+let replayAutoplay = false;
+let replayPauseBetween = 1.2; // seconds pause between replays
+let replayPauseTimer = 0;
 let returnTrajectoryLine = null;
 let paddleMesh = null;
 
@@ -825,15 +847,6 @@ function updateReplayInfo(replay) {
   info.innerHTML = html;
 }
 
-function showReplay(index) {
-  if (!replayData || !replayData.replays) return;
-  const replays = replayData.replays;
-  replayIndex = ((index % replays.length) + replays.length) % replays.length;
-  document.getElementById("replay-index").textContent =
-    `${replayIndex + 1} / ${replays.length}`;
-  loadReplay(replays[replayIndex]);
-}
-
 document.getElementById("replay-load").addEventListener("click", async () => {
   try {
     const resp = await fetch("replays.json");
@@ -862,6 +875,52 @@ document.getElementById("replay-prev").addEventListener("click", () => {
 document.getElementById("replay-next").addEventListener("click", () => {
   showReplay(replayIndex + 1);
 });
+
+document.getElementById("replay-autoplay").addEventListener("click", () => {
+  replayAutoplay = !replayAutoplay;
+  const btn = document.getElementById("replay-autoplay");
+  if (replayAutoplay) {
+    btn.textContent = "⏹ Stop";
+    // Start playing current replay
+    animPlaying = true;
+    animSpeed = 0.4;
+    document.getElementById("anim-speed").value = "0.40";
+    document.getElementById("anim-speed-val").textContent = "0.40×";
+    lastFrameTime = performance.now();
+    document.getElementById("btn-play").textContent = "⏸";
+  } else {
+    btn.textContent = "▶ Auto-play";
+    replayPauseTimer = 0;
+  }
+});
+
+document.getElementById("replay-filter").addEventListener("click", () => {
+  const btn = document.getElementById("replay-filter");
+  const filters = ["all", "success", "paddle_miss"];
+  const current = btn.dataset.filter;
+  const next = filters[(filters.indexOf(current) + 1) % filters.length];
+  btn.dataset.filter = next;
+  btn.textContent = next === "all" ? "All" : next === "success" ? "✓ Success" : "✗ Miss";
+  // Re-show current filtered replay
+  if (replayData) showReplay(0);
+});
+
+function getFilteredReplays() {
+  if (!replayData || !replayData.replays) return [];
+  const filter = document.getElementById("replay-filter").dataset.filter;
+  if (filter === "all") return replayData.replays;
+  return replayData.replays.filter((r) => r.outcome === filter);
+}
+
+// Override showReplay to use filtered list
+function showReplay(index) {
+  const replays = getFilteredReplays();
+  if (replays.length === 0) return;
+  replayIndex = ((index % replays.length) + replays.length) % replays.length;
+  document.getElementById("replay-index").textContent =
+    `${replayIndex + 1} / ${replays.length}`;
+  loadReplay(replays[replayIndex]);
+}
 
 // ===== Init =====
 
