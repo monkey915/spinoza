@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>spinoza – Table Tennis Ball Simulation</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #12121a;
+      --panel: #1a1a28;
+      --panel-border: #2a2a40;
+      --text: #e0e0e8;
+      --text-dim: #8888a0;
+      --accent: #ff8844;
+      --accent2: #44aaff;
+      --slider-track: #333350;
+      --slider-thumb: #ff8844;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+    }
+
+    /* ===== Sidebar ===== */
+    #sidebar {
+      width: 320px;
+      min-width: 320px;
+      height: 100vh;
+      background: var(--panel);
+      border-right: 1px solid var(--panel-border);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: var(--panel-border) transparent;
+    }
+
+    #sidebar h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 16px 20px 8px;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+    #sidebar h1 span {
+      color: var(--text-dim);
+      font-weight: 400;
+      font-size: 0.75rem;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .section {
+      padding: 8px 20px 12px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+
+    /* Slider rows */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+    .slider-row label {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      width: 80px;
+      flex-shrink: 0;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--slider-track);
+      border-radius: 2px;
+      outline: none;
+    }
+    .slider-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--slider-thumb);
+      cursor: pointer;
+      border: 2px solid var(--panel);
+    }
+    .slider-row input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--slider-thumb);
+      cursor: pointer;
+      border: 2px solid var(--panel);
+    }
+    .slider-row .val {
+      font-size: 0.75rem;
+      color: var(--accent2);
+      width: 50px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .btn {
+      padding: 5px 12px;
+      font-size: 0.72rem;
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn:hover {
+      background: var(--panel-border);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn-accent {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    .btn-accent:hover {
+      background: #ffaa66;
+      color: var(--bg);
+    }
+
+    /* Animation controls */
+    .anim-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .anim-controls .btn {
+      font-size: 1.1rem;
+      padding: 4px 10px;
+      line-height: 1;
+    }
+    #timeline {
+      flex: 1;
+    }
+    #time-display {
+      font-size: 0.75rem;
+      color: var(--accent2);
+      font-variant-numeric: tabular-nums;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    /* Info panel */
+    #info {
+      padding: 4px 0;
+      font-size: 0.78rem;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .info-row span:first-child { color: var(--text-dim); }
+    .info-row span:last-child { color: var(--text); font-variant-numeric: tabular-nums; }
+    .info-row.warn span { color: #ff6644; font-weight: 600; }
+
+    /* ===== Viewport ===== */
+    #viewport-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    #viewport {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      #sidebar {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 1px solid var(--panel-border);
+      }
+      #viewport-container { height: 55vh; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h1>🏓 spinoza <span>Table Tennis Ball Simulation</span></h1>
+
+  <div class="section">
+    <div class="section-title">Launch</div>
+    <div class="slider-row">
+      <label>Speed</label>
+      <input type="range" id="speed" class="param-slider" min="1" max="20" step="0.1" value="8">
+      <span class="val" id="speed-val">8.0</span>
+      <span class="val" style="width:30px; color:var(--text-dim)">m/s</span>
+    </div>
+    <div class="slider-row">
+      <label>Elevation</label>
+      <input type="range" id="elevation" class="param-slider" min="-20" max="45" step="0.5" value="10">
+      <span class="val" id="elevation-val">10.0</span>
+      <span class="val" style="width:30px; color:var(--text-dim)">°</span>
+    </div>
+    <div class="slider-row">
+      <label>Azimuth</label>
+      <input type="range" id="azimuth" class="param-slider" min="-30" max="30" step="0.5" value="0">
+      <span class="val" id="azimuth-val">0.0</span>
+      <span class="val" style="width:30px; color:var(--text-dim)">°</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Spin</div>
+    <div class="slider-row">
+      <label>Topspin</label>
+      <input type="range" id="topspin" class="param-slider" min="0" max="300" step="5" value="0">
+      <span class="val" id="topspin-val">0</span>
+      <span class="val" style="width:40px; color:var(--text-dim)">rad/s</span>
+    </div>
+    <div class="slider-row">
+      <label>Backspin</label>
+      <input type="range" id="backspin" class="param-slider" min="0" max="300" step="5" value="0">
+      <span class="val" id="backspin-val">0</span>
+      <span class="val" style="width:40px; color:var(--text-dim)">rad/s</span>
+    </div>
+    <div class="slider-row">
+      <label>Sidespin</label>
+      <input type="range" id="sidespin" class="param-slider" min="-200" max="200" step="5" value="0">
+      <span class="val" id="sidespin-val">0</span>
+      <span class="val" style="width:40px; color:var(--text-dim)">rad/s</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Launch Position</div>
+    <div class="slider-row">
+      <label>X₀</label>
+      <input type="range" id="x0" class="param-slider" min="0" max="1.525" step="0.01" value="0.7625">
+      <span class="val" id="x0-val">0.76</span>
+      <span class="val" style="width:30px; color:var(--text-dim)">m</span>
+    </div>
+    <div class="slider-row">
+      <label>Y₀</label>
+      <input type="range" id="y0" class="param-slider" min="-0.5" max="1.0" step="0.01" value="0.0">
+      <span class="val" id="y0-val">0.00</span>
+      <span class="val" style="width:30px; color:var(--text-dim)">m</span>
+    </div>
+    <div class="slider-row">
+      <label>Z₀</label>
+      <input type="range" id="z0" class="param-slider" min="0.76" max="1.5" step="0.01" value="0.90">
+      <span class="val" id="z0-val">0.90</span>
+      <span class="val" style="width:30px; color:var(--text-dim)">m</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Presets</div>
+    <div class="btn-row">
+      <button class="btn" id="preset-topspin">🔴 Topspin</button>
+      <button class="btn" id="preset-backspin">🔵 Backspin</button>
+      <button class="btn" id="preset-side">🟡 Sidespin</button>
+      <button class="btn" id="preset-fast">⚡ Smash</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Animation</div>
+    <div class="anim-controls">
+      <button class="btn btn-accent" id="btn-play">▶</button>
+      <button class="btn" id="btn-reset">⏮</button>
+      <input type="range" id="timeline" min="0" max="1" step="0.0001" value="0">
+      <span id="time-display">t = 0.000 s</span>
+    </div>
+    <div class="slider-row">
+      <label>Speed</label>
+      <input type="range" id="anim-speed" min="0.05" max="2" step="0.05" value="0.3">
+      <span class="val" id="anim-speed-val">0.30×</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Camera</div>
+    <div class="btn-row">
+      <button class="btn" id="cam-server">Server</button>
+      <button class="btn" id="cam-receiver">Receiver</button>
+      <button class="btn" id="cam-side">Side</button>
+      <button class="btn" id="cam-top">Top</button>
+    </div>
+  </div>
+
+  <div class="section" style="flex:1;">
+    <div class="section-title">Result</div>
+    <div id="info"></div>
+  </div>
+</div>
+
+<div id="viewport-container">
+  <canvas id="viewport"></canvas>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
