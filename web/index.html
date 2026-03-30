@@ -334,6 +334,24 @@
     <div id="info"></div>
   </div>
 
+  <div class="section" id="live-section">
+    <div class="section-title">🔴 Live Training</div>
+    <div id="live-status" style="font-size:0.72rem;color:var(--text-dim);margin-bottom:6px;">Klicke Refresh</div>
+    <div id="live-stats" style="display:none;">
+      <div class="info-row"><span>Stage</span><span id="live-stage">–</span></div>
+      <div class="info-row"><span>Steps</span><span id="live-steps">–</span></div>
+      <div class="info-row"><span>Success</span><span id="live-success" style="color:var(--accent)">–</span></div>
+      <div class="info-row"><span>eps/s</span><span id="live-eps">–</span></div>
+      <div class="info-row"><span>Elapsed</span><span id="live-elapsed">–</span></div>
+    </div>
+    <canvas id="live-chart" width="278" height="72" style="display:none;margin-top:8px;border-radius:4px;"></canvas>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-accent" id="live-refresh">🔄 Refresh</button>
+      <button class="btn" id="live-auto">Auto 3min</button>
+      <button class="btn" id="live-replay-btn">Live Replays</button>
+    </div>
+  </div>
+
   <div class="section" id="replay-section">
     <div class="section-title">🤖 AI Replay</div>
     <div class="btn-row">
@@ -356,6 +374,7 @@
 
 <div id="viewport-container">
   <canvas id="viewport"></canvas>
+  <div id="spin-overlay" style="position:absolute;top:12px;left:12px;color:#fff;font:bold 14px monospace;background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:4px;pointer-events:none;display:none;"></div>
 </div>
 
 <script type="module" src="js/main.js"></script>

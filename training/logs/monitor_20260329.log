@@ -1,0 +1,2047 @@
+[16:30:33] === Monitor gestartet (PID 247796) ===
+[16:35:33] Kein Training aktiv. omega.x=50.6 rad/s | watchdog=0 switch=0
+[16:35:33] Topspin OK (50.6 rad/s) — kein weiteres Training nötig
+[16:40:33] Kein Training aktiv. omega.x=50.6 rad/s | watchdog=0 switch=0
+[16:40:33] Topspin OK (50.6 rad/s) — kein weiteres Training nötig
+[16:45:33] Training: step=400128 success=0.1% pids=[248321 248371 ] watchdog=0 switch=0
+[16:45:33] WATCHDOG TOT → starte neu
+[16:45:33] Watchdog neu: PID 252971
+[16:45:33] AUTO-SWITCH TOT → starte neu
+[16:45:33] === Watchdog gestartet (PID 252974) ===
+[16:45:33] Auto-switch neu: PID 252981
+[16:45:33] === Auto-Switch gestartet (PID 252984) ===
+[16:45:33]     Topspin-Schwelle: omega.x > 30.0 rad/s
+[16:45:33]     Prüft alle 60s ob MLP-Training fertig ist
+[16:45:33] Warte auf MLP-Training (run_all_stages.sh) ...
+[16:45:33]   MLP läuft: step=400128 success=0.1%  pids=[248321 248371 ]
+[16:46:33]   MLP läuft: step=700224 success=0.1%  pids=[248321 248371 ]
+[16:47:33] step=900288 success=0.1% pids=[248321 248371 ]
+[16:47:33]   MLP läuft: step=900288 success=0.1%  pids=[248321 248371 ]
+[16:48:33]   MLP läuft: step=1200384 success=0.1%  pids=[248321 248371 ]
+[16:49:33] step=1400448 success=0.1% pids=[248321 248371 ]
+[16:49:33]   MLP läuft: step=1400448 success=0.1%  pids=[248321 248371 ]
+[16:50:33] Training: step=1700544 success=0.1% pids=[248321 248371 ] watchdog=1 switch=1
+[16:50:34]   MLP läuft: step=1700544 success=0.1%  pids=[248321 248371 ]
+[16:51:33] step=1900608 success=0.2% pids=[248321 248371 ]
+[16:51:34]   MLP läuft: step=1900608 success=0.2%  pids=[248321 248371 ]
+[16:52:34]   MLP läuft: step=2200704 success=0.2%  pids=[248321 248371 ]
+[16:53:33] step=2400768 success=0.2% pids=[248321 248371 ]
+[16:53:34]   MLP läuft: step=2400768 success=0.2%  pids=[248321 248371 ]
+[16:54:34]   MLP läuft: step=2700864 success=0.2%  pids=[248321 248371 ]
+[16:55:33] Training: step=2900928 success=0.3% pids=[248321 248371 ] watchdog=1 switch=1
+[16:55:34] step=2900928 success=0.3% pids=[248321 248371 ]
+[16:55:34]   MLP läuft: step=2900928 success=0.3%  pids=[248321 248371 ]
+[16:56:34]   MLP läuft: step=3201024 success=0.2%  pids=[248321 248371 ]
+[16:57:34] step=3301056 success=0.2% pids=[keine]
+[16:57:34] Training nicht aktiv. Warte...
+[16:57:34] MLP-Training beendet (keine Prozesse mehr aktiv).
+[16:57:34] 
+[16:57:34] === Prüfe Topspin-Qualität ===
+[16:57:34]   Mittleres omega.x = 50.64 rad/s (Schwelle: 30.0)
+[16:57:34] 
+[16:57:34] ✅ TOPSPIN GELERNT! omega.x=50.64 rad/s >= 30.0 rad/s
+[16:57:34]    MLP-Modell ist ausreichend. Kein LSTM nötig.
+[16:57:34]    Replays verfügbar in: ../web/replays.json
+[16:57:34] 
+[16:57:34] === Auto-Switch beendet ===
+[17:00:34] Training: step=600192 success=0.1% pids=[254455 254458 254459 ] watchdog=1 switch=0
+[17:00:34] AUTO-SWITCH TOT → starte neu
+[17:00:34] Auto-switch neu: PID 258943
+[17:00:34] === Auto-Switch gestartet (PID 258945) ===
+[17:00:34]     Topspin-Schwelle: omega.x > 30.0 rad/s
+[17:00:34]     Prüft alle 60s ob MLP-Training fertig ist
+[17:00:34] Warte auf MLP-Training (run_all_stages.sh) ...
+[17:00:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:01:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:02:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:03:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:04:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:04:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:05:34] Training: step=1900608 success=0.2% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:05:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:06:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:06:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:07:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:08:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:08:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:09:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:10:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:10:34] Training: step=3100992 success=0.1% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:10:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:11:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:12:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:12:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:13:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:14:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:14:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:15:34] Training: step=4401408 success=0.2% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:15:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:16:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:16:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:17:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:18:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:18:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:19:34]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:20:34] Training: step=5701824 success=0.1% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:20:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:20:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:21:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:22:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:22:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:23:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:24:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:24:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:25:34] Training: step=6902208 success=0.2% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:25:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:26:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:26:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:27:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:28:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:28:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:29:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:30:34] Training: step=8202624 success=0.6% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:30:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:30:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:31:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:32:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:32:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:33:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:34:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:34:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:35:34] Training: step=9403008 success=1.8% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:35:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:36:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:36:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:37:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:38:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:38:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:39:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:40:35] Training: step=10703424 success=3.3% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:40:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:40:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:41:35]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:42:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:42:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:43:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:44:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:44:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:45:35] Training: step=11903808 success=5.2% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:45:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:46:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:46:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:47:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:48:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:48:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:49:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:50:35] Training: step=13104192 success=6.8% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:50:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:50:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:51:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:52:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:52:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:53:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:54:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:54:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:55:35] Training: step=14404608 success=9.0% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[17:55:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:56:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:56:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:57:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:58:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:58:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[17:59:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:00:35] Training: step=15604992 success=10.9% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[18:00:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:00:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:01:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:02:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:02:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:03:36]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:04:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:04:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:05:35] Training: step=16905408 success=13.4% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[18:05:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:06:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:06:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:07:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:08:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:08:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:09:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:10:35] Training: step=18105792 success=15.3% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[18:10:36] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:10:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:11:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:12:36] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:12:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:13:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:14:36] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:14:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:15:35] Training: step=19306176 success=16.7% pids=[254455 254458 254459 ] watchdog=1 switch=1
+[18:15:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:16:36] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:16:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:17:37]   MLP läuft: step=3301056 success=0.2%  pids=[254455 254458 254459 ]
+[18:18:36] step=3301056 success=0.2% pids=[keine]
+[18:18:36] Training nicht aktiv. Warte...
+[18:18:37] MLP-Training beendet (keine Prozesse mehr aktiv).
+[18:18:37] 
+[18:18:37] === Prüfe Topspin-Qualität ===
+[18:18:37]   Mittleres omega.x = 311.60 rad/s (Schwelle: 30.0)
+[18:18:37] 
+[18:18:37] ✅ TOPSPIN GELERNT! omega.x=311.60 rad/s >= 30.0 rad/s
+[18:18:37]    MLP-Modell ist ausreichend. Kein LSTM nötig.
+[18:18:37]    Replays verfügbar in: ../web/replays.json
+[18:18:37] 
+[18:18:37] === Auto-Switch beendet ===
+[18:20:35] Kein Training aktiv. omega.x=311.6 rad/s | watchdog=1 switch=0
+[18:20:35] Topspin OK (311.6 rad/s) — kein weiteres Training nötig
+[18:25:36] Training: step=300096 success=0.1% pids=[266990 266992 266993 ] watchdog=1 switch=0
+[18:25:36] AUTO-SWITCH TOT → starte neu
+[18:25:36] Auto-switch neu: PID 271303
+[18:25:36] === Auto-Switch gestartet (PID 271306) ===
+[18:25:36]     Topspin-Schwelle: omega.x > 30.0 rad/s
+[18:25:36]     Prüft alle 60s ob MLP-Training fertig ist
+[18:25:36] Warte auf MLP-Training (run_all_stages.sh) ...
+[18:25:36]   MLP läuft: step=3301056 success=0.2%  pids=[266990 266992 266993 ]
+[18:25:36] step=3301056 success=0.2% pids=[266990 266992 266993 ]
+[18:26:36]   MLP läuft: step=3301056 success=0.2%  pids=[266990 266992 266993 ]
+[18:27:36] Kein Fortschritt im Log.
+[18:28:36]   MLP läuft: step=300096 success=0.1%  pids=[271457 271459 271508 ]
+[18:29:36]   MLP läuft: step=500160 success=0.0%  pids=[271457 271459 271508 ]
+[18:29:36] step=500160 success=0.0% pids=[271457 271459 271508 ]
+[18:30:36] Training: step=800256 success=0.1% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[18:30:36]   MLP läuft: step=800256 success=0.1%  pids=[271457 271459 271508 ]
+[18:31:36]   MLP läuft: step=1000320 success=0.1%  pids=[271457 271459 271508 ]
+[18:31:36] step=1000320 success=0.1% pids=[271457 271459 271508 ]
+[18:32:36]   MLP läuft: step=1300416 success=0.1%  pids=[271457 271459 271508 ]
+[18:33:36] step=1600512 success=0.1% pids=[271457 271459 271508 ]
+[18:33:36]   MLP läuft: step=1600512 success=0.1%  pids=[271457 271459 271508 ]
+[18:34:36]   MLP läuft: step=1800576 success=0.2%  pids=[271457 271459 271508 ]
+[18:35:36] Training: step=2100672 success=0.2% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[18:35:36] step=2100672 success=0.2% pids=[271457 271459 271508 ]
+[18:35:36]   MLP läuft: step=2100672 success=0.2%  pids=[271457 271459 271508 ]
+[18:36:36]   MLP läuft: step=2300736 success=0.2%  pids=[271457 271459 271508 ]
+[18:37:36] step=2600832 success=0.2% pids=[271457 271459 271508 ]
+[18:37:36]   MLP läuft: step=2600832 success=0.2%  pids=[271457 271459 271508 ]
+[18:38:36]   MLP läuft: step=2800896 success=0.3%  pids=[271457 271459 271508 ]
+[18:39:36] step=3100992 success=0.3% pids=[271457 271459 271508 ]
+[18:39:36]   MLP läuft: step=3100992 success=0.3%  pids=[271457 271459 271508 ]
+[18:40:36] Training: step=3401088 success=0.4% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[18:40:36]   MLP läuft: step=3401088 success=0.4%  pids=[271457 271459 271508 ]
+[18:41:36] step=3601152 success=0.4% pids=[271457 271459 271508 ]
+[18:41:36]   MLP läuft: step=3601152 success=0.4%  pids=[271457 271459 271508 ]
+[18:42:36]   MLP läuft: step=3901248 success=0.5%  pids=[271457 271459 271508 ]
+[18:43:36] step=4101312 success=0.6% pids=[271457 271459 271508 ]
+[18:43:36]   MLP läuft: step=4101312 success=0.6%  pids=[271457 271459 271508 ]
+[18:44:37]   MLP läuft: step=4401408 success=0.8%  pids=[271457 271459 271508 ]
+[18:45:36] Training: step=4601472 success=0.9% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[18:45:36] step=4601472 success=0.9% pids=[271457 271459 271508 ]
+[18:45:37]   MLP läuft: step=4601472 success=0.9%  pids=[271457 271459 271508 ]
+[18:46:37]   MLP läuft: step=4901568 success=0.9%  pids=[271457 271459 271508 ]
+[18:47:36] step=5201664 success=1.4% pids=[271457 271459 271508 ]
+[18:47:37]   MLP läuft: step=5201664 success=1.4%  pids=[271457 271459 271508 ]
+[18:48:37]   MLP läuft: step=5401728 success=1.9%  pids=[271457 271459 271508 ]
+[18:49:36] step=5601792 success=2.1% pids=[271457 271459 271508 ]
+[18:49:37]   MLP läuft: step=5701824 success=2.1%  pids=[271457 271459 271508 ]
+[18:50:36] Training: step=5901888 success=2.6% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[18:50:37]   MLP läuft: step=5901888 success=2.6%  pids=[271457 271459 271508 ]
+[18:51:37] step=6201984 success=2.9% pids=[271457 271459 271508 ]
+[18:51:37]   MLP läuft: step=6201984 success=2.9%  pids=[271457 271459 271508 ]
+[18:52:37]   MLP läuft: step=6402048 success=3.1%  pids=[271457 271459 271508 ]
+[18:53:37] step=6702144 success=4.0% pids=[271457 271459 271508 ]
+[18:53:37]   MLP läuft: step=6702144 success=4.0%  pids=[271457 271459 271508 ]
+[18:54:37]   MLP läuft: step=6902208 success=3.5%  pids=[271457 271459 271508 ]
+[18:55:36] Training: step=7202304 success=4.5% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[18:55:37] step=7202304 success=4.5% pids=[271457 271459 271508 ]
+[18:55:37]   MLP läuft: step=7202304 success=4.5%  pids=[271457 271459 271508 ]
+[18:56:37]   MLP läuft: step=7402368 success=4.3%  pids=[271457 271459 271508 ]
+[18:57:37] step=7702464 success=5.1% pids=[271457 271459 271508 ]
+[18:57:37]   MLP läuft: step=7702464 success=5.1%  pids=[271457 271459 271508 ]
+[18:58:37]   MLP läuft: step=7902528 success=5.3%  pids=[271457 271459 271508 ]
+[18:59:37] step=8202624 success=6.5% pids=[271457 271459 271508 ]
+[18:59:37]   MLP läuft: step=8202624 success=6.5%  pids=[271457 271459 271508 ]
+[19:00:36] Training: step=8402688 success=6.1% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:00:37]   MLP läuft: step=8402688 success=6.1%  pids=[271457 271459 271508 ]
+[19:01:37] step=8702784 success=7.8% pids=[271457 271459 271508 ]
+[19:01:37]   MLP läuft: step=8702784 success=7.8%  pids=[271457 271459 271508 ]
+[19:02:37]   MLP läuft: step=8902848 success=9.1%  pids=[271457 271459 271508 ]
+[19:03:37] step=9202944 success=11.2% pids=[271457 271459 271508 ]
+[19:03:37]   MLP läuft: step=9202944 success=11.2%  pids=[271457 271459 271508 ]
+[19:04:37]   MLP läuft: step=9403008 success=10.1%  pids=[271457 271459 271508 ]
+[19:05:37] Training: step=9703104 success=13.1% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:05:37] step=9703104 success=13.1% pids=[271457 271459 271508 ]
+[19:05:38]   MLP läuft: step=9703104 success=13.1%  pids=[271457 271459 271508 ]
+[19:06:38]   MLP läuft: step=9903168 success=13.8%  pids=[271457 271459 271508 ]
+[19:07:37] step=10203264 success=15.2% pids=[271457 271459 271508 ]
+[19:07:38]   MLP läuft: step=10203264 success=15.2%  pids=[271457 271459 271508 ]
+[19:08:38]   MLP läuft: step=10403328 success=15.6%  pids=[271457 271459 271508 ]
+[19:09:37] step=10703424 success=19.5% pids=[271457 271459 271508 ]
+[19:09:38]   MLP läuft: step=10703424 success=19.5%  pids=[271457 271459 271508 ]
+[19:10:37] Training: step=10903488 success=20.4% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:10:38]   MLP läuft: step=10903488 success=20.4%  pids=[271457 271459 271508 ]
+[19:11:37] step=11203584 success=23.6% pids=[271457 271459 271508 ]
+[19:11:38]   MLP läuft: step=11203584 success=23.6%  pids=[271457 271459 271508 ]
+[19:12:38]   MLP läuft: step=11403648 success=24.7%  pids=[271457 271459 271508 ]
+[19:13:37] step=11603712 success=25.4% pids=[271457 271459 271508 ]
+[19:13:38]   MLP läuft: step=11603712 success=25.4%  pids=[271457 271459 271508 ]
+[19:14:38]   MLP läuft: step=11903808 success=27.4%  pids=[271457 271459 271508 ]
+[19:15:37] Training: step=12103872 success=28.1% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:15:37] step=12103872 success=28.1% pids=[271457 271459 271508 ]
+[19:15:38]   MLP läuft: step=12103872 success=28.1%  pids=[271457 271459 271508 ]
+[19:16:38]   MLP läuft: step=12403968 success=31.6%  pids=[271457 271459 271508 ]
+[19:17:37] step=12604032 success=32.3% pids=[271457 271459 271508 ]
+[19:17:38]   MLP läuft: step=12604032 success=32.3%  pids=[271457 271459 271508 ]
+[19:18:38]   MLP läuft: step=12904128 success=34.5%  pids=[271457 271459 271508 ]
+[19:19:37] step=13104192 success=36.0% pids=[271457 271459 271508 ]
+[19:19:38]   MLP läuft: step=13104192 success=36.0%  pids=[271457 271459 271508 ]
+[19:20:37] Training: step=13304256 success=36.0% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:20:38]   MLP läuft: step=13404288 success=37.1%  pids=[271457 271459 271508 ]
+[19:21:37] step=13604352 success=38.2% pids=[271457 271459 271508 ]
+[19:21:38]   MLP läuft: step=13604352 success=38.2%  pids=[271457 271459 271508 ]
+[19:22:38]   MLP läuft: step=13804416 success=41.2%  pids=[271457 271459 271508 ]
+[19:23:37] step=14104512 success=41.5% pids=[271457 271459 271508 ]
+[19:23:38]   MLP läuft: step=14104512 success=41.5%  pids=[271457 271459 271508 ]
+[19:24:38]   MLP läuft: step=14304576 success=44.3%  pids=[271457 271459 271508 ]
+[19:25:37] Training: step=14604672 success=48.3% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:25:38] step=14604672 success=48.3% pids=[271457 271459 271508 ]
+[19:25:38]   MLP läuft: step=14604672 success=48.3%  pids=[271457 271459 271508 ]
+[19:26:38]   MLP läuft: step=14804736 success=50.0%  pids=[271457 271459 271508 ]
+[19:27:38] step=15004800 success=50.7% pids=[271457 271459 271508 ]
+[19:27:39]   MLP läuft: step=15104832 success=50.3%  pids=[271457 271459 271508 ]
+[19:28:39]   MLP läuft: step=15304896 success=52.3%  pids=[271457 271459 271508 ]
+[19:29:38] step=15504960 success=53.3% pids=[271457 271459 271508 ]
+[19:29:39]   MLP läuft: step=15504960 success=53.3%  pids=[271457 271459 271508 ]
+[19:30:37] Training: step=15805056 success=55.8% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:30:39]   MLP läuft: step=15805056 success=55.8%  pids=[271457 271459 271508 ]
+[19:31:38] step=16005120 success=56.6% pids=[271457 271459 271508 ]
+[19:31:39]   MLP läuft: step=16005120 success=56.6%  pids=[271457 271459 271508 ]
+[19:32:39]   MLP läuft: step=16205184 success=57.5%  pids=[271457 271459 271508 ]
+[19:33:38] step=16505280 success=59.1% pids=[271457 271459 271508 ]
+[19:33:39]   MLP läuft: step=16505280 success=59.1%  pids=[271457 271459 271508 ]
+[19:34:39]   MLP läuft: step=16705344 success=60.4%  pids=[271457 271459 271508 ]
+[19:35:37] Training: step=17005440 success=61.8% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:35:38] step=17005440 success=61.8% pids=[271457 271459 271508 ]
+[19:35:39]   MLP läuft: step=17005440 success=61.8%  pids=[271457 271459 271508 ]
+[19:36:39]   MLP läuft: step=17205504 success=61.3%  pids=[271457 271459 271508 ]
+[19:37:38] step=17405568 success=62.7% pids=[271457 271459 271508 ]
+[19:37:39]   MLP läuft: step=17405568 success=62.7%  pids=[271457 271459 271508 ]
+[19:38:39]   MLP läuft: step=17705664 success=64.2%  pids=[271457 271459 271508 ]
+[19:39:38] step=17905728 success=65.4% pids=[271457 271459 271508 ]
+[19:39:39]   MLP läuft: step=17905728 success=65.4%  pids=[271457 271459 271508 ]
+[19:40:37] Training: step=18105792 success=65.8% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:40:39]   MLP läuft: step=18105792 success=65.8%  pids=[271457 271459 271508 ]
+[19:41:38] step=18405888 success=66.7% pids=[271457 271459 271508 ]
+[19:41:39]   MLP läuft: step=18405888 success=66.7%  pids=[271457 271459 271508 ]
+[19:42:39]   MLP läuft: step=18605952 success=67.3%  pids=[271457 271459 271508 ]
+[19:43:38] step=18906048 success=68.5% pids=[271457 271459 271508 ]
+[19:43:39]   MLP läuft: step=18906048 success=68.5%  pids=[271457 271459 271508 ]
+[19:44:39]   MLP läuft: step=19106112 success=68.7%  pids=[271457 271459 271508 ]
+[19:45:37] Training: step=19306176 success=69.1% pids=[271457 271459 271508 ] watchdog=1 switch=1
+[19:45:38] step=19306176 success=69.1% pids=[271457 271459 271508 ]
+[19:45:39]   MLP läuft: step=19306176 success=69.1%  pids=[271457 271459 271508 ]
+[19:46:39]   MLP läuft: step=19606272 success=69.4%  pids=[271457 271459 271508 ]
+[19:47:38] step=19806336 success=70.1% pids=[271457 271459 271508 ]
+[19:47:39]   MLP läuft: step=19806336 success=70.1%  pids=[271457 271459 271508 ]
+[19:49:38] step=500160 success=50.9% pids=[271457 271459 279654 ]
+[19:49:40]   MLP läuft: step=500160 success=50.9%  pids=[271457 271459 279654 ]
+[19:50:38] Training: step=900288 success=52.7% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[19:50:40]   MLP läuft: step=900288 success=52.7%  pids=[271457 271459 279654 ]
+[19:51:38] step=1400448 success=54.0% pids=[271457 271459 279654 ]
+[19:51:40]   MLP läuft: step=1400448 success=54.0%  pids=[271457 271459 279654 ]
+[19:52:40]   MLP läuft: step=1800576 success=56.7%  pids=[271457 271459 279654 ]
+[19:53:38] step=2200704 success=56.3% pids=[271457 271459 279654 ]
+[19:53:40]   MLP läuft: step=2200704 success=56.3%  pids=[271457 271459 279654 ]
+[19:54:40]   MLP läuft: step=2700864 success=54.1%  pids=[271457 271459 279654 ]
+[19:55:38] Training: step=3100992 success=53.9% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[19:55:38] step=3100992 success=53.9% pids=[271457 271459 279654 ]
+[19:55:40]   MLP läuft: step=3100992 success=53.9%  pids=[271457 271459 279654 ]
+[19:56:40]   MLP läuft: step=3501120 success=55.8%  pids=[271457 271459 279654 ]
+[19:57:39] step=3901248 success=56.6% pids=[271457 271459 279654 ]
+[19:57:40]   MLP läuft: step=3901248 success=56.6%  pids=[271457 271459 279654 ]
+[19:58:40]   MLP läuft: step=4401408 success=49.7%  pids=[271457 271459 279654 ]
+[19:59:39] step=4801536 success=57.9% pids=[271457 271459 279654 ]
+[19:59:40]   MLP läuft: step=4801536 success=57.9%  pids=[271457 271459 279654 ]
+[20:00:38] Training: step=5201664 success=56.8% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:00:40]   MLP läuft: step=5201664 success=56.8%  pids=[271457 271459 279654 ]
+[20:01:39] step=5601792 success=55.3% pids=[271457 271459 279654 ]
+[20:01:40]   MLP läuft: step=5601792 success=55.3%  pids=[271457 271459 279654 ]
+[20:02:40]   MLP läuft: step=6101952 success=54.8%  pids=[271457 271459 279654 ]
+[20:03:39] step=6502080 success=58.2% pids=[271457 271459 279654 ]
+[20:03:40]   MLP läuft: step=6502080 success=58.2%  pids=[271457 271459 279654 ]
+[20:04:40]   MLP läuft: step=6902208 success=57.0%  pids=[271457 271459 279654 ]
+[20:05:38] Training: step=7302336 success=57.6% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:05:39] step=7302336 success=57.6% pids=[271457 271459 279654 ]
+[20:05:40]   MLP läuft: step=7302336 success=57.6%  pids=[271457 271459 279654 ]
+[20:06:40]   MLP läuft: step=7702464 success=57.5%  pids=[271457 271459 279654 ]
+[20:07:39] step=8202624 success=58.8% pids=[271457 271459 279654 ]
+[20:07:40]   MLP läuft: step=8202624 success=58.8%  pids=[271457 271459 279654 ]
+[20:08:40]   MLP läuft: step=8602752 success=58.9%  pids=[271457 271459 279654 ]
+[20:09:39] step=9002880 success=58.4% pids=[271457 271459 279654 ]
+[20:09:41]   MLP läuft: step=9002880 success=58.4%  pids=[271457 271459 279654 ]
+[20:10:38] Training: step=9403008 success=57.9% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:10:41]   MLP läuft: step=9403008 success=57.9%  pids=[271457 271459 279654 ]
+[20:11:39] step=9803136 success=58.8% pids=[271457 271459 279654 ]
+[20:11:41]   MLP läuft: step=9803136 success=58.8%  pids=[271457 271459 279654 ]
+[20:12:41]   MLP läuft: step=10203264 success=59.6%  pids=[271457 271459 279654 ]
+[20:13:39] step=10603392 success=60.5% pids=[271457 271459 279654 ]
+[20:13:41]   MLP läuft: step=10603392 success=60.5%  pids=[271457 271459 279654 ]
+[20:14:41]   MLP läuft: step=11003520 success=57.9%  pids=[271457 271459 279654 ]
+[20:15:38] Training: step=11403648 success=58.2% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:15:39] step=11403648 success=58.2% pids=[271457 271459 279654 ]
+[20:15:41]   MLP läuft: step=11403648 success=58.2%  pids=[271457 271459 279654 ]
+[20:16:41]   MLP läuft: step=11803776 success=60.0%  pids=[271457 271459 279654 ]
+[20:17:39] step=12203904 success=59.8% pids=[271457 271459 279654 ]
+[20:17:41]   MLP läuft: step=12203904 success=59.8%  pids=[271457 271459 279654 ]
+[20:18:41]   MLP läuft: step=12604032 success=60.4%  pids=[271457 271459 279654 ]
+[20:19:39] step=13004160 success=60.0% pids=[271457 271459 279654 ]
+[20:19:41]   MLP läuft: step=13004160 success=60.0%  pids=[271457 271459 279654 ]
+[20:20:38] Training: step=13304256 success=60.9% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:20:41]   MLP läuft: step=13404288 success=61.6%  pids=[271457 271459 279654 ]
+[20:21:39] step=13704384 success=62.8% pids=[271457 271459 279654 ]
+[20:21:41]   MLP läuft: step=13804416 success=61.4%  pids=[271457 271459 279654 ]
+[20:22:41]   MLP läuft: step=14104512 success=59.5%  pids=[271457 271459 279654 ]
+[20:23:39] step=14504640 success=59.3% pids=[271457 271459 279654 ]
+[20:23:41]   MLP läuft: step=14504640 success=59.3%  pids=[271457 271459 279654 ]
+[20:24:41]   MLP läuft: step=14904768 success=60.4%  pids=[271457 271459 279654 ]
+[20:25:38] Training: step=15204864 success=62.8% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:25:39] step=15204864 success=62.8% pids=[271457 271459 279654 ]
+[20:25:41]   MLP läuft: step=15204864 success=62.8%  pids=[271457 271459 279654 ]
+[20:26:41]   MLP läuft: step=15604992 success=63.8%  pids=[271457 271459 279654 ]
+[20:27:39] step=16005120 success=62.8% pids=[271457 271459 279654 ]
+[20:27:41]   MLP läuft: step=16005120 success=62.8%  pids=[271457 271459 279654 ]
+[20:28:41]   MLP läuft: step=16305216 success=63.3%  pids=[271457 271459 279654 ]
+[20:29:40] step=16605312 success=64.0% pids=[271457 271459 279654 ]
+[20:29:41]   MLP läuft: step=16705344 success=64.4%  pids=[271457 271459 279654 ]
+[20:30:39] Training: step=17005440 success=64.7% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:30:42]   MLP läuft: step=17005440 success=64.7%  pids=[271457 271459 279654 ]
+[20:31:40] step=17305536 success=65.4% pids=[271457 271459 279654 ]
+[20:31:42]   MLP läuft: step=17305536 success=65.4%  pids=[271457 271459 279654 ]
+[20:32:42]   MLP läuft: step=17705664 success=64.7%  pids=[271457 271459 279654 ]
+[20:33:40] step=18005760 success=66.8% pids=[271457 271459 279654 ]
+[20:33:42]   MLP läuft: step=18005760 success=66.8%  pids=[271457 271459 279654 ]
+[20:34:42]   MLP läuft: step=18305856 success=66.0%  pids=[271457 271459 279654 ]
+[20:35:39] Training: step=18605952 success=66.4% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:35:40] step=18605952 success=66.4% pids=[271457 271459 279654 ]
+[20:35:42]   MLP läuft: step=18605952 success=66.4%  pids=[271457 271459 279654 ]
+[20:36:42]   MLP läuft: step=19006080 success=67.2%  pids=[271457 271459 279654 ]
+[20:37:40] step=19306176 success=66.9% pids=[271457 271459 279654 ]
+[20:37:42]   MLP läuft: step=19306176 success=66.9%  pids=[271457 271459 279654 ]
+[20:38:42]   MLP läuft: step=19606272 success=67.5%  pids=[271457 271459 279654 ]
+[20:39:40] step=19906368 success=68.1% pids=[271457 271459 279654 ]
+[20:39:42]   MLP läuft: step=19906368 success=68.1%  pids=[271457 271459 279654 ]
+[20:40:39] Training: step=20206464 success=67.0% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:40:42]   MLP läuft: step=20206464 success=67.0%  pids=[271457 271459 279654 ]
+[20:41:40] step=20506560 success=69.1% pids=[271457 271459 279654 ]
+[20:41:42]   MLP läuft: step=20506560 success=69.1%  pids=[271457 271459 279654 ]
+[20:42:42]   MLP läuft: step=20806656 success=68.7%  pids=[271457 271459 279654 ]
+[20:43:40] step=21106752 success=69.7% pids=[271457 271459 279654 ]
+[20:43:42]   MLP läuft: step=21106752 success=69.7%  pids=[271457 271459 279654 ]
+[20:44:42]   MLP läuft: step=21406848 success=69.9%  pids=[271457 271459 279654 ]
+[20:45:39] Training: step=21706944 success=70.5% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:45:40] step=21706944 success=70.5% pids=[271457 271459 279654 ]
+[20:45:42]   MLP läuft: step=21806976 success=69.5%  pids=[271457 271459 279654 ]
+[20:46:42]   MLP läuft: step=22007040 success=70.5%  pids=[271457 271459 279654 ]
+[20:47:40] step=22307136 success=70.0% pids=[271457 271459 279654 ]
+[20:47:42]   MLP läuft: step=22407168 success=70.3%  pids=[271457 271459 279654 ]
+[20:48:42]   MLP läuft: step=22707264 success=71.5%  pids=[271457 271459 279654 ]
+[20:49:40] step=22907328 success=70.9% pids=[271457 271459 279654 ]
+[20:49:42]   MLP läuft: step=22907328 success=70.9%  pids=[271457 271459 279654 ]
+[20:50:39] Training: step=23207424 success=71.9% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:50:42]   MLP läuft: step=23207424 success=71.9%  pids=[271457 271459 279654 ]
+[20:51:40] step=23507520 success=71.9% pids=[271457 271459 279654 ]
+[20:51:43]   MLP läuft: step=23507520 success=71.9%  pids=[271457 271459 279654 ]
+[20:52:43]   MLP läuft: step=23807616 success=71.7%  pids=[271457 271459 279654 ]
+[20:53:40] step=24107712 success=72.3% pids=[271457 271459 279654 ]
+[20:53:43]   MLP läuft: step=24107712 success=72.3%  pids=[271457 271459 279654 ]
+[20:54:43]   MLP läuft: step=24407808 success=72.3%  pids=[271457 271459 279654 ]
+[20:55:39] Training: step=24707904 success=72.8% pids=[271457 271459 279654 ] watchdog=1 switch=1
+[20:55:40] step=24707904 success=72.8% pids=[271457 271459 279654 ]
+[20:55:43]   MLP läuft: step=24707904 success=72.8%  pids=[271457 271459 279654 ]
+[20:57:40] step=200064 success=53.9% pids=[271457 271459 286995 ]
+[20:57:43]   MLP läuft: step=200064 success=53.9%  pids=[271457 271459 286995 ]
+[20:58:43]   MLP läuft: step=500160 success=58.1%  pids=[271457 271459 286995 ]
+[20:59:41] step=800256 success=59.3% pids=[271457 271459 286995 ]
+[20:59:43]   MLP läuft: step=800256 success=59.3%  pids=[271457 271459 286995 ]
+[21:00:39] Training: step=1000320 success=59.8% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:00:43]   MLP läuft: step=1000320 success=59.8%  pids=[271457 271459 286995 ]
+[21:01:41] step=1300416 success=59.8% pids=[271457 271459 286995 ]
+[21:01:43]   MLP läuft: step=1300416 success=59.8%  pids=[271457 271459 286995 ]
+[21:02:43]   MLP läuft: step=1600512 success=60.5%  pids=[271457 271459 286995 ]
+[21:03:41] step=1800576 success=61.1% pids=[271457 271459 286995 ]
+[21:03:43]   MLP läuft: step=1900608 success=60.8%  pids=[271457 271459 286995 ]
+[21:04:43]   MLP läuft: step=2100672 success=60.8%  pids=[271457 271459 286995 ]
+[21:05:39] Training: step=2400768 success=61.5% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:05:41] step=2400768 success=61.5% pids=[271457 271459 286995 ]
+[21:05:43]   MLP läuft: step=2400768 success=61.5%  pids=[271457 271459 286995 ]
+[21:06:43]   MLP läuft: step=2700864 success=61.1%  pids=[271457 271459 286995 ]
+[21:07:41] step=2900928 success=61.1% pids=[271457 271459 286995 ]
+[21:07:43]   MLP läuft: step=2900928 success=61.1%  pids=[271457 271459 286995 ]
+[21:08:43]   MLP läuft: step=3201024 success=61.5%  pids=[271457 271459 286995 ]
+[21:09:41] step=3401088 success=61.6% pids=[271457 271459 286995 ]
+[21:09:43]   MLP läuft: step=3501120 success=61.7%  pids=[271457 271459 286995 ]
+[21:10:39] Training: step=3701184 success=61.4% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:10:43]   MLP läuft: step=3701184 success=61.4%  pids=[271457 271459 286995 ]
+[21:11:41] step=4001280 success=61.5% pids=[271457 271459 286995 ]
+[21:11:43]   MLP läuft: step=4001280 success=61.5%  pids=[271457 271459 286995 ]
+[21:12:44]   MLP läuft: step=4301376 success=62.1%  pids=[271457 271459 286995 ]
+[21:13:41] step=4501440 success=62.1% pids=[271457 271459 286995 ]
+[21:13:44]   MLP läuft: step=4501440 success=62.1%  pids=[271457 271459 286995 ]
+[21:14:44]   MLP läuft: step=4801536 success=61.8%  pids=[271457 271459 286995 ]
+[21:15:40] Training: step=5001600 success=62.2% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:15:41] step=5001600 success=62.2% pids=[271457 271459 286995 ]
+[21:15:44]   MLP läuft: step=5101632 success=62.2%  pids=[271457 271459 286995 ]
+[21:16:44]   MLP läuft: step=5301696 success=62.1%  pids=[271457 271459 286995 ]
+[21:17:41] step=5601792 success=62.5% pids=[271457 271459 286995 ]
+[21:17:44]   MLP läuft: step=5601792 success=62.5%  pids=[271457 271459 286995 ]
+[21:18:44]   MLP läuft: step=5801856 success=62.3%  pids=[271457 271459 286995 ]
+[21:19:41] step=6101952 success=62.1% pids=[271457 271459 286995 ]
+[21:19:44]   MLP läuft: step=6101952 success=62.1%  pids=[271457 271459 286995 ]
+[21:20:40] Training: step=6402048 success=62.2% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:20:44]   MLP läuft: step=6402048 success=62.2%  pids=[271457 271459 286995 ]
+[21:21:41] step=6602112 success=62.9% pids=[271457 271459 286995 ]
+[21:21:44]   MLP läuft: step=6602112 success=62.9%  pids=[271457 271459 286995 ]
+[21:22:44]   MLP läuft: step=6902208 success=62.6%  pids=[271457 271459 286995 ]
+[21:23:41] step=7102272 success=63.0% pids=[271457 271459 286995 ]
+[21:23:44]   MLP läuft: step=7202304 success=62.8%  pids=[271457 271459 286995 ]
+[21:24:44]   MLP läuft: step=7402368 success=63.0%  pids=[271457 271459 286995 ]
+[21:25:40] Training: step=7702464 success=62.2% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:25:41] step=7702464 success=62.2% pids=[271457 271459 286995 ]
+[21:25:44]   MLP läuft: step=7702464 success=62.2%  pids=[271457 271459 286995 ]
+[21:26:44]   MLP läuft: step=7902528 success=63.1%  pids=[271457 271459 286995 ]
+[21:27:41] step=8202624 success=63.0% pids=[271457 271459 286995 ]
+[21:27:44]   MLP läuft: step=8202624 success=63.0%  pids=[271457 271459 286995 ]
+[21:28:44]   MLP läuft: step=8502720 success=63.4%  pids=[271457 271459 286995 ]
+[21:29:41] step=8702784 success=63.5% pids=[271457 271459 286995 ]
+[21:29:44]   MLP läuft: step=8702784 success=63.5%  pids=[271457 271459 286995 ]
+[21:30:40] Training: step=9002880 success=62.7% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:30:44]   MLP läuft: step=9002880 success=62.7%  pids=[271457 271459 286995 ]
+[21:31:42] step=9302976 success=63.3% pids=[271457 271459 286995 ]
+[21:31:44]   MLP läuft: step=9302976 success=63.3%  pids=[271457 271459 286995 ]
+[21:32:44]   MLP läuft: step=9503040 success=63.2%  pids=[271457 271459 286995 ]
+[21:33:42] step=9803136 success=63.5% pids=[271457 271459 286995 ]
+[21:33:45]   MLP läuft: step=9803136 success=63.5%  pids=[271457 271459 286995 ]
+[21:34:45]   MLP läuft: step=10103232 success=63.3%  pids=[271457 271459 286995 ]
+[21:35:40] Training: step=10303296 success=63.2% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:35:42] step=10303296 success=63.2% pids=[271457 271459 286995 ]
+[21:35:45]   MLP läuft: step=10303296 success=63.2%  pids=[271457 271459 286995 ]
+[21:36:45]   MLP läuft: step=10603392 success=63.6%  pids=[271457 271459 286995 ]
+[21:37:42] step=10803456 success=63.7% pids=[271457 271459 286995 ]
+[21:37:45]   MLP läuft: step=10803456 success=63.7%  pids=[271457 271459 286995 ]
+[21:38:45]   MLP läuft: step=11103552 success=63.8%  pids=[271457 271459 286995 ]
+[21:39:42] step=11403648 success=64.0% pids=[271457 271459 286995 ]
+[21:39:45]   MLP läuft: step=11403648 success=64.0%  pids=[271457 271459 286995 ]
+[21:40:40] Training: step=11603712 success=63.8% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:40:45]   MLP läuft: step=11603712 success=63.8%  pids=[271457 271459 286995 ]
+[21:41:42] step=11903808 success=63.8% pids=[271457 271459 286995 ]
+[21:41:45]   MLP läuft: step=11903808 success=63.8%  pids=[271457 271459 286995 ]
+[21:42:45]   MLP läuft: step=12203904 success=64.0%  pids=[271457 271459 286995 ]
+[21:43:42] step=12403968 success=63.9% pids=[271457 271459 286995 ]
+[21:43:45]   MLP läuft: step=12403968 success=63.9%  pids=[271457 271459 286995 ]
+[21:44:45]   MLP läuft: step=12704064 success=64.1%  pids=[271457 271459 286995 ]
+[21:45:40] Training: step=12904128 success=64.1% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:45:42] step=12904128 success=64.1% pids=[271457 271459 286995 ]
+[21:45:45]   MLP läuft: step=13004160 success=64.4%  pids=[271457 271459 286995 ]
+[21:46:45]   MLP läuft: step=13204224 success=64.1%  pids=[271457 271459 286995 ]
+[21:47:42] step=13504320 success=64.3% pids=[271457 271459 286995 ]
+[21:47:45]   MLP läuft: step=13504320 success=64.3%  pids=[271457 271459 286995 ]
+[21:48:45]   MLP läuft: step=13804416 success=64.2%  pids=[271457 271459 286995 ]
+[21:49:42] step=14004480 success=64.4% pids=[271457 271459 286995 ]
+[21:49:45]   MLP läuft: step=14004480 success=64.4%  pids=[271457 271459 286995 ]
+[21:50:40] Training: step=14304576 success=64.2% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:50:45]   MLP läuft: step=14304576 success=64.2%  pids=[271457 271459 286995 ]
+[21:51:42] step=14504640 success=64.5% pids=[271457 271459 286995 ]
+[21:51:45]   MLP läuft: step=14604672 success=64.8%  pids=[271457 271459 286995 ]
+[21:52:45]   MLP läuft: step=14804736 success=64.4%  pids=[271457 271459 286995 ]
+[21:53:42] step=15104832 success=64.5% pids=[271457 271459 286995 ]
+[21:53:46]   MLP läuft: step=15104832 success=64.5%  pids=[271457 271459 286995 ]
+[21:54:46]   MLP läuft: step=15304896 success=64.5%  pids=[271457 271459 286995 ]
+[21:55:41] Training: step=15604992 success=64.6% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[21:55:42] step=15604992 success=64.6% pids=[271457 271459 286995 ]
+[21:55:46]   MLP läuft: step=15604992 success=64.6%  pids=[271457 271459 286995 ]
+[21:56:46]   MLP läuft: step=15905088 success=64.4%  pids=[271457 271459 286995 ]
+[21:57:42] step=16105152 success=64.6% pids=[271457 271459 286995 ]
+[21:57:46]   MLP läuft: step=16105152 success=64.6%  pids=[271457 271459 286995 ]
+[21:58:46]   MLP läuft: step=16405248 success=64.3%  pids=[271457 271459 286995 ]
+[21:59:42] step=16705344 success=65.0% pids=[271457 271459 286995 ]
+[21:59:46]   MLP läuft: step=16705344 success=65.0%  pids=[271457 271459 286995 ]
+[22:00:41] Training: step=16905408 success=64.9% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:00:46]   MLP läuft: step=16905408 success=64.9%  pids=[271457 271459 286995 ]
+[22:01:42] step=17205504 success=65.2% pids=[271457 271459 286995 ]
+[22:01:46]   MLP läuft: step=17205504 success=65.2%  pids=[271457 271459 286995 ]
+[22:02:46]   MLP läuft: step=17505600 success=65.0%  pids=[271457 271459 286995 ]
+[22:03:43] step=17705664 success=65.2% pids=[271457 271459 286995 ]
+[22:03:46]   MLP läuft: step=17705664 success=65.2%  pids=[271457 271459 286995 ]
+[22:04:46]   MLP läuft: step=17905728 success=65.2%  pids=[271457 271459 286995 ]
+[22:05:41] Training: step=18205824 success=65.2% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:05:43] step=18205824 success=65.2% pids=[271457 271459 286995 ]
+[22:05:46]   MLP läuft: step=18205824 success=65.2%  pids=[271457 271459 286995 ]
+[22:06:46]   MLP läuft: step=18505920 success=65.3%  pids=[271457 271459 286995 ]
+[22:07:43] step=18705984 success=65.4% pids=[271457 271459 286995 ]
+[22:07:46]   MLP läuft: step=18705984 success=65.4%  pids=[271457 271459 286995 ]
+[22:08:46]   MLP läuft: step=19006080 success=65.1%  pids=[271457 271459 286995 ]
+[22:09:43] step=19206144 success=65.5% pids=[271457 271459 286995 ]
+[22:09:46]   MLP läuft: step=19206144 success=65.5%  pids=[271457 271459 286995 ]
+[22:10:41] Training: step=19506240 success=65.0% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:10:46]   MLP läuft: step=19506240 success=65.0%  pids=[271457 271459 286995 ]
+[22:11:43] step=19706304 success=65.7% pids=[271457 271459 286995 ]
+[22:11:46]   MLP läuft: step=19806336 success=65.6%  pids=[271457 271459 286995 ]
+[22:12:46]   MLP läuft: step=20006400 success=65.7%  pids=[271457 271459 286995 ]
+[22:13:43] step=20306496 success=65.6% pids=[271457 271459 286995 ]
+[22:13:46]   MLP läuft: step=20306496 success=65.6%  pids=[271457 271459 286995 ]
+[22:14:47]   MLP läuft: step=20506560 success=65.5%  pids=[271457 271459 286995 ]
+[22:15:41] Training: step=20806656 success=65.7% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:15:43] step=20806656 success=65.7% pids=[271457 271459 286995 ]
+[22:15:47]   MLP läuft: step=20806656 success=65.7%  pids=[271457 271459 286995 ]
+[22:16:47]   MLP läuft: step=21106752 success=65.8%  pids=[271457 271459 286995 ]
+[22:17:43] step=21306816 success=65.8% pids=[271457 271459 286995 ]
+[22:17:47]   MLP läuft: step=21306816 success=65.8%  pids=[271457 271459 286995 ]
+[22:18:47]   MLP läuft: step=21606912 success=65.4%  pids=[271457 271459 286995 ]
+[22:19:43] step=21907008 success=65.9% pids=[271457 271459 286995 ]
+[22:19:47]   MLP läuft: step=21907008 success=65.9%  pids=[271457 271459 286995 ]
+[22:20:41] Training: step=22107072 success=65.7% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:20:47]   MLP läuft: step=22107072 success=65.7%  pids=[271457 271459 286995 ]
+[22:21:43] step=22407168 success=66.1% pids=[271457 271459 286995 ]
+[22:21:47]   MLP läuft: step=22407168 success=66.1%  pids=[271457 271459 286995 ]
+[22:22:47]   MLP läuft: step=22707264 success=66.0%  pids=[271457 271459 286995 ]
+[22:23:43] step=22907328 success=65.8% pids=[271457 271459 286995 ]
+[22:23:47]   MLP läuft: step=22907328 success=65.8%  pids=[271457 271459 286995 ]
+[22:24:47]   MLP läuft: step=23207424 success=65.8%  pids=[271457 271459 286995 ]
+[22:25:41] Training: step=23407488 success=66.3% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:25:43] step=23407488 success=66.3% pids=[271457 271459 286995 ]
+[22:25:47]   MLP läuft: step=23507520 success=66.1%  pids=[271457 271459 286995 ]
+[22:26:47]   MLP läuft: step=23707584 success=66.3%  pids=[271457 271459 286995 ]
+[22:27:43] step=24007680 success=66.3% pids=[271457 271459 286995 ]
+[22:27:47]   MLP läuft: step=24007680 success=66.3%  pids=[271457 271459 286995 ]
+[22:28:47]   MLP läuft: step=24207744 success=66.1%  pids=[271457 271459 286995 ]
+[22:29:43] step=24507840 success=66.6% pids=[271457 271459 286995 ]
+[22:29:47]   MLP läuft: step=24507840 success=66.6%  pids=[271457 271459 286995 ]
+[22:30:41] Training: step=24707904 success=66.2% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:30:47]   MLP läuft: step=24807936 success=66.5%  pids=[271457 271459 286995 ]
+[22:31:43] step=25008000 success=66.3% pids=[271457 271459 286995 ]
+[22:31:47]   MLP läuft: step=25008000 success=66.3%  pids=[271457 271459 286995 ]
+[22:32:47]   MLP läuft: step=25308096 success=66.2%  pids=[271457 271459 286995 ]
+[22:33:44] step=25508160 success=66.2% pids=[271457 271459 286995 ]
+[22:33:47]   MLP läuft: step=25608192 success=66.6%  pids=[271457 271459 286995 ]
+[22:34:47]   MLP läuft: step=25808256 success=66.7%  pids=[271457 271459 286995 ]
+[22:35:41] Training: step=26108352 success=66.9% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:35:44] step=26108352 success=66.9% pids=[271457 271459 286995 ]
+[22:35:48]   MLP läuft: step=26108352 success=66.9%  pids=[271457 271459 286995 ]
+[22:36:48]   MLP läuft: step=26408448 success=66.7%  pids=[271457 271459 286995 ]
+[22:37:44] step=26608512 success=67.1% pids=[271457 271459 286995 ]
+[22:37:48]   MLP läuft: step=26608512 success=67.1%  pids=[271457 271459 286995 ]
+[22:38:48]   MLP läuft: step=26908608 success=66.4%  pids=[271457 271459 286995 ]
+[22:39:44] step=27108672 success=67.2% pids=[271457 271459 286995 ]
+[22:39:48]   MLP läuft: step=27208704 success=66.6%  pids=[271457 271459 286995 ]
+[22:40:42] Training: step=27408768 success=67.0% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:40:48]   MLP läuft: step=27408768 success=67.0%  pids=[271457 271459 286995 ]
+[22:41:44] step=27708864 success=66.9% pids=[271457 271459 286995 ]
+[22:41:48]   MLP läuft: step=27708864 success=66.9%  pids=[271457 271459 286995 ]
+[22:42:48]   MLP läuft: step=27908928 success=66.7%  pids=[271457 271459 286995 ]
+[22:43:44] step=28209024 success=67.3% pids=[271457 271459 286995 ]
+[22:43:48]   MLP läuft: step=28209024 success=67.3%  pids=[271457 271459 286995 ]
+[22:44:48]   MLP läuft: step=28509120 success=67.1%  pids=[271457 271459 286995 ]
+[22:45:42] Training: step=28709184 success=67.2% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:45:44] step=28709184 success=67.2% pids=[271457 271459 286995 ]
+[22:45:48]   MLP läuft: step=28709184 success=67.2%  pids=[271457 271459 286995 ]
+[22:46:48]   MLP läuft: step=29009280 success=67.3%  pids=[271457 271459 286995 ]
+[22:47:44] step=29309376 success=67.0% pids=[271457 271459 286995 ]
+[22:47:48]   MLP läuft: step=29309376 success=67.0%  pids=[271457 271459 286995 ]
+[22:48:48]   MLP läuft: step=29509440 success=67.2%  pids=[271457 271459 286995 ]
+[22:49:44] step=29809536 success=67.0% pids=[271457 271459 286995 ]
+[22:49:48]   MLP läuft: step=29809536 success=67.0%  pids=[271457 271459 286995 ]
+[22:50:42] Training: step=30009600 success=67.4% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:50:48]   MLP läuft: step=30109632 success=67.4%  pids=[271457 271459 286995 ]
+[22:51:44] step=30309696 success=67.3% pids=[271457 271459 286995 ]
+[22:51:48]   MLP läuft: step=30309696 success=67.3%  pids=[271457 271459 286995 ]
+[22:52:48]   MLP läuft: step=30609792 success=67.5%  pids=[271457 271459 286995 ]
+[22:53:44] step=30809856 success=67.3% pids=[271457 271459 286995 ]
+[22:53:48]   MLP läuft: step=30909888 success=67.6%  pids=[271457 271459 286995 ]
+[22:54:48]   MLP läuft: step=31109952 success=67.2%  pids=[271457 271459 286995 ]
+[22:55:42] Training: step=31410048 success=67.9% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[22:55:44] step=31410048 success=67.9% pids=[271457 271459 286995 ]
+[22:55:48]   MLP läuft: step=31410048 success=67.9%  pids=[271457 271459 286995 ]
+[22:56:49]   MLP läuft: step=31710144 success=67.8%  pids=[271457 271459 286995 ]
+[22:57:44] step=31910208 success=67.7% pids=[271457 271459 286995 ]
+[22:57:49]   MLP läuft: step=31910208 success=67.7%  pids=[271457 271459 286995 ]
+[22:58:49]   MLP läuft: step=32210304 success=68.0%  pids=[271457 271459 286995 ]
+[22:59:44] step=32410368 success=68.1% pids=[271457 271459 286995 ]
+[22:59:49]   MLP läuft: step=32410368 success=68.1%  pids=[271457 271459 286995 ]
+[23:00:42] Training: step=32710464 success=67.8% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[23:00:49]   MLP läuft: step=32710464 success=67.8%  pids=[271457 271459 286995 ]
+[23:01:44] step=33010560 success=68.0% pids=[271457 271459 286995 ]
+[23:01:49]   MLP läuft: step=33010560 success=68.0%  pids=[271457 271459 286995 ]
+[23:02:49]   MLP läuft: step=33210624 success=68.0%  pids=[271457 271459 286995 ]
+[23:03:45] step=33510720 success=67.4% pids=[271457 271459 286995 ]
+[23:03:49]   MLP läuft: step=33510720 success=67.4%  pids=[271457 271459 286995 ]
+[23:04:49]   MLP läuft: step=33810816 success=67.8%  pids=[271457 271459 286995 ]
+[23:05:42] Training: step=34010880 success=67.8% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[23:05:45] step=34010880 success=67.8% pids=[271457 271459 286995 ]
+[23:05:49]   MLP läuft: step=34010880 success=67.8%  pids=[271457 271459 286995 ]
+[23:06:49]   MLP läuft: step=34310976 success=68.2%  pids=[271457 271459 286995 ]
+[23:07:45] step=34611072 success=68.1% pids=[271457 271459 286995 ]
+[23:07:49]   MLP läuft: step=34611072 success=68.1%  pids=[271457 271459 286995 ]
+[23:08:49]   MLP läuft: step=34811136 success=68.1%  pids=[271457 271459 286995 ]
+[23:09:45] step=35111232 success=68.1% pids=[271457 271459 286995 ]
+[23:09:49]   MLP läuft: step=35111232 success=68.1%  pids=[271457 271459 286995 ]
+[23:10:42] Training: step=35311296 success=68.1% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[23:10:49]   MLP läuft: step=35411328 success=68.1%  pids=[271457 271459 286995 ]
+[23:11:45] step=35611392 success=68.2% pids=[271457 271459 286995 ]
+[23:11:49]   MLP läuft: step=35611392 success=68.2%  pids=[271457 271459 286995 ]
+[23:12:49]   MLP läuft: step=35911488 success=68.1%  pids=[271457 271459 286995 ]
+[23:13:45] step=36111552 success=68.7% pids=[271457 271459 286995 ]
+[23:13:49]   MLP läuft: step=36211584 success=68.2%  pids=[271457 271459 286995 ]
+[23:14:49]   MLP läuft: step=36411648 success=68.1%  pids=[271457 271459 286995 ]
+[23:15:42] Training: step=36611712 success=67.8% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[23:15:45] step=36711744 success=68.7% pids=[271457 271459 286995 ]
+[23:15:49]   MLP läuft: step=36711744 success=68.7%  pids=[271457 271459 286995 ]
+[23:16:49]   MLP läuft: step=36911808 success=68.5%  pids=[271457 271459 286995 ]
+[23:17:45] step=37211904 success=68.5% pids=[271457 271459 286995 ]
+[23:17:50]   MLP läuft: step=37211904 success=68.5%  pids=[271457 271459 286995 ]
+[23:18:50]   MLP läuft: step=37512000 success=68.5%  pids=[271457 271459 286995 ]
+[23:19:45] step=37712064 success=68.6% pids=[271457 271459 286995 ]
+[23:19:50]   MLP läuft: step=37712064 success=68.6%  pids=[271457 271459 286995 ]
+[23:20:43] Training: step=38012160 success=68.3% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[23:20:50]   MLP läuft: step=38012160 success=68.3%  pids=[271457 271459 286995 ]
+[23:21:45] step=38212224 success=68.7% pids=[271457 271459 286995 ]
+[23:21:50]   MLP läuft: step=38312256 success=68.4%  pids=[271457 271459 286995 ]
+[23:22:50]   MLP läuft: step=38512320 success=68.5%  pids=[271457 271459 286995 ]
+[23:23:45] step=38812416 success=68.6% pids=[271457 271459 286995 ]
+[23:23:50]   MLP läuft: step=38812416 success=68.6%  pids=[271457 271459 286995 ]
+[23:24:50]   MLP läuft: step=39112512 success=68.7%  pids=[271457 271459 286995 ]
+[23:25:43] Training: step=39312576 success=68.9% pids=[271457 271459 286995 ] watchdog=1 switch=1
+[23:25:45] step=39312576 success=68.9% pids=[271457 271459 286995 ]
+[23:25:50]   MLP läuft: step=39312576 success=68.9%  pids=[271457 271459 286995 ]
+[23:26:50]   MLP läuft: step=39612672 success=68.8%  pids=[271457 271459 286995 ]
+[23:27:45] step=39812736 success=68.9% pids=[271457 271459 286995 ]
+[23:27:50]   MLP läuft: step=39812736 success=68.9%  pids=[271457 271459 286995 ]
+[23:28:50] MLP-Training beendet (keine Prozesse mehr aktiv).
+[23:28:50] 
+[23:28:50] === Prüfe Topspin-Qualität ===
+[23:28:50]   Mittleres omega.x = -180.40 rad/s (Schwelle: 30.0)
+[23:28:50] 
+[23:28:50] ⚠️  KEIN TOPSPIN: omega.x=-180.40 rad/s < 30.0 rad/s
+[23:28:50]    Wechsle zu RecurrentPPO (LSTM) ...
+[23:28:50] 
+[23:28:50]   Stoppe alten Watchdog: 252974 
+[23:28:50] === Starte LSTM-Training ===
+[23:28:50] === LSTM Training gestartet ===
+[23:28:50] 
+[23:28:50] === LSTM Stage 1 | 35M Steps | lr=3e-4→1e-5 | ent=0.02 ===
+=== spinoza LSTM Training (RecurrentPPO) ===
+  n_envs=32, difficulty=1
+  lstm_hidden=256, total_steps=35000000
+/home/sefo/.local/lib/python3.12/site-packages/stable_baselines3/common/utils.py:195: UserWarning: get_linear_fn() is deprecated, please use LinearSchedule() instead
+  warnings.warn("get_linear_fn() is deprecated, please use LinearSchedule() instead")
+  model params: 977,935
+
+[23:30:43] Training: step= success=% pids=[298428 298442 ] watchdog=0 switch=1
+[23:30:43] WATCHDOG TOT → starte neu
+[23:30:43] Watchdog neu: PID 300626
+[23:30:43] === Watchdog gestartet (PID 300629) ===
+  step=  100000 | eps/s=   871 | success=  0.0% | miss= 97.4% | elapsed=114.8s
+[23:32:43] Kein Fortschritt im Log.
+  step=  200000 | eps/s=   875 | success=  0.0% | miss= 95.0% | elapsed=228.6s
+[23:34:43] Kein Fortschritt im Log.
+  step=  300000 | eps/s=   864 | success=  0.1% | miss= 94.6% | elapsed=347.2s
+[23:35:43] Training: step=300000 success=0.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step=  400000 | eps/s=   867 | success=  0.1% | miss= 94.1% | elapsed=461.3s
+[23:36:43] Kein Fortschritt im Log.
+  step=  500000 | eps/s=   864 | success=  0.1% | miss= 93.6% | elapsed=578.8s
+[23:38:43] Kein Fortschritt im Log.
+  step=  600000 | eps/s=   866 | success=  0.2% | miss= 92.9% | elapsed=692.8s
+[23:40:43] Kein Fortschritt im Log.
+[23:40:43] Training: step=600000 success=0.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=  700000 | eps/s=   867 | success=  0.2% | miss= 92.1% | elapsed=807.3s
+[23:42:43] Kein Fortschritt im Log.
+  step=  800000 | eps/s=   864 | success=  0.2% | miss= 91.6% | elapsed=926.1s
+[23:44:43] Kein Fortschritt im Log.
+[23:45:43] Training: step=800000 success=0.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=  900000 | eps/s=   865 | success=  0.2% | miss= 91.0% | elapsed=1040.0s
+[23:46:43] Kein Fortschritt im Log.
+  step= 1000000 | eps/s=   863 | success=  0.2% | miss= 90.1% | elapsed=1158.9s
+[23:48:43] Kein Fortschritt im Log.
+  step= 1100000 | eps/s=   864 | success=  0.3% | miss= 89.1% | elapsed=1273.3s
+[23:50:43] Kein Fortschritt im Log.
+[23:50:43] Training: step=1100000 success=0.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 1200000 | eps/s=   865 | success=  0.2% | miss= 88.1% | elapsed=1387.7s
+[23:52:43] Kein Fortschritt im Log.
+  step= 1300000 | eps/s=   863 | success=  0.3% | miss= 87.7% | elapsed=1506.8s
+[23:54:43] Kein Fortschritt im Log.
+[23:55:43] Training: step=1300000 success=0.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 1400000 | eps/s=   864 | success=  0.3% | miss= 86.4% | elapsed=1621.0s
+[23:56:43] Kein Fortschritt im Log.
+  step= 1500000 | eps/s=   862 | success=  0.4% | miss= 85.5% | elapsed=1739.9s
+[23:58:43] Kein Fortschritt im Log.
+  step= 1600000 | eps/s=   863 | success=  0.5% | miss= 84.7% | elapsed=1854.8s
+[00:00:43] Kein Fortschritt im Log.
+[00:00:43] Training: step=1600000 success=0.5% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 1700000 | eps/s=   861 | success=  0.5% | miss= 84.8% | elapsed=1973.6s
+[00:02:43] Kein Fortschritt im Log.
+  step= 1800000 | eps/s=   862 | success=  0.8% | miss= 83.1% | elapsed=2088.6s
+[00:04:43] Kein Fortschritt im Log.
+  step= 1900000 | eps/s=   862 | success=  0.9% | miss= 82.4% | elapsed=2203.3s
+[00:05:43] Training: step=1900000 success=0.9% pids=[298428 298442 ] watchdog=1 switch=1
+[00:06:43] Kein Fortschritt im Log.
+  step= 2000000 | eps/s=   861 | success=  1.0% | miss= 81.1% | elapsed=2322.4s
+[00:08:43] Kein Fortschritt im Log.
+  step= 2100000 | eps/s=   861 | success=  1.2% | miss= 79.9% | elapsed=2437.7s
+[00:10:43] Kein Fortschritt im Log.
+[00:10:43] Training: step=2100000 success=1.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 2200000 | eps/s=   860 | success=  1.5% | miss= 78.9% | elapsed=2557.0s
+[00:12:43] Kein Fortschritt im Log.
+  step= 2300000 | eps/s=   861 | success=  1.6% | miss= 79.2% | elapsed=2672.1s
+[00:14:43] Kein Fortschritt im Log.
+  step= 2400000 | eps/s=   861 | success=  1.8% | miss= 77.5% | elapsed=2786.9s
+[00:15:44] Training: step=2400000 success=1.8% pids=[298428 298442 ] watchdog=1 switch=1
+[00:16:43] Kein Fortschritt im Log.
+  step= 2500000 | eps/s=   860 | success=  1.9% | miss= 76.4% | elapsed=2906.2s
+[00:18:43] Kein Fortschritt im Log.
+  step= 2600000 | eps/s=   861 | success=  2.1% | miss= 78.1% | elapsed=3020.9s
+[00:20:43] Kein Fortschritt im Log.
+[00:20:44] Training: step=2600000 success=2.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 2700000 | eps/s=   860 | success=  2.4% | miss= 76.5% | elapsed=3139.9s
+[00:22:43] Kein Fortschritt im Log.
+  step= 2800000 | eps/s=   860 | success=  2.8% | miss= 74.3% | elapsed=3254.6s
+[00:24:43] Kein Fortschritt im Log.
+  step= 2900000 | eps/s=   860 | success=  2.9% | miss= 72.7% | elapsed=3373.7s
+[00:25:44] Training: step=2900000 success=2.9% pids=[298428 298442 ] watchdog=1 switch=1
+[00:26:43] Kein Fortschritt im Log.
+  step= 3000000 | eps/s=   860 | success=  3.5% | miss= 69.9% | elapsed=3488.9s
+[00:28:43] Kein Fortschritt im Log.
+  step= 3100000 | eps/s=   860 | success=  4.0% | miss= 67.7% | elapsed=3604.4s
+[00:30:43] Kein Fortschritt im Log.
+[00:30:44] Training: step=3100000 success=4.0% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 3200000 | eps/s=   859 | success=  4.7% | miss= 65.5% | elapsed=3723.6s
+[00:32:43] Kein Fortschritt im Log.
+  step= 3300000 | eps/s=   860 | success=  5.9% | miss= 63.6% | elapsed=3838.5s
+[00:34:43] Kein Fortschritt im Log.
+  step= 3400000 | eps/s=   859 | success=  6.9% | miss= 61.2% | elapsed=3958.0s
+[00:35:44] Training: step=3400000 success=6.9% pids=[298428 298442 ] watchdog=1 switch=1
+[00:36:43] Kein Fortschritt im Log.
+  step= 3500000 | eps/s=   859 | success=  7.8% | miss= 59.7% | elapsed=4073.3s
+[00:38:43] Kein Fortschritt im Log.
+  step= 3600000 | eps/s=   860 | success=  8.8% | miss= 58.2% | elapsed=4188.3s
+[00:40:43] Kein Fortschritt im Log.
+  step= 3700000 | eps/s=   859 | success= 10.4% | miss= 55.8% | elapsed=4307.6s
+[00:40:44] Training: step=3700000 success=10.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 3800000 | eps/s=   859 | success= 12.2% | miss= 53.6% | elapsed=4422.6s
+[00:42:43] Kein Fortschritt im Log.
+  step= 3900000 | eps/s=   859 | success= 13.2% | miss= 51.7% | elapsed=4542.2s
+[00:44:43] Kein Fortschritt im Log.
+[00:45:44] Training: step=3900000 success=13.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 4000000 | eps/s=   859 | success= 15.1% | miss= 49.5% | elapsed=4657.5s
+[00:46:43] Kein Fortschritt im Log.
+  step= 4100000 | eps/s=   859 | success= 15.7% | miss= 50.2% | elapsed=4773.1s
+[00:48:43] Kein Fortschritt im Log.
+  step= 4200000 | eps/s=   858 | success= 17.5% | miss= 45.7% | elapsed=4892.8s
+[00:50:43] Kein Fortschritt im Log.
+[00:50:44] Training: step=4200000 success=17.5% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 4300000 | eps/s=   859 | success= 20.8% | miss= 44.0% | elapsed=5008.4s
+[00:52:43] Kein Fortschritt im Log.
+  step= 4400000 | eps/s=   858 | success= 22.7% | miss= 42.6% | elapsed=5128.1s
+[00:54:43] Kein Fortschritt im Log.
+[00:55:44] Training: step=4400000 success=22.7% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 4500000 | eps/s=   858 | success= 24.1% | miss= 39.9% | elapsed=5243.5s
+[00:56:43] Kein Fortschritt im Log.
+  step= 4600000 | eps/s=   858 | success= 25.8% | miss= 38.2% | elapsed=5363.1s
+[00:58:43] Kein Fortschritt im Log.
+  step= 4700000 | eps/s=   858 | success= 28.2% | miss= 36.0% | elapsed=5478.5s
+[01:00:43] Kein Fortschritt im Log.
+[01:00:44] Training: step=4700000 success=28.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 4800000 | eps/s=   858 | success= 32.3% | miss= 34.7% | elapsed=5593.9s
+[01:02:43] Kein Fortschritt im Log.
+  step= 4900000 | eps/s=   858 | success= 34.1% | miss= 32.4% | elapsed=5714.1s
+[01:04:43] Kein Fortschritt im Log.
+[01:05:45] Training: step=4900000 success=34.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 5000000 | eps/s=   858 | success= 37.2% | miss= 31.4% | elapsed=5830.1s
+[01:06:43] Kein Fortschritt im Log.
+  step= 5100000 | eps/s=   857 | success= 40.8% | miss= 28.5% | elapsed=5949.7s
+[01:08:43] Kein Fortschritt im Log.
+  step= 5200000 | eps/s=   857 | success= 45.2% | miss= 26.8% | elapsed=6065.4s
+[01:10:43] Kein Fortschritt im Log.
+[01:10:45] Training: step=5200000 success=45.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 5300000 | eps/s=   857 | success= 46.5% | miss= 25.0% | elapsed=6181.1s
+[01:12:43] Kein Fortschritt im Log.
+  step= 5400000 | eps/s=   857 | success= 49.6% | miss= 23.7% | elapsed=6301.4s
+[01:14:43] Kein Fortschritt im Log.
+[01:15:45] Training: step=5400000 success=49.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 5500000 | eps/s=   857 | success= 52.5% | miss= 20.9% | elapsed=6417.2s
+[01:16:43] Kein Fortschritt im Log.
+  step= 5600000 | eps/s=   857 | success= 53.3% | miss= 23.6% | elapsed=6536.9s
+[01:18:43] Kein Fortschritt im Log.
+  step= 5700000 | eps/s=   857 | success= 57.1% | miss= 18.1% | elapsed=6652.6s
+[01:20:43] Kein Fortschritt im Log.
+[01:20:45] Training: step=5700000 success=57.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 5800000 | eps/s=   856 | success= 62.7% | miss= 16.5% | elapsed=6772.3s
+[01:22:43] Kein Fortschritt im Log.
+  step= 5900000 | eps/s=   857 | success= 65.6% | miss= 14.6% | elapsed=6887.8s
+[01:24:43] Kein Fortschritt im Log.
+  step= 6000000 | eps/s=   857 | success= 68.6% | miss= 14.0% | elapsed=7003.3s
+[01:25:45] Training: step=6000000 success=68.6% pids=[298428 298442 ] watchdog=1 switch=1
+[01:26:43] Kein Fortschritt im Log.
+  step= 6100000 | eps/s=   856 | success= 67.1% | miss= 15.2% | elapsed=7123.2s
+[01:28:43] Kein Fortschritt im Log.
+  step= 6200000 | eps/s=   856 | success= 71.9% | miss= 11.4% | elapsed=7238.8s
+[01:30:43] Kein Fortschritt im Log.
+[01:30:45] Training: step=6200000 success=71.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 6300000 | eps/s=   856 | success= 74.1% | miss= 10.8% | elapsed=7358.7s
+[01:32:43] Kein Fortschritt im Log.
+  step= 6400000 | eps/s=   856 | success= 77.3% | miss=  9.0% | elapsed=7474.7s
+[01:34:43] Kein Fortschritt im Log.
+  step= 6500000 | eps/s=   856 | success= 78.7% | miss=  7.5% | elapsed=7590.5s
+[01:35:45] Training: step=6500000 success=78.7% pids=[298428 298442 ] watchdog=1 switch=1
+[01:36:43] Kein Fortschritt im Log.
+  step= 6600000 | eps/s=   856 | success= 81.4% | miss=  6.8% | elapsed=7710.8s
+[01:38:43] Kein Fortschritt im Log.
+  step= 6700000 | eps/s=   856 | success= 81.3% | miss=  7.3% | elapsed=7826.8s
+[01:40:43] Kein Fortschritt im Log.
+[01:40:45] Training: step=6700000 success=81.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 6800000 | eps/s=   856 | success= 84.2% | miss=  6.2% | elapsed=7946.9s
+[01:42:43] Kein Fortschritt im Log.
+  step= 6900000 | eps/s=   856 | success= 85.6% | miss=  5.2% | elapsed=8063.1s
+[01:44:43] Kein Fortschritt im Log.
+  step= 7000000 | eps/s=   856 | success= 87.6% | miss=  4.7% | elapsed=8179.2s
+[01:45:45] Training: step=7000000 success=87.6% pids=[298428 298442 ] watchdog=1 switch=1
+[01:46:43] Kein Fortschritt im Log.
+  step= 7100000 | eps/s=   855 | success= 86.7% | miss=  5.3% | elapsed=8299.3s
+[01:48:44] Kein Fortschritt im Log.
+  step= 7200000 | eps/s=   856 | success= 89.3% | miss=  4.3% | elapsed=8415.0s
+[01:50:44] Kein Fortschritt im Log.
+[01:50:45] Training: step=7200000 success=89.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 7300000 | eps/s=   855 | success= 90.1% | miss=  3.2% | elapsed=8534.7s
+[01:52:44] Kein Fortschritt im Log.
+  step= 7400000 | eps/s=   855 | success= 91.2% | miss=  3.7% | elapsed=8650.6s
+[01:54:44] Kein Fortschritt im Log.
+  step= 7500000 | eps/s=   855 | success= 89.8% | miss=  3.9% | elapsed=8771.0s
+[01:55:45] Training: step=7500000 success=89.8% pids=[298428 298442 ] watchdog=1 switch=1
+[01:56:44] Kein Fortschritt im Log.
+  step= 7600000 | eps/s=   855 | success= 92.5% | miss=  3.3% | elapsed=8886.7s
+[01:58:44] Kein Fortschritt im Log.
+  step= 7700000 | eps/s=   855 | success= 92.8% | miss=  3.2% | elapsed=9002.9s
+[02:00:44] Kein Fortschritt im Log.
+[02:00:46] Training: step=7700000 success=92.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 7800000 | eps/s=   855 | success= 93.7% | miss=  3.0% | elapsed=9122.7s
+[02:02:44] Kein Fortschritt im Log.
+  step= 7900000 | eps/s=   855 | success= 92.5% | miss=  4.3% | elapsed=9238.5s
+[02:04:44] Kein Fortschritt im Log.
+  step= 8000000 | eps/s=   855 | success= 93.7% | miss=  3.0% | elapsed=9358.8s
+[02:05:46] Training: step=8000000 success=93.7% pids=[298428 298442 ] watchdog=1 switch=1
+[02:06:44] Kein Fortschritt im Log.
+  step= 8100000 | eps/s=   855 | success= 93.5% | miss=  3.4% | elapsed=9478.3s
+[02:08:44] Kein Fortschritt im Log.
+  step= 8200000 | eps/s=   855 | success= 94.1% | miss=  2.2% | elapsed=9593.8s
+[02:10:44] Kein Fortschritt im Log.
+[02:10:46] Training: step=8200000 success=94.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 8300000 | eps/s=   854 | success= 95.2% | miss=  2.0% | elapsed=9714.0s
+[02:12:44] Kein Fortschritt im Log.
+  step= 8400000 | eps/s=   854 | success= 95.8% | miss=  1.5% | elapsed=9830.6s
+[02:14:44] Kein Fortschritt im Log.
+  step= 8500000 | eps/s=   854 | success= 95.8% | miss=  1.8% | elapsed=9950.8s
+[02:15:46] Training: step=8500000 success=95.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 8600000 | eps/s=   854 | success= 95.4% | miss=  2.1% | elapsed=10066.7s
+[02:16:44] Kein Fortschritt im Log.
+[02:18:44] Kein Fortschritt im Log.
+  step= 8700000 | eps/s=   854 | success= 95.9% | miss=  1.7% | elapsed=10188.9s
+[02:20:44] Kein Fortschritt im Log.
+[02:20:46] Training: step=8700000 success=95.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 8800000 | eps/s=   853 | success= 96.4% | miss=  1.6% | elapsed=10312.7s
+[02:22:44] Kein Fortschritt im Log.
+  step= 8900000 | eps/s=   853 | success= 95.6% | miss=  2.0% | elapsed=10428.8s
+[02:24:44] Kein Fortschritt im Log.
+  step= 9000000 | eps/s=   853 | success= 96.8% | miss=  1.3% | elapsed=10549.4s
+[02:25:46] Training: step=9000000 success=96.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 9100000 | eps/s=   853 | success= 96.3% | miss=  1.3% | elapsed=10665.6s
+[02:26:44] Kein Fortschritt im Log.
+  step= 9200000 | eps/s=   853 | success= 96.1% | miss=  1.6% | elapsed=10785.8s
+[02:28:44] Kein Fortschritt im Log.
+  step= 9300000 | eps/s=   853 | success= 97.4% | miss=  0.8% | elapsed=10901.6s
+[02:30:44] Kein Fortschritt im Log.
+[02:30:46] Training: step=9300000 success=97.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 9400000 | eps/s=   853 | success= 94.5% | miss=  4.4% | elapsed=11017.5s
+[02:32:44] Kein Fortschritt im Log.
+  step= 9500000 | eps/s=   853 | success= 95.5% | miss=  2.9% | elapsed=11137.9s
+[02:34:44] Kein Fortschritt im Log.
+[02:35:46] Training: step=9500000 success=95.5% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 9600000 | eps/s=   853 | success= 96.4% | miss=  1.7% | elapsed=11254.0s
+[02:36:44] Kein Fortschritt im Log.
+  step= 9700000 | eps/s=   853 | success= 94.9% | miss=  2.5% | elapsed=11374.5s
+[02:38:44] Kein Fortschritt im Log.
+  step= 9800000 | eps/s=   853 | success= 95.4% | miss=  3.7% | elapsed=11490.2s
+[02:40:44] Kein Fortschritt im Log.
+[02:40:46] Training: step=9800000 success=95.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step= 9900000 | eps/s=   853 | success= 85.8% | miss= 11.9% | elapsed=11606.5s
+[02:42:44] Kein Fortschritt im Log.
+  step=10000000 | eps/s=   853 | success= 92.4% | miss=  6.1% | elapsed=11726.5s
+[02:44:44] Kein Fortschritt im Log.
+[02:45:46] Training: step=10000000 success=92.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step=10100000 | eps/s=   853 | success= 90.1% | miss=  6.9% | elapsed=11842.3s
+[02:46:44] Kein Fortschritt im Log.
+  step=10200000 | eps/s=   853 | success= 96.8% | miss=  2.2% | elapsed=11962.3s
+[02:48:44] Kein Fortschritt im Log.
+  step=10300000 | eps/s=   853 | success= 98.1% | miss=  0.7% | elapsed=12078.5s
+[02:50:44] Kein Fortschritt im Log.
+[02:50:46] Training: step=10300000 success=98.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step=10400000 | eps/s=   853 | success= 92.5% | miss=  1.3% | elapsed=12199.1s
+[02:52:44] Kein Fortschritt im Log.
+  step=10500000 | eps/s=   853 | success= 95.3% | miss=  2.2% | elapsed=12315.2s
+[02:54:44] Kein Fortschritt im Log.
+[02:55:46] Training: step=10500000 success=95.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step=10600000 | eps/s=   853 | success= 95.2% | miss=  3.2% | elapsed=12431.3s
+[02:56:44] Kein Fortschritt im Log.
+  step=10700000 | eps/s=   852 | success= 87.1% | miss=  7.6% | elapsed=12551.8s
+[02:58:44] Kein Fortschritt im Log.
+  step=10800000 | eps/s=   853 | success= 25.1% | miss=  1.8% | elapsed=12668.4s
+[03:00:44] Kein Fortschritt im Log.
+[03:00:47] Training: step=10800000 success=25.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step=10900000 | eps/s=   852 | success= 84.8% | miss= 10.2% | elapsed=12788.6s
+[03:02:44] Kein Fortschritt im Log.
+  step=11000000 | eps/s=   852 | success= 21.5% | miss= 77.9% | elapsed=12903.4s
+[03:04:44] Kein Fortschritt im Log.
+[03:05:47] Training: step=11000000 success=21.5% pids=[298428 298442 ] watchdog=1 switch=1
+  step=11100000 | eps/s=   853 | success= 22.0% | miss= 76.2% | elapsed=13018.2s
+[03:06:44] Kein Fortschritt im Log.
+  step=11200000 | eps/s=   853 | success= 20.9% | miss= 75.7% | elapsed=13137.4s
+[03:08:44] Kein Fortschritt im Log.
+  step=11300000 | eps/s=   853 | success= 21.8% | miss= 75.4% | elapsed=13252.5s
+[03:10:44] Kein Fortschritt im Log.
+[03:10:47] Training: step=11300000 success=21.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step=11400000 | eps/s=   853 | success= 24.0% | miss= 75.6% | elapsed=13371.8s
+[03:12:44] Kein Fortschritt im Log.
+  step=11500000 | eps/s=   853 | success= 23.0% | miss= 75.5% | elapsed=13486.7s
+[03:14:44] Kein Fortschritt im Log.
+  step=11600000 | eps/s=   853 | success= 24.0% | miss= 75.6% | elapsed=13605.9s
+[03:15:47] Training: step=11600000 success=24.0% pids=[298428 298442 ] watchdog=1 switch=1
+[03:16:44] Kein Fortschritt im Log.
+  step=11700000 | eps/s=   853 | success= 24.3% | miss= 75.5% | elapsed=13720.8s
+[03:18:44] Kein Fortschritt im Log.
+  step=11800000 | eps/s=   853 | success= 24.4% | miss= 75.1% | elapsed=13836.2s
+[03:20:44] Kein Fortschritt im Log.
+[03:20:47] Training: step=11800000 success=24.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step=11900000 | eps/s=   853 | success= 24.2% | miss= 75.4% | elapsed=13955.8s
+[03:22:44] Kein Fortschritt im Log.
+  step=12000000 | eps/s=   853 | success= 24.4% | miss= 75.1% | elapsed=14071.0s
+[03:24:44] Kein Fortschritt im Log.
+  step=12100000 | eps/s=   853 | success= 23.3% | miss= 75.5% | elapsed=14190.1s
+[03:25:47] Training: step=12100000 success=23.3% pids=[298428 298442 ] watchdog=1 switch=1
+[03:26:44] Kein Fortschritt im Log.
+  step=12200000 | eps/s=   853 | success= 22.1% | miss= 75.4% | elapsed=14305.5s
+[03:28:44] Kein Fortschritt im Log.
+  step=12300000 | eps/s=   853 | success= 21.9% | miss= 75.5% | elapsed=14420.7s
+[03:30:44] Kein Fortschritt im Log.
+[03:30:47] Training: step=12300000 success=21.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=12400000 | eps/s=   853 | success= 22.0% | miss= 75.5% | elapsed=14539.7s
+[03:32:44] Kein Fortschritt im Log.
+  step=12500000 | eps/s=   853 | success= 16.6% | miss= 75.4% | elapsed=14654.6s
+[03:34:44] Kein Fortschritt im Log.
+  step=12600000 | eps/s=   853 | success= 15.3% | miss= 75.5% | elapsed=14774.1s
+[03:35:47] Training: step=12600000 success=15.3% pids=[298428 298442 ] watchdog=1 switch=1
+[03:36:44] Kein Fortschritt im Log.
+  step=12700000 | eps/s=   853 | success= 14.5% | miss= 75.4% | elapsed=14889.7s
+[03:38:44] Kein Fortschritt im Log.
+  step=12800000 | eps/s=   853 | success= 14.9% | miss= 75.3% | elapsed=15004.5s
+[03:40:44] Kein Fortschritt im Log.
+[03:40:47] Training: step=12800000 success=14.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=12900000 | eps/s=   853 | success= 12.4% | miss= 75.5% | elapsed=15124.2s
+[03:42:44] Kein Fortschritt im Log.
+  step=13000000 | eps/s=   853 | success= 10.1% | miss= 75.7% | elapsed=15239.4s
+[03:44:44] Kein Fortschritt im Log.
+  step=13100000 | eps/s=   853 | success=  8.2% | miss= 75.6% | elapsed=15358.9s
+[03:45:47] Training: step=13100000 success=8.2% pids=[298428 298442 ] watchdog=1 switch=1
+[03:46:44] Kein Fortschritt im Log.
+  step=13200000 | eps/s=   853 | success=  7.1% | miss= 75.3% | elapsed=15474.3s
+[03:48:44] Kein Fortschritt im Log.
+  step=13300000 | eps/s=   853 | success=  5.6% | miss= 75.7% | elapsed=15593.7s
+[03:50:44] Kein Fortschritt im Log.
+  step=13400000 | eps/s=   853 | success= 11.8% | miss= 75.6% | elapsed=15708.7s
+[03:50:48] Training: step=13400000 success=11.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step=13500000 | eps/s=   853 | success= 22.5% | miss= 76.7% | elapsed=15823.3s
+[03:52:44] Kein Fortschritt im Log.
+  step=13600000 | eps/s=   853 | success= 23.4% | miss= 75.7% | elapsed=15942.8s
+[03:54:44] Kein Fortschritt im Log.
+[03:55:48] Training: step=13600000 success=23.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step=13700000 | eps/s=   853 | success= 23.8% | miss= 75.4% | elapsed=16057.8s
+[03:56:44] Kein Fortschritt im Log.
+  step=13800000 | eps/s=   853 | success= 23.9% | miss= 75.4% | elapsed=16176.9s
+[03:58:44] Kein Fortschritt im Log.
+  step=13900000 | eps/s=   853 | success= 23.8% | miss= 75.5% | elapsed=16291.8s
+[04:00:44] Kein Fortschritt im Log.
+[04:00:48] Training: step=13900000 success=23.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step=14000000 | eps/s=   853 | success= 23.8% | miss= 75.7% | elapsed=16407.2s
+[04:02:44] Kein Fortschritt im Log.
+  step=14100000 | eps/s=   853 | success= 24.0% | miss= 75.3% | elapsed=16526.4s
+[04:04:44] Kein Fortschritt im Log.
+[04:05:48] Training: step=14100000 success=24.0% pids=[298428 298442 ] watchdog=1 switch=1
+  step=14200000 | eps/s=   853 | success= 23.8% | miss= 75.7% | elapsed=16641.6s
+[04:06:44] Kein Fortschritt im Log.
+  step=14300000 | eps/s=   853 | success= 23.8% | miss= 75.7% | elapsed=16761.0s
+[04:08:44] Kein Fortschritt im Log.
+  step=14400000 | eps/s=   853 | success= 24.1% | miss= 75.5% | elapsed=16875.8s
+[04:10:44] Kein Fortschritt im Log.
+[04:10:48] Training: step=14400000 success=24.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step=14500000 | eps/s=   853 | success= 24.2% | miss= 75.4% | elapsed=16994.9s
+[04:12:44] Kein Fortschritt im Log.
+  step=14600000 | eps/s=   853 | success= 23.9% | miss= 75.7% | elapsed=17109.9s
+[04:14:44] Kein Fortschritt im Log.
+[04:15:48] Training: step=14600000 success=23.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=14700000 | eps/s=   853 | success= 23.9% | miss= 75.4% | elapsed=17224.2s
+[04:16:44] Kein Fortschritt im Log.
+  step=14800000 | eps/s=   853 | success= 23.8% | miss= 75.6% | elapsed=17343.4s
+[04:18:44] Kein Fortschritt im Log.
+  step=14900000 | eps/s=   853 | success= 24.0% | miss= 75.5% | elapsed=17458.1s
+[04:20:44] Kein Fortschritt im Log.
+[04:20:48] Training: step=14900000 success=24.0% pids=[298428 298442 ] watchdog=1 switch=1
+  step=15000000 | eps/s=   853 | success= 23.7% | miss= 75.5% | elapsed=17577.1s
+[04:22:44] Kein Fortschritt im Log.
+  step=15100000 | eps/s=   853 | success= 23.5% | miss= 75.4% | elapsed=17692.1s
+[04:24:44] Kein Fortschritt im Log.
+  step=15200000 | eps/s=   854 | success= 23.6% | miss= 75.3% | elapsed=17806.9s
+[04:25:48] Training: step=15200000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+[04:26:44] Kein Fortschritt im Log.
+  step=15300000 | eps/s=   854 | success= 23.7% | miss= 75.5% | elapsed=17926.0s
+[04:28:44] Kein Fortschritt im Log.
+  step=15400000 | eps/s=   854 | success= 23.4% | miss= 75.6% | elapsed=18040.8s
+[04:30:44] Kein Fortschritt im Log.
+[04:30:48] Training: step=15400000 success=23.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step=15500000 | eps/s=   854 | success= 23.8% | miss= 75.5% | elapsed=18160.2s
+[04:32:44] Kein Fortschritt im Log.
+  step=15600000 | eps/s=   854 | success= 23.5% | miss= 75.3% | elapsed=18275.4s
+[04:34:44] Kein Fortschritt im Log.
+  step=15700000 | eps/s=   854 | success= 23.3% | miss= 75.5% | elapsed=18394.7s
+[04:35:48] Training: step=15700000 success=23.3% pids=[298428 298442 ] watchdog=1 switch=1
+[04:36:44] Kein Fortschritt im Log.
+  step=15800000 | eps/s=   854 | success= 23.6% | miss= 75.5% | elapsed=18509.7s
+[04:38:44] Kein Fortschritt im Log.
+  step=15900000 | eps/s=   854 | success= 22.9% | miss= 75.5% | elapsed=18624.4s
+[04:40:44] Kein Fortschritt im Log.
+[04:40:48] Training: step=15900000 success=22.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=16000000 | eps/s=   854 | success= 23.1% | miss= 75.6% | elapsed=18743.4s
+[04:42:44] Kein Fortschritt im Log.
+  step=16100000 | eps/s=   854 | success= 22.5% | miss= 75.4% | elapsed=18858.4s
+[04:44:44] Kein Fortschritt im Log.
+  step=16200000 | eps/s=   854 | success= 22.9% | miss= 75.5% | elapsed=18977.5s
+[04:45:48] Training: step=16200000 success=22.9% pids=[298428 298442 ] watchdog=1 switch=1
+[04:46:44] Kein Fortschritt im Log.
+  step=16300000 | eps/s=   854 | success= 22.7% | miss= 75.4% | elapsed=19091.8s
+[04:48:44] Kein Fortschritt im Log.
+  step=16400000 | eps/s=   854 | success= 22.7% | miss= 75.4% | elapsed=19207.0s
+[04:50:44] Kein Fortschritt im Log.
+[04:50:49] Training: step=16400000 success=22.7% pids=[298428 298442 ] watchdog=1 switch=1
+  step=16500000 | eps/s=   854 | success= 22.8% | miss= 75.5% | elapsed=19325.8s
+[04:52:44] Kein Fortschritt im Log.
+  step=16600000 | eps/s=   854 | success= 22.2% | miss= 75.8% | elapsed=19440.4s
+[04:54:44] Kein Fortschritt im Log.
+  step=16700000 | eps/s=   854 | success= 22.2% | miss= 75.6% | elapsed=19559.2s
+[04:55:49] Training: step=16700000 success=22.2% pids=[298428 298442 ] watchdog=1 switch=1
+[04:56:44] Kein Fortschritt im Log.
+  step=16800000 | eps/s=   854 | success= 22.3% | miss= 75.4% | elapsed=19674.2s
+[04:58:44] Kein Fortschritt im Log.
+  step=16900000 | eps/s=   854 | success= 22.7% | miss= 75.5% | elapsed=19789.2s
+[05:00:45] Kein Fortschritt im Log.
+  step=17000000 | eps/s=   854 | success= 22.9% | miss= 75.3% | elapsed=19908.4s
+[05:00:49] Training: step=17000000 success=22.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=17100000 | eps/s=   854 | success= 22.5% | miss= 75.4% | elapsed=20023.6s
+[05:02:45] Kein Fortschritt im Log.
+  step=17200000 | eps/s=   854 | success= 22.8% | miss= 75.2% | elapsed=20143.3s
+[05:04:45] Kein Fortschritt im Log.
+[05:05:49] Training: step=17200000 success=22.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step=17300000 | eps/s=   854 | success= 23.4% | miss= 75.3% | elapsed=20258.4s
+[05:06:45] Kein Fortschritt im Log.
+  step=17400000 | eps/s=   854 | success= 23.4% | miss= 75.3% | elapsed=20377.3s
+[05:08:45] Kein Fortschritt im Log.
+  step=17500000 | eps/s=   854 | success= 23.2% | miss= 75.4% | elapsed=20492.2s
+[05:10:45] Kein Fortschritt im Log.
+[05:10:49] Training: step=17500000 success=23.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=17600000 | eps/s=   854 | success= 23.5% | miss= 75.5% | elapsed=20607.2s
+[05:12:45] Kein Fortschritt im Log.
+  step=17700000 | eps/s=   854 | success= 23.8% | miss= 75.3% | elapsed=20726.2s
+[05:14:45] Kein Fortschritt im Log.
+[05:15:49] Training: step=17700000 success=23.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step=17800000 | eps/s=   854 | success= 22.9% | miss= 75.4% | elapsed=20841.2s
+[05:16:45] Kein Fortschritt im Log.
+  step=17900000 | eps/s=   854 | success= 23.3% | miss= 75.7% | elapsed=20960.2s
+[05:18:45] Kein Fortschritt im Log.
+  step=18000000 | eps/s=   854 | success= 23.3% | miss= 75.3% | elapsed=21075.4s
+[05:20:45] Kein Fortschritt im Log.
+[05:20:49] Training: step=18000000 success=23.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step=18100000 | eps/s=   854 | success= 23.6% | miss= 75.2% | elapsed=21190.0s
+[05:22:45] Kein Fortschritt im Log.
+  step=18200000 | eps/s=   854 | success= 23.7% | miss= 75.4% | elapsed=21309.5s
+[05:24:45] Kein Fortschritt im Log.
+[05:25:49] Training: step=18200000 success=23.7% pids=[298428 298442 ] watchdog=1 switch=1
+  step=18300000 | eps/s=   854 | success= 23.9% | miss= 75.3% | elapsed=21423.8s
+[05:26:45] Kein Fortschritt im Log.
+  step=18400000 | eps/s=   854 | success= 23.3% | miss= 75.3% | elapsed=21542.5s
+[05:28:45] Kein Fortschritt im Log.
+  step=18500000 | eps/s=   854 | success= 23.1% | miss= 75.6% | elapsed=21657.2s
+[05:30:45] Kein Fortschritt im Log.
+[05:30:49] Training: step=18500000 success=23.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step=18600000 | eps/s=   854 | success= 23.2% | miss= 75.3% | elapsed=21776.2s
+[05:32:45] Kein Fortschritt im Log.
+  step=18700000 | eps/s=   854 | success= 23.3% | miss= 75.6% | elapsed=21891.0s
+[05:34:45] Kein Fortschritt im Log.
+  step=18800000 | eps/s=   854 | success= 23.4% | miss= 75.3% | elapsed=22005.9s
+[05:35:49] Training: step=18800000 success=23.4% pids=[298428 298442 ] watchdog=1 switch=1
+[05:36:45] Kein Fortschritt im Log.
+  step=18900000 | eps/s=   854 | success= 23.4% | miss= 75.5% | elapsed=22125.0s
+[05:38:45] Kein Fortschritt im Log.
+  step=19000000 | eps/s=   854 | success= 23.8% | miss= 75.4% | elapsed=22239.5s
+[05:40:45] Kein Fortschritt im Log.
+[05:40:49] Training: step=19000000 success=23.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step=19100000 | eps/s=   854 | success= 23.8% | miss= 75.3% | elapsed=22358.7s
+[05:42:45] Kein Fortschritt im Log.
+  step=19200000 | eps/s=   854 | success= 23.5% | miss= 75.4% | elapsed=22473.5s
+[05:44:45] Kein Fortschritt im Log.
+  step=19300000 | eps/s=   854 | success= 23.6% | miss= 75.4% | elapsed=22588.4s
+[05:45:50] Training: step=19300000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+[05:46:45] Kein Fortschritt im Log.
+  step=19400000 | eps/s=   854 | success= 23.2% | miss= 75.6% | elapsed=22707.4s
+[05:48:45] Kein Fortschritt im Log.
+  step=19500000 | eps/s=   854 | success= 23.6% | miss= 75.3% | elapsed=22822.6s
+[05:50:45] Kein Fortschritt im Log.
+[05:50:50] Training: step=19500000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=19600000 | eps/s=   854 | success= 23.2% | miss= 75.5% | elapsed=22941.6s
+[05:52:45] Kein Fortschritt im Log.
+  step=19700000 | eps/s=   854 | success= 23.5% | miss= 75.5% | elapsed=23056.5s
+[05:54:45] Kein Fortschritt im Log.
+  step=19800000 | eps/s=   855 | success= 23.8% | miss= 75.3% | elapsed=23171.1s
+[05:55:50] Training: step=19800000 success=23.8% pids=[298428 298442 ] watchdog=1 switch=1
+[05:56:45] Kein Fortschritt im Log.
+  step=19900000 | eps/s=   854 | success= 23.7% | miss= 75.7% | elapsed=23290.9s
+[05:58:45] Kein Fortschritt im Log.
+  step=20000000 | eps/s=   854 | success= 23.3% | miss= 75.8% | elapsed=23406.3s
+[06:00:45] Kein Fortschritt im Log.
+[06:00:50] Training: step=20000000 success=23.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step=20100000 | eps/s=   854 | success= 23.6% | miss= 75.5% | elapsed=23525.3s
+[06:02:45] Kein Fortschritt im Log.
+  step=20200000 | eps/s=   854 | success= 23.9% | miss= 75.2% | elapsed=23640.2s
+[06:04:45] Kein Fortschritt im Log.
+  step=20300000 | eps/s=   854 | success= 23.6% | miss= 75.9% | elapsed=23759.0s
+[06:05:50] Training: step=20300000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+[06:06:45] Kein Fortschritt im Log.
+  step=20400000 | eps/s=   854 | success= 24.1% | miss= 75.3% | elapsed=23874.0s
+[06:08:45] Kein Fortschritt im Log.
+  step=20500000 | eps/s=   855 | success= 23.7% | miss= 75.4% | elapsed=23988.8s
+  step=20600000 | eps/s=   854 | success= 22.9% | miss= 75.5% | elapsed=24108.2s
+[06:10:45] Kein Fortschritt im Log.
+[06:10:50] Training: step=20600000 success=22.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=20700000 | eps/s=   855 | success= 23.3% | miss= 75.5% | elapsed=24223.1s
+[06:12:45] Kein Fortschritt im Log.
+  step=20800000 | eps/s=   854 | success= 23.6% | miss= 75.5% | elapsed=24342.2s
+[06:14:45] Kein Fortschritt im Log.
+[06:15:50] Training: step=20800000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=20900000 | eps/s=   855 | success= 23.4% | miss= 75.4% | elapsed=24457.3s
+[06:16:45] Kein Fortschritt im Log.
+  step=21000000 | eps/s=   855 | success= 24.0% | miss= 75.0% | elapsed=24572.0s
+[06:18:45] Kein Fortschritt im Log.
+  step=21100000 | eps/s=   855 | success= 23.5% | miss= 75.3% | elapsed=24691.3s
+[06:20:45] Kein Fortschritt im Log.
+[06:20:50] Training: step=21100000 success=23.5% pids=[298428 298442 ] watchdog=1 switch=1
+  step=21200000 | eps/s=   855 | success= 23.3% | miss= 75.3% | elapsed=24806.5s
+[06:22:45] Kein Fortschritt im Log.
+  step=21300000 | eps/s=   855 | success= 23.2% | miss= 75.5% | elapsed=24925.8s
+[06:24:45] Kein Fortschritt im Log.
+[06:25:50] Training: step=21300000 success=23.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=21400000 | eps/s=   855 | success= 23.6% | miss= 75.3% | elapsed=25040.6s
+[06:26:45] Kein Fortschritt im Log.
+  step=21500000 | eps/s=   855 | success= 23.8% | miss= 75.4% | elapsed=25159.6s
+[06:28:45] Kein Fortschritt im Log.
+  step=21600000 | eps/s=   855 | success= 23.1% | miss= 75.8% | elapsed=25274.0s
+[06:30:45] Kein Fortschritt im Log.
+[06:30:50] Training: step=21600000 success=23.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step=21700000 | eps/s=   855 | success= 23.5% | miss= 75.4% | elapsed=25388.8s
+[06:32:45] Kein Fortschritt im Log.
+  step=21800000 | eps/s=   855 | success= 23.0% | miss= 75.6% | elapsed=25507.9s
+[06:34:45] Kein Fortschritt im Log.
+[06:35:50] Training: step=21800000 success=23.0% pids=[298428 298442 ] watchdog=1 switch=1
+  step=21900000 | eps/s=   855 | success= 23.3% | miss= 75.5% | elapsed=25622.7s
+[06:36:45] Kein Fortschritt im Log.
+  step=22000000 | eps/s=   855 | success= 23.7% | miss= 75.1% | elapsed=25742.2s
+[06:38:45] Kein Fortschritt im Log.
+  step=22100000 | eps/s=   855 | success= 23.2% | miss= 75.5% | elapsed=25857.5s
+[06:40:45] Kein Fortschritt im Log.
+[06:40:51] Training: step=22100000 success=23.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=22200000 | eps/s=   855 | success= 23.5% | miss= 75.5% | elapsed=25972.5s
+[06:42:45] Kein Fortschritt im Log.
+  step=22300000 | eps/s=   855 | success= 23.5% | miss= 75.5% | elapsed=26092.0s
+[06:44:45] Kein Fortschritt im Log.
+  step=22400000 | eps/s=   855 | success= 23.8% | miss= 75.4% | elapsed=26207.3s
+[06:45:51] Training: step=22400000 success=23.8% pids=[298428 298442 ] watchdog=1 switch=1
+[06:46:45] Kein Fortschritt im Log.
+  step=22500000 | eps/s=   855 | success= 23.5% | miss= 75.3% | elapsed=26326.7s
+[06:48:45] Kein Fortschritt im Log.
+  step=22600000 | eps/s=   855 | success= 23.3% | miss= 75.7% | elapsed=26441.9s
+[06:50:45] Kein Fortschritt im Log.
+[06:50:51] Training: step=22600000 success=23.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step=22700000 | eps/s=   855 | success= 24.0% | miss= 74.9% | elapsed=26556.4s
+[06:52:45] Kein Fortschritt im Log.
+  step=22800000 | eps/s=   855 | success= 23.6% | miss= 75.4% | elapsed=26676.0s
+[06:54:45] Kein Fortschritt im Log.
+  step=22900000 | eps/s=   855 | success= 24.1% | miss= 75.2% | elapsed=26791.2s
+[06:55:51] Training: step=22900000 success=24.1% pids=[298428 298442 ] watchdog=1 switch=1
+[06:56:45] Kein Fortschritt im Log.
+  step=23000000 | eps/s=   855 | success= 23.7% | miss= 75.5% | elapsed=26910.4s
+[06:58:45] Kein Fortschritt im Log.
+  step=23100000 | eps/s=   855 | success= 23.2% | miss= 75.5% | elapsed=27025.5s
+[07:00:45] Kein Fortschritt im Log.
+[07:00:51] Training: step=23100000 success=23.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=23200000 | eps/s=   855 | success= 23.4% | miss= 75.5% | elapsed=27144.6s
+[07:02:45] Kein Fortschritt im Log.
+  step=23300000 | eps/s=   855 | success= 23.5% | miss= 75.5% | elapsed=27259.3s
+[07:04:45] Kein Fortschritt im Log.
+  step=23400000 | eps/s=   855 | success= 23.7% | miss= 75.4% | elapsed=27374.9s
+[07:05:51] Training: step=23400000 success=23.7% pids=[298428 298442 ] watchdog=1 switch=1
+[07:06:45] Kein Fortschritt im Log.
+  step=23500000 | eps/s=   855 | success= 23.6% | miss= 75.4% | elapsed=27494.1s
+[07:08:45] Kein Fortschritt im Log.
+  step=23600000 | eps/s=   855 | success= 23.6% | miss= 75.6% | elapsed=27609.1s
+[07:10:45] Kein Fortschritt im Log.
+[07:10:51] Training: step=23600000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=23700000 | eps/s=   855 | success= 23.6% | miss= 75.6% | elapsed=27728.6s
+[07:12:45] Kein Fortschritt im Log.
+  step=23800000 | eps/s=   855 | success= 23.6% | miss= 75.5% | elapsed=27843.8s
+[07:14:45] Kein Fortschritt im Log.
+  step=23900000 | eps/s=   855 | success= 23.8% | miss= 75.5% | elapsed=27959.0s
+[07:15:51] Training: step=23900000 success=23.8% pids=[298428 298442 ] watchdog=1 switch=1
+[07:16:45] Kein Fortschritt im Log.
+  step=24000000 | eps/s=   855 | success= 24.0% | miss= 75.3% | elapsed=28078.2s
+[07:18:45] Kein Fortschritt im Log.
+  step=24100000 | eps/s=   855 | success= 23.8% | miss= 75.6% | elapsed=28193.4s
+[07:20:45] Kein Fortschritt im Log.
+  step=24200000 | eps/s=   855 | success= 23.7% | miss= 75.5% | elapsed=28312.6s
+[07:20:51] Training: step=24200000 success=23.7% pids=[298428 298442 ] watchdog=1 switch=1
+  step=24300000 | eps/s=   855 | success= 23.7% | miss= 75.4% | elapsed=28427.1s
+[07:22:45] Kein Fortschritt im Log.
+  step=24400000 | eps/s=   855 | success= 24.0% | miss= 75.5% | elapsed=28546.4s
+[07:24:45] Kein Fortschritt im Log.
+[07:25:51] Training: step=24400000 success=24.0% pids=[298428 298442 ] watchdog=1 switch=1
+  step=24500000 | eps/s=   855 | success= 24.2% | miss= 75.4% | elapsed=28661.0s
+[07:26:45] Kein Fortschritt im Log.
+  step=24600000 | eps/s=   855 | success= 23.9% | miss= 75.5% | elapsed=28775.8s
+[07:28:45] Kein Fortschritt im Log.
+  step=24700000 | eps/s=   855 | success= 23.9% | miss= 75.4% | elapsed=28894.8s
+[07:30:45] Kein Fortschritt im Log.
+[07:30:51] Training: step=24700000 success=23.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=24800000 | eps/s=   855 | success= 23.8% | miss= 75.5% | elapsed=29009.6s
+[07:32:45] Kein Fortschritt im Log.
+  step=24900000 | eps/s=   855 | success= 23.6% | miss= 75.5% | elapsed=29129.5s
+[07:34:45] Kein Fortschritt im Log.
+[07:35:52] Training: step=24900000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=25000000 | eps/s=   855 | success= 23.6% | miss= 75.5% | elapsed=29244.5s
+[07:36:45] Kein Fortschritt im Log.
+  step=25100000 | eps/s=   855 | success= 23.8% | miss= 75.3% | elapsed=29359.3s
+[07:38:45] Kein Fortschritt im Log.
+  step=25200000 | eps/s=   855 | success= 23.6% | miss= 75.5% | elapsed=29478.5s
+[07:40:45] Kein Fortschritt im Log.
+[07:40:52] Training: step=25200000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=25300000 | eps/s=   855 | success= 23.8% | miss= 75.3% | elapsed=29593.4s
+[07:42:45] Kein Fortschritt im Log.
+  step=25400000 | eps/s=   855 | success= 23.6% | miss= 75.5% | elapsed=29712.7s
+[07:44:45] Kein Fortschritt im Log.
+[07:45:52] Training: step=25400000 success=23.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=25500000 | eps/s=   855 | success= 24.0% | miss= 75.2% | elapsed=29827.5s
+[07:46:45] Kein Fortschritt im Log.
+  step=25600000 | eps/s=   855 | success= 23.7% | miss= 75.7% | elapsed=29942.7s
+[07:48:45] Kein Fortschritt im Log.
+  step=25700000 | eps/s=   855 | success= 23.5% | miss= 75.6% | elapsed=30062.5s
+[07:50:45] Kein Fortschritt im Log.
+[07:50:52] Training: step=25700000 success=23.5% pids=[298428 298442 ] watchdog=1 switch=1
+  step=25800000 | eps/s=   855 | success= 23.7% | miss= 75.4% | elapsed=30177.7s
+[07:52:45] Kein Fortschritt im Log.
+  step=25900000 | eps/s=   855 | success= 23.6% | miss= 75.5% | elapsed=30297.0s
+[07:54:45] Kein Fortschritt im Log.
+  step=26000000 | eps/s=   855 | success= 24.0% | miss= 75.4% | elapsed=30411.8s
+[07:55:52] Training: step=26000000 success=24.0% pids=[298428 298442 ] watchdog=1 switch=1
+[07:56:45] Kein Fortschritt im Log.
+  step=26100000 | eps/s=   855 | success= 23.7% | miss= 75.5% | elapsed=30530.6s
+[07:58:45] Kein Fortschritt im Log.
+  step=26200000 | eps/s=   855 | success= 23.8% | miss= 75.4% | elapsed=30645.6s
+[08:00:45] Kein Fortschritt im Log.
+[08:00:52] Training: step=26200000 success=23.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step=26300000 | eps/s=   855 | success= 24.0% | miss= 75.2% | elapsed=30760.6s
+[08:02:45] Kein Fortschritt im Log.
+  step=26400000 | eps/s=   855 | success= 52.4% | miss= 33.3% | elapsed=30880.4s
+[08:04:45] Kein Fortschritt im Log.
+  step=26500000 | eps/s=   855 | success= 67.8% | miss= 16.8% | elapsed=30996.7s
+[08:05:52] Training: step=26500000 success=67.8% pids=[298428 298442 ] watchdog=1 switch=1
+[08:06:45] Kein Fortschritt im Log.
+  step=26600000 | eps/s=   855 | success= 72.2% | miss= 15.8% | elapsed=31116.9s
+[08:08:45] Kein Fortschritt im Log.
+  step=26700000 | eps/s=   855 | success= 71.5% | miss= 15.0% | elapsed=31232.6s
+[08:10:45] Kein Fortschritt im Log.
+[08:10:52] Training: step=26700000 success=71.5% pids=[298428 298442 ] watchdog=1 switch=1
+  step=26800000 | eps/s=   855 | success= 72.1% | miss= 14.5% | elapsed=31347.6s
+[08:12:45] Kein Fortschritt im Log.
+  step=26900000 | eps/s=   855 | success= 73.8% | miss= 13.8% | elapsed=31467.6s
+[08:14:46] Kein Fortschritt im Log.
+  step=27000000 | eps/s=   855 | success= 75.5% | miss= 13.6% | elapsed=31583.4s
+[08:15:52] Training: step=27000000 success=75.5% pids=[298428 298442 ] watchdog=1 switch=1
+[08:16:46] Kein Fortschritt im Log.
+  step=27100000 | eps/s=   855 | success= 77.3% | miss= 13.4% | elapsed=31703.2s
+[08:18:46] Kein Fortschritt im Log.
+  step=27200000 | eps/s=   855 | success= 77.3% | miss= 13.0% | elapsed=31818.8s
+[08:20:46] Kein Fortschritt im Log.
+[08:20:52] Training: step=27200000 success=77.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step=27300000 | eps/s=   855 | success= 76.7% | miss= 12.5% | elapsed=31938.4s
+[08:22:46] Kein Fortschritt im Log.
+  step=27400000 | eps/s=   855 | success= 76.8% | miss= 12.0% | elapsed=32053.9s
+[08:24:46] Kein Fortschritt im Log.
+  step=27500000 | eps/s=   855 | success= 77.1% | miss= 12.0% | elapsed=32169.6s
+[08:25:52] Training: step=27500000 success=77.1% pids=[298428 298442 ] watchdog=1 switch=1
+[08:26:46] Kein Fortschritt im Log.
+  step=27600000 | eps/s=   855 | success= 78.4% | miss= 11.7% | elapsed=32289.5s
+[08:28:46] Kein Fortschritt im Log.
+  step=27700000 | eps/s=   855 | success= 79.2% | miss= 11.3% | elapsed=32404.7s
+[08:30:46] Kein Fortschritt im Log.
+[08:30:53] Training: step=27700000 success=79.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=27800000 | eps/s=   855 | success= 79.8% | miss= 11.2% | elapsed=32524.4s
+[08:32:46] Kein Fortschritt im Log.
+  step=27900000 | eps/s=   855 | success= 80.3% | miss= 10.9% | elapsed=32640.3s
+[08:34:46] Kein Fortschritt im Log.
+  step=28000000 | eps/s=   855 | success= 80.3% | miss= 10.5% | elapsed=32756.4s
+[08:35:53] Training: step=28000000 success=80.3% pids=[298428 298442 ] watchdog=1 switch=1
+[08:36:46] Kein Fortschritt im Log.
+  step=28100000 | eps/s=   855 | success= 81.1% | miss= 10.5% | elapsed=32876.4s
+[08:38:46] Kein Fortschritt im Log.
+  step=28200000 | eps/s=   855 | success= 81.5% | miss= 10.3% | elapsed=32992.5s
+[08:40:46] Kein Fortschritt im Log.
+  step=28300000 | eps/s=   855 | success= 82.1% | miss= 10.0% | elapsed=33112.6s
+[08:40:53] Training: step=28300000 success=82.1% pids=[298428 298442 ] watchdog=1 switch=1
+  step=28400000 | eps/s=   855 | success= 82.7% | miss= 10.0% | elapsed=33228.4s
+[08:42:46] Kein Fortschritt im Log.
+  step=28500000 | eps/s=   855 | success= 83.6% | miss=  9.7% | elapsed=33347.9s
+[08:44:46] Kein Fortschritt im Log.
+[08:45:53] Training: step=28500000 success=83.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=28600000 | eps/s=   855 | success= 83.7% | miss=  9.4% | elapsed=33463.3s
+[08:46:46] Kein Fortschritt im Log.
+  step=28700000 | eps/s=   855 | success= 83.2% | miss=  9.3% | elapsed=33578.8s
+[08:48:46] Kein Fortschritt im Log.
+  step=28800000 | eps/s=   855 | success= 82.7% | miss=  9.2% | elapsed=33699.0s
+[08:50:46] Kein Fortschritt im Log.
+[08:50:53] Training: step=28800000 success=82.7% pids=[298428 298442 ] watchdog=1 switch=1
+  step=28900000 | eps/s=   855 | success= 83.2% | miss=  8.9% | elapsed=33814.7s
+[08:52:46] Kein Fortschritt im Log.
+  step=29000000 | eps/s=   855 | success= 83.6% | miss=  8.7% | elapsed=33935.1s
+[08:54:46] Kein Fortschritt im Log.
+[08:55:53] Training: step=29000000 success=83.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=29100000 | eps/s=   855 | success= 82.9% | miss=  8.7% | elapsed=34050.8s
+[08:56:46] Kein Fortschritt im Log.
+  step=29200000 | eps/s=   855 | success= 83.5% | miss=  8.1% | elapsed=34166.4s
+[08:58:46] Kein Fortschritt im Log.
+  step=29300000 | eps/s=   855 | success= 84.3% | miss=  8.3% | elapsed=34286.0s
+[09:00:46] Kein Fortschritt im Log.
+[09:00:53] Training: step=29300000 success=84.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step=29400000 | eps/s=   855 | success= 84.3% | miss=  8.1% | elapsed=34401.8s
+[09:02:46] Kein Fortschritt im Log.
+  step=29500000 | eps/s=   855 | success= 84.5% | miss=  7.8% | elapsed=34521.5s
+[09:04:46] Kein Fortschritt im Log.
+[09:05:53] Training: step=29500000 success=84.5% pids=[298428 298442 ] watchdog=1 switch=1
+  step=29600000 | eps/s=   855 | success= 85.7% | miss=  7.5% | elapsed=34637.2s
+[09:06:46] Kein Fortschritt im Log.
+  step=29700000 | eps/s=   855 | success= 86.6% | miss=  7.6% | elapsed=34752.7s
+[09:08:46] Kein Fortschritt im Log.
+  step=29800000 | eps/s=   855 | success= 86.8% | miss=  7.6% | elapsed=34872.8s
+[09:10:46] Kein Fortschritt im Log.
+[09:10:53] Training: step=29800000 success=86.8% pids=[298428 298442 ] watchdog=1 switch=1
+  step=29900000 | eps/s=   855 | success= 87.6% | miss=  7.4% | elapsed=34988.8s
+[09:12:46] Kein Fortschritt im Log.
+  step=30000000 | eps/s=   854 | success= 87.0% | miss=  7.3% | elapsed=35108.6s
+[09:14:46] Kein Fortschritt im Log.
+[09:15:53] Training: step=30000000 success=87.0% pids=[298428 298442 ] watchdog=1 switch=1
+  step=30100000 | eps/s=   855 | success= 87.5% | miss=  7.0% | elapsed=35224.4s
+[09:16:46] Kein Fortschritt im Log.
+  step=30200000 | eps/s=   854 | success= 87.9% | miss=  6.9% | elapsed=35343.9s
+[09:18:46] Kein Fortschritt im Log.
+  step=30300000 | eps/s=   854 | success= 87.4% | miss=  6.8% | elapsed=35461.4s
+[09:20:46] Kein Fortschritt im Log.
+[09:20:53] Training: step=30300000 success=87.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step=30400000 | eps/s=   854 | success= 87.3% | miss=  6.6% | elapsed=35582.0s
+[09:22:46] Kein Fortschritt im Log.
+  step=30500000 | eps/s=   854 | success= 87.9% | miss=  6.5% | elapsed=35706.0s
+[09:24:46] Kein Fortschritt im Log.
+[09:25:54] Training: step=30500000 success=87.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=30600000 | eps/s=   854 | success= 88.0% | miss=  6.4% | elapsed=35827.7s
+[09:26:46] Kein Fortschritt im Log.
+  step=30700000 | eps/s=   854 | success= 89.0% | miss=  6.2% | elapsed=35949.7s
+[09:28:46] Kein Fortschritt im Log.
+  step=30800000 | eps/s=   854 | success= 89.0% | miss=  6.2% | elapsed=36066.3s
+[09:30:46] Kein Fortschritt im Log.
+[09:30:54] Training: step=30800000 success=89.0% pids=[298428 298442 ] watchdog=1 switch=1
+  step=30900000 | eps/s=   854 | success= 89.5% | miss=  6.1% | elapsed=36182.6s
+[09:32:46] Kein Fortschritt im Log.
+  step=31000000 | eps/s=   854 | success= 89.2% | miss=  6.0% | elapsed=36302.4s
+[09:34:46] Kein Fortschritt im Log.
+[09:35:54] Training: step=31000000 success=89.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=31100000 | eps/s=   854 | success= 88.9% | miss=  5.8% | elapsed=36429.5s
+[09:36:46] Kein Fortschritt im Log.
+  step=31200000 | eps/s=   853 | success= 89.3% | miss=  5.8% | elapsed=36555.6s
+[09:38:46] Kein Fortschritt im Log.
+  step=31300000 | eps/s=   853 | success= 89.6% | miss=  5.7% | elapsed=36681.8s
+[09:40:46] Kein Fortschritt im Log.
+[09:40:54] Training: step=31300000 success=89.6% pids=[298428 298442 ] watchdog=1 switch=1
+  step=31400000 | eps/s=   853 | success= 89.5% | miss=  5.7% | elapsed=36809.9s
+[09:42:46] Kein Fortschritt im Log.
+  step=31500000 | eps/s=   853 | success= 89.4% | miss=  5.5% | elapsed=36931.0s
+[09:44:46] Kein Fortschritt im Log.
+[09:45:54] Training: step=31500000 success=89.4% pids=[298428 298442 ] watchdog=1 switch=1
+  step=31600000 | eps/s=   853 | success= 89.6% | miss=  5.5% | elapsed=37050.1s
+[09:46:46] Kein Fortschritt im Log.
+  step=31700000 | eps/s=   853 | success= 89.5% | miss=  5.4% | elapsed=37171.2s
+[09:48:46] Kein Fortschritt im Log.
+  step=31800000 | eps/s=   853 | success= 89.9% | miss=  5.2% | elapsed=37287.0s
+[09:50:46] Kein Fortschritt im Log.
+[09:50:54] Training: step=31800000 success=89.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=31900000 | eps/s=   853 | success= 90.6% | miss=  5.1% | elapsed=37407.5s
+[09:52:46] Kein Fortschritt im Log.
+  step=32000000 | eps/s=   853 | success= 90.2% | miss=  5.1% | elapsed=37523.4s
+[09:54:46] Kein Fortschritt im Log.
+[09:55:54] Training: step=32000000 success=90.2% pids=[298428 298442 ] watchdog=1 switch=1
+  step=32100000 | eps/s=   853 | success= 90.5% | miss=  5.0% | elapsed=37642.5s
+[09:56:46] Kein Fortschritt im Log.
+  step=32200000 | eps/s=   853 | success= 90.8% | miss=  5.0% | elapsed=37766.4s
+[09:58:46] Kein Fortschritt im Log.
+  step=32300000 | eps/s=   853 | success= 90.9% | miss=  4.8% | elapsed=37882.4s
+[10:00:46] Kein Fortschritt im Log.
+[10:00:54] Training: step=32300000 success=90.9% pids=[298428 298442 ] watchdog=1 switch=1
+  step=32400000 | eps/s=   853 | success= 91.3% | miss=  4.7% | elapsed=38003.1s
+[10:02:46] Kein Fortschritt im Log.
+  step=32500000 | eps/s=   853 | success= 91.3% | miss=  4.6% | elapsed=38119.5s
+[10:04:46] Kein Fortschritt im Log.
+[10:05:54] Training: step=32500000 success=91.3% pids=[298428 298442 ] watchdog=1 switch=1
+  step=32600000 | eps/s=   853 | success= 90.7% | miss=  4.6% | elapsed=38236.1s
+[10:06:46] Kein Fortschritt im Log.
+  step=32700000 | eps/s=   853 | success= 91.3% | miss=  4.6% | elapsed=38357.1s
+[10:08:46] Kein Fortschritt im Log.
+  step=32800000 | eps/s=   853 | success= 90.9% | miss=  4.6% | elapsed=38474.0s
+[10:10:46] Kein Fortschritt im Log.
+[10:10:54] Training: step= success=% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+[10:12:46] step=300096 success=0.1% pids=[310299 310300 310350 ]
+  step=32900000 | eps/s=   851 | success= 91.2% | miss=  4.4% | elapsed=38638.5s
+[10:14:46] step=700224 success=0.1% pids=[310299 310300 310350 ]
+  step=33000000 | eps/s=   850 | success= 91.3% | miss=  4.3% | elapsed=38808.4s
+[10:15:55] Training: step=33000000 success=91.3% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+[10:16:46] step=1100352 success=0.1% pids=[310299 310300 310350 ]
+  step=33100000 | eps/s=   849 | success= 91.4% | miss=  4.4% | elapsed=38982.9s
+[10:18:46] step=1500480 success=0.1% pids=[310299 310300 310350 ]
+[10:20:46] step=1800576 success=0.2% pids=[310299 310300 310350 ]
+[10:20:55] Training: step=1900608 success=0.2% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+  step=33200000 | eps/s=   848 | success= 91.6% | miss=  4.2% | elapsed=39155.1s
+[10:22:47] step=2200704 success=0.3% pids=[310299 310300 310350 ]
+  step=33300000 | eps/s=   847 | success= 92.1% | miss=  4.4% | elapsed=39325.7s
+[10:24:47] step=2600832 success=0.3% pids=[310299 310300 310350 ]
+[10:25:55] Training: step=2800896 success=0.3% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+[10:26:47] step=2900928 success=0.3% pids=[310299 310300 310350 ]
+  step=33400000 | eps/s=   845 | success= 92.4% | miss=  4.1% | elapsed=39507.0s
+[10:28:47] step=3301056 success=0.4% pids=[310299 310300 310350 ]
+  step=33500000 | eps/s=   844 | success= 92.4% | miss=  4.2% | elapsed=39676.0s
+[10:30:47] step=3701184 success=0.4% pids=[310299 310300 310350 ]
+[10:30:55] Training: step=3701184 success=0.4% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+[10:32:47] step=4101312 success=0.5% pids=[310299 310300 310350 ]
+  step=33600000 | eps/s=   843 | success= 91.9% | miss=  4.1% | elapsed=39849.3s
+[10:34:47] step=4401408 success=0.7% pids=[310299 310300 310350 ]
+[10:35:55] Training: step=4601472 success=0.9% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+  step=33700000 | eps/s=   842 | success= 92.4% | miss=  3.9% | elapsed=40024.6s
+[10:36:47] step=4801536 success=1.1% pids=[310299 310300 310350 ]
+[10:38:47] step=5101632 success=1.4% pids=[310299 310300 310350 ]
+  step=33800000 | eps/s=   841 | success= 92.7% | miss=  4.0% | elapsed=40196.1s
+[10:40:47] step=5501760 success=2.0% pids=[310299 310300 310350 ]
+[10:40:55] Training: step=5501760 success=2.0% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+  step=33900000 | eps/s=   839 | success= 92.9% | miss=  3.8% | elapsed=40392.8s
+[10:42:47] step=5801856 success=2.5% pids=[310299 310300 310350 ]
+[10:44:47] step=6101952 success=2.5% pids=[310299 310300 310350 ]
+  step=34000000 | eps/s=   837 | success= 93.1% | miss=  3.7% | elapsed=40606.4s
+[10:45:55] Training: step=34000000 success=93.1% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+[10:46:47] step=6302016 success=3.2% pids=[310299 310300 310350 ]
+[10:48:48] step=6602112 success=3.4% pids=[310299 310300 310350 ]
+  step=34100000 | eps/s=   835 | success= 92.8% | miss=  3.8% | elapsed=40820.8s
+[10:50:48] step=6902208 success=3.6% pids=[310299 310300 310350 ]
+[10:50:56] Training: step=6902208 success=3.6% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+  step=34200000 | eps/s=   834 | success= 92.3% | miss=  3.8% | elapsed=41020.4s
+[10:52:48] step=7202304 success=3.9% pids=[310299 310300 310350 ]
+[10:54:48] step=7502400 success=4.1% pids=[310299 310300 310350 ]
+[10:55:56] Training: step=7602432 success=4.0% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+  step=34300000 | eps/s=   831 | success= 92.7% | miss=  3.9% | elapsed=41255.2s
+[10:56:48] step=7802496 success=4.2% pids=[310299 310300 310350 ]
+[10:58:48] step=8002560 success=4.8% pids=[310299 310300 310350 ]
+  step=34400000 | eps/s=   830 | success= 92.8% | miss=  3.7% | elapsed=41452.0s
+[11:00:48] step=8402688 success=5.8% pids=[310299 310300 310350 ]
+[11:00:56] Training: step=8402688 success=5.8% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+[11:02:48] step=8702784 success=7.6% pids=[310299 310300 310350 ]
+  step=34500000 | eps/s=   829 | success= 92.7% | miss=  3.6% | elapsed=41632.0s
+[11:04:48] step=9102912 success=9.1% pids=[310299 310300 310350 ]
+  step=34600000 | eps/s=   827 | success= 92.9% | miss=  3.7% | elapsed=41817.8s
+[11:05:56] Training: step=34600000 success=92.9% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+[11:06:48] step=9403008 success=10.4% pids=[310299 310300 310350 ]
+[11:08:48] step=9703104 success=11.0% pids=[310299 310300 310350 ]
+  step=34700000 | eps/s=   826 | success= 92.8% | miss=  3.7% | elapsed=41995.4s
+[11:10:48] step=10103232 success=14.3% pids=[310299 310300 310350 ]
+[11:10:56] Training: step=10103232 success=14.3% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+  step=34800000 | eps/s=   825 | success= 92.8% | miss=  3.6% | elapsed=42181.1s
+[11:12:49] step=10403328 success=15.1% pids=[310299 310300 310350 ]
+[11:14:49] step=10803456 success=16.0% pids=[310299 310300 310350 ]
+  step=34900000 | eps/s=   824 | success= 92.9% | miss=  3.6% | elapsed=42356.4s
+[11:15:56] Training: step=11003520 success=20.1% pids=[298428 298442 310299 310300 310350 ] watchdog=1 switch=1
+[11:16:49] step=11103552 success=21.3% pids=[310299 310300 310350 ]
+  step=35000000 | eps/s=   823 | success= 92.9% | miss=  3.5% | elapsed=42531.9s
+
+  Training complete in 42537.5s
+  Avg throughput: 823 timesteps/sec
+  Model saved to models/lstm_stage1
+
+=== Evaluation (100 episodes) ===
+  success: 100%
+  avg reward: 1.437
+[11:17:55] === Replay-Export LSTM Stage 1 ===
+Exported 32 replays to ../web/replays_lstm_stage1.json (1549 KB)
+  Outcomes: {'success': 148, 'return_missed_table': 1, 'paddle_miss': 1}
+[11:18:02] LSTM Stage 1 abgeschlossen.
+[11:18:02] 
+[11:18:02] === LSTM Stage 2 | 25M Steps | Difficulty 2 | Fine-Tune ===
+=== spinoza LSTM Training (RecurrentPPO) ===
+  n_envs=32, difficulty=2
+  lstm_hidden=256, total_steps=25000000
+  Lade Modell von models/lstm_stage1 ...
+  model params: 977,935
+
+[11:18:49] step=11503680 success=23.4% pids=[310299 310300 310350 ]
+  step=  100000 | eps/s=   780 | success= 79.0% | miss= 15.6% | elapsed=128.3s
+[11:20:49] step=11803776 success=26.6% pids=[310299 310300 310350 ]
+[11:20:57] Training: step=11803776 success=26.6% pids=[298428 310299 310300 310350 316283 ] watchdog=1 switch=1
+  step=  200000 | eps/s=   789 | success= 79.7% | miss= 15.2% | elapsed=253.6s
+[11:22:49] step=12103872 success=29.2% pids=[310299 310300 310350 ]
+  step=  300000 | eps/s=   802 | success= 79.9% | miss= 15.3% | elapsed=374.0s
+[11:24:49] step=12504000 success=33.5% pids=[310299 310300 310350 ]
+[11:25:57] Training: step=12604032 success=33.7% pids=[298428 310299 310300 310350 316283 ] watchdog=1 switch=1
+  step=  400000 | eps/s=   815 | success= 79.9% | miss= 15.1% | elapsed=490.7s
+[11:26:49] step=12804096 success=35.5% pids=[310299 310300 310350 ]
+  step=  500000 | eps/s=   812 | success= 80.4% | miss= 15.0% | elapsed=615.5s
+[11:28:49] step=13104192 success=37.7% pids=[310299 310300 310350 ]
+  step=  600000 | eps/s=   823 | success= 79.5% | miss= 15.3% | elapsed=729.2s
+[11:30:49] step=13504320 success=40.5% pids=[310299 310300 310350 ]
+[11:30:57] Training: step=13504320 success=40.5% pids=[298428 310299 310300 310350 316283 ] watchdog=1 switch=1
+  step=  700000 | eps/s=   830 | success= 79.9% | miss= 15.2% | elapsed=843.0s
+[11:32:49] step=13804416 success=44.1% pids=[310299 310300 310350 ]
+  step=  800000 | eps/s=   833 | success= 80.0% | miss= 14.8% | elapsed=959.9s
+[11:34:49] step=14204544 success=45.4% pids=[310299 310300 310350 ]
+[11:35:57] Training: step=14304576 success=46.7% pids=[298428 310299 310300 310350 316283 ] watchdog=1 switch=1
+  step=  900000 | eps/s=   837 | success= 79.9% | miss= 15.1% | elapsed=1075.0s
+[11:36:49] step=14504640 success=47.9% pids=[310299 310300 310350 ]
+  step= 1000000 | eps/s=   831 | success= 80.0% | miss= 15.0% | elapsed=1203.9s
+[11:38:50] step=14804736 success=50.0% pids=[310299 310300 310350 ]
+  step= 1100000 | eps/s=   828 | success= 80.6% | miss= 14.7% | elapsed=1329.3s
+[11:40:50] step=15104832 success=52.0% pids=[310299 310300 310350 ]
+[11:40:57] Training: step=15104832 success=52.0% pids=[298428 310299 310300 310350 316283 ] watchdog=1 switch=1
+  step= 1200000 | eps/s=   826 | success= 80.8% | miss= 14.7% | elapsed=1452.9s
+[11:42:50] step=15404928 success=54.5% pids=[310299 310300 310350 ]
+  step= 1300000 | eps/s=   822 | success= 80.5% | miss= 14.8% | elapsed=1581.1s
+[11:44:50] step=15705024 success=55.7% pids=[keine]
+[11:44:50] Training nicht aktiv. Warte...
+  step= 1400000 | eps/s=   846 | success= 80.4% | miss= 15.0% | elapsed=1655.6s
+[11:45:57] Training: step=1400000 success=80.4% pids=[298428 316283 ] watchdog=1 switch=1
+  step= 1500000 | eps/s=   868 | success= 80.1% | miss= 15.0% | elapsed=1728.0s
+  step= 1600000 | eps/s=   829 | success= 79.9% | miss= 15.0% | elapsed=1930.8s
+[11:50:57] Training: step=300096 success=0.0% pids=[298428 316283 320828 320829 320879 ] watchdog=1 switch=1
+[11:51:50] step=500160 success=0.1% pids=[320828 320829 320879 ]
+[11:51:50] EINGRIFF: KOLLAPS: 54.5% -> 0.1%
+[11:51:53] Training gestoppt.
+[11:51:58] Starte Training neu...
+[11:51:58] Training gestartet (PID 330043)
+  step= 1700000 | eps/s=   826 | success= 80.2% | miss= 14.9% | elapsed=2057.8s
+[11:53:58] step=300096 success=0.1% pids=[330043 330096 ]
+  step= 1800000 | eps/s=   818 | success= 80.5% | miss= 15.0% | elapsed=2200.9s
+[11:55:58] Training: step=600192 success=0.1% pids=[298428 316283 330043 330096 ] watchdog=1 switch=1
+[11:55:58] step=600192 success=0.1% pids=[330043 330096 ]
+  step= 1900000 | eps/s=   813 | success= 79.9% | miss= 15.1% | elapsed=2336.1s
+[11:57:58] step=900288 success=0.1% pids=[330043 330096 ]
+  step= 2000000 | eps/s=   810 | success= 80.2% | miss= 14.9% | elapsed=2467.7s
+[11:59:58] step=1200384 success=0.1% pids=[keine]
+[11:59:58] Training nicht aktiv. Warte...
+  step= 2100000 | eps/s=   825 | success= 80.2% | miss= 15.0% | elapsed=2546.1s
+[12:00:58] Training: step=2100000 success=80.2% pids=[298428 316283 ] watchdog=1 switch=1
+  step= 2200000 | eps/s=   840 | success= 80.2% | miss= 15.1% | elapsed=2618.2s
+  step= 2300000 | eps/s=   856 | success= 80.2% | miss= 15.0% | elapsed=2688.2s
+  step= 2400000 | eps/s=   870 | success= 80.4% | miss= 14.9% | elapsed=2758.6s
+  step= 2500000 | eps/s=   883 | success= 80.8% | miss= 14.8% | elapsed=2830.9s
+[12:05:58] Training: step=2500000 success=80.8% pids=[298428 316283 ] watchdog=1 switch=1
+  step= 2600000 | eps/s=   896 | success= 80.8% | miss= 14.8% | elapsed=2901.2s
+[12:06:58] step=1200384 success=0.1% pids=[keine]
+[12:06:58] Training nicht aktiv. Warte...
+  step= 2700000 | eps/s=   908 | success= 80.7% | miss= 14.9% | elapsed=2973.3s
+  step= 2800000 | eps/s=   920 | success= 80.8% | miss= 14.9% | elapsed=3043.7s
+  step= 2900000 | eps/s=   927 | success= 80.5% | miss= 14.6% | elapsed=3129.4s
+[12:10:58] Training: step=2900000 success=80.5% pids=[298428 316283 337041 ] watchdog=1 switch=1
+  step= 3000000 | eps/s=   920 | success= 80.8% | miss= 14.7% | elapsed=3261.5s
+[12:13:58] step=1200384 success=0.1% pids=[337041 ]
+  step= 3100000 | eps/s=   914 | success= 81.0% | miss= 14.7% | elapsed=3391.7s
+[12:15:58] Training: step=3100000 success=81.0% pids=[298428 316283 337041 ] watchdog=1 switch=1
+[12:15:58] step=1200384 success=0.1% pids=[337041 ]
+  step= 3200000 | eps/s=   907 | success= 81.0% | miss= 14.7% | elapsed=3526.6s
+[12:17:58] step=1200384 success=0.1% pids=[337041 ]
+  step= 3300000 | eps/s=   902 | success= 81.1% | miss= 14.5% | elapsed=3657.8s
+[12:19:59] step=1200384 success=0.1% pids=[337041 ]
+[12:20:58] Training: step=3300000 success=81.1% pids=[298428 316283 337041 ] watchdog=1 switch=1
+  step= 3400000 | eps/s=   897 | success= 80.7% | miss= 14.7% | elapsed=3792.4s
+[12:21:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 3500000 | eps/s=   892 | success= 81.1% | miss= 14.7% | elapsed=3923.3s
+[12:23:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 3600000 | eps/s=   888 | success= 80.5% | miss= 14.6% | elapsed=4052.9s
+[12:25:58] Training: step=3600000 success=80.5% pids=[298428 316283 337041 ] watchdog=1 switch=1
+[12:25:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 3700000 | eps/s=   884 | success= 80.8% | miss= 14.6% | elapsed=4186.3s
+[12:27:59] step=1200384 success=0.1% pids=[337041 ]
+[12:29:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 3800000 | eps/s=   880 | success= 81.2% | miss= 14.6% | elapsed=4317.5s
+[12:30:59] Training: step=3800000 success=81.2% pids=[298428 316283 337041 ] watchdog=1 switch=1
+[12:31:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 3900000 | eps/s=   876 | success= 80.7% | miss= 14.6% | elapsed=4449.9s
+[12:33:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 4000000 | eps/s=   874 | success= 80.6% | miss= 14.7% | elapsed=4578.9s
+[12:35:59] Training: step=4000000 success=80.6% pids=[298428 316283 337041 ] watchdog=1 switch=1
+[12:35:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 4100000 | eps/s=   871 | success= 81.0% | miss= 14.5% | elapsed=4709.1s
+[12:37:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 4200000 | eps/s=   867 | success= 80.8% | miss= 14.8% | elapsed=4842.8s
+[12:39:59] step=1200384 success=0.1% pids=[337041 ]
+[12:40:59] Training: step=4200000 success=80.8% pids=[298428 316283 337041 ] watchdog=1 switch=1
+  step= 4300000 | eps/s=   865 | success= 81.2% | miss= 14.4% | elapsed=4972.4s
+[12:41:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 4400000 | eps/s=   862 | success= 81.0% | miss= 14.6% | elapsed=5104.2s
+[12:43:59] step=1200384 success=0.1% pids=[337041 ]
+  step= 4500000 | eps/s=   860 | success= 81.0% | miss= 14.6% | elapsed=5233.6s
+[12:45:59] Training: step=4500000 success=81.0% pids=[298428 316283 337041 ] watchdog=1 switch=1
+[12:46:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 4600000 | eps/s=   858 | success= 81.1% | miss= 14.4% | elapsed=5363.5s
+[12:48:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 4700000 | eps/s=   856 | success= 81.0% | miss= 14.3% | elapsed=5491.7s
+[12:50:00] step=1200384 success=0.1% pids=[337041 ]
+[12:50:59] Training: step=4700000 success=81.0% pids=[298428 316283 337041 ] watchdog=1 switch=1
+  step= 4800000 | eps/s=   854 | success= 80.8% | miss= 14.7% | elapsed=5622.6s
+[12:52:00] step=1200384 success=0.1% pids=[337041 ]
+[12:54:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 4900000 | eps/s=   851 | success= 81.4% | miss= 14.4% | elapsed=5755.0s
+[12:55:59] Training: step=4900000 success=81.4% pids=[298428 316283 337041 ] watchdog=1 switch=1
+[12:56:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 5000000 | eps/s=   850 | success= 80.8% | miss= 14.5% | elapsed=5883.3s
+[12:58:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 5100000 | eps/s=   848 | success= 81.0% | miss= 14.5% | elapsed=6014.9s
+[13:00:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 5200000 | eps/s=   847 | success= 81.2% | miss= 14.3% | elapsed=6142.6s
+[13:01:00] Training: step=5200000 success=81.2% pids=[298428 316283 337041 ] watchdog=1 switch=1
+[13:02:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 5300000 | eps/s=   845 | success= 81.3% | miss= 14.5% | elapsed=6272.0s
+[13:04:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 5400000 | eps/s=   843 | success= 81.1% | miss= 14.4% | elapsed=6406.2s
+[13:06:00] Training: step=5400000 success=81.1% pids=[298428 316283 337041 ] watchdog=1 switch=1
+[13:06:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 5500000 | eps/s=   842 | success= 80.9% | miss= 14.5% | elapsed=6535.2s
+[13:08:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 5600000 | eps/s=   840 | success= 81.3% | miss= 14.6% | elapsed=6666.7s
+[13:10:00] step=1200384 success=0.1% pids=[337041 ]
+  step= 5700000 | eps/s=   842 | success= 80.9% | miss= 14.5% | elapsed=6767.2s
+[13:11:00] Training: step=5700000 success=80.9% pids=[298428 316283 ] watchdog=1 switch=1
+[13:12:01] step=1200384 success=0.1% pids=[keine]
+[13:12:01] Training nicht aktiv. Warte...
+  step= 5800000 | eps/s=   848 | success= 80.6% | miss= 14.5% | elapsed=6839.8s
+  step= 5900000 | eps/s=   854 | success= 80.9% | miss= 14.3% | elapsed=6910.2s
+  step= 6000000 | eps/s=   858 | success= 81.3% | miss= 14.5% | elapsed=6992.5s
+[13:16:00] Training: step=6000000 success=81.3% pids=[298428 316283 343671 ] watchdog=1 switch=1
+  step= 6100000 | eps/s=   856 | success= 81.5% | miss= 14.3% | elapsed=7126.8s
+[13:19:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 6200000 | eps/s=   854 | success= 81.7% | miss= 14.3% | elapsed=7257.4s
+[13:21:00] Training: step=6200000 success=81.7% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[13:21:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 6300000 | eps/s=   852 | success= 81.5% | miss= 14.3% | elapsed=7390.8s
+[13:23:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 6400000 | eps/s=   851 | success= 81.4% | miss= 14.2% | elapsed=7522.9s
+[13:25:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 6500000 | eps/s=   849 | success= 81.6% | miss= 14.2% | elapsed=7653.7s
+[13:26:00] Training: step=6500000 success=81.6% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[13:27:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 6600000 | eps/s=   847 | success= 81.2% | miss= 14.3% | elapsed=7788.5s
+[13:29:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 6700000 | eps/s=   846 | success= 81.0% | miss= 14.5% | elapsed=7920.7s
+[13:31:00] Training: step=6700000 success=81.0% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[13:31:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 6800000 | eps/s=   844 | success= 80.7% | miss= 14.4% | elapsed=8054.2s
+[13:33:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 6900000 | eps/s=   843 | success= 81.4% | miss= 14.2% | elapsed=8182.4s
+[13:35:01] step=1200384 success=0.1% pids=[343671 ]
+[13:36:01] Training: step=6900000 success=81.4% pids=[298428 316283 343671 ] watchdog=1 switch=1
+  step= 7000000 | eps/s=   842 | success= 80.7% | miss= 14.5% | elapsed=8310.2s
+[13:37:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 7100000 | eps/s=   841 | success= 81.6% | miss= 14.1% | elapsed=8437.5s
+[13:39:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 7200000 | eps/s=   841 | success= 81.1% | miss= 14.5% | elapsed=8563.3s
+[13:41:01] Training: step=7200000 success=81.1% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[13:41:01] step=1200384 success=0.1% pids=[343671 ]
+  step= 7300000 | eps/s=   840 | success= 81.9% | miss= 14.0% | elapsed=8691.3s
+[13:43:02] step=1200384 success=0.1% pids=[343671 ]
+[13:45:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 7400000 | eps/s=   839 | success= 81.6% | miss= 14.1% | elapsed=8815.9s
+[13:46:01] Training: step=7400000 success=81.6% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[13:47:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 7500000 | eps/s=   839 | success= 81.4% | miss= 14.2% | elapsed=8943.6s
+[13:49:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 7600000 | eps/s=   838 | success= 81.3% | miss= 14.4% | elapsed=9070.7s
+[13:51:01] Training: step=7600000 success=81.3% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[13:51:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 7700000 | eps/s=   837 | success= 81.1% | miss= 14.3% | elapsed=9195.5s
+[13:53:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 7800000 | eps/s=   836 | success= 81.3% | miss= 14.1% | elapsed=9325.5s
+[13:55:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 7900000 | eps/s=   836 | success= 81.2% | miss= 14.3% | elapsed=9454.3s
+[13:56:01] Training: step=7900000 success=81.2% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[13:57:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 8000000 | eps/s=   832 | success= 81.4% | miss= 13.9% | elapsed=9620.5s
+[13:59:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 8100000 | eps/s=   830 | success= 81.3% | miss= 14.3% | elapsed=9755.0s
+[14:01:01] Training: step=8100000 success=81.3% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:01:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 8200000 | eps/s=   830 | success= 81.7% | miss= 14.2% | elapsed=9880.4s
+[14:03:02] step=1200384 success=0.1% pids=[343671 ]
+  step= 8300000 | eps/s=   830 | success= 81.7% | miss= 14.1% | elapsed=10001.5s
+[14:05:02] step=1200384 success=0.1% pids=[343671 ]
+[14:06:02] Training: step=8300000 success=81.7% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:07:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 8400000 | eps/s=   828 | success= 81.8% | miss= 14.1% | elapsed=10141.3s
+[14:09:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 8500000 | eps/s=   827 | success= 81.8% | miss= 13.9% | elapsed=10278.0s
+[14:11:02] Training: step=8500000 success=81.8% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:11:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 8600000 | eps/s=   827 | success= 81.4% | miss= 14.3% | elapsed=10401.8s
+[14:13:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 8700000 | eps/s=   826 | success= 81.5% | miss= 14.2% | elapsed=10531.2s
+[14:15:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 8800000 | eps/s=   825 | success= 81.7% | miss= 14.0% | elapsed=10661.3s
+[14:16:02] Training: step=8800000 success=81.7% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:17:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 8900000 | eps/s=   824 | success= 81.4% | miss= 14.2% | elapsed=10797.6s
+[14:19:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 9000000 | eps/s=   823 | success= 81.8% | miss= 14.0% | elapsed=10935.1s
+[14:21:02] Training: step=9000000 success=81.8% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:21:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 9100000 | eps/s=   822 | success= 82.0% | miss= 14.0% | elapsed=11072.8s
+[14:23:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 9200000 | eps/s=   821 | success= 82.1% | miss= 14.0% | elapsed=11205.7s
+[14:25:03] step=1200384 success=0.1% pids=[343671 ]
+[14:26:02] Training: step=9200000 success=82.1% pids=[298428 316283 343671 ] watchdog=1 switch=1
+  step= 9300000 | eps/s=   821 | success= 81.7% | miss= 14.1% | elapsed=11332.3s
+[14:27:03] step=1200384 success=0.1% pids=[343671 ]
+  step= 9400000 | eps/s=   821 | success= 81.7% | miss= 14.0% | elapsed=11454.3s
+[14:29:03] step=1200384 success=0.1% pids=[343671 ]
+[14:31:02] Training: step=9400000 success=81.7% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:31:04] step=1200384 success=0.1% pids=[343671 ]
+  step= 9500000 | eps/s=   820 | success= 81.9% | miss= 14.0% | elapsed=11585.6s
+[14:33:04] step=1200384 success=0.1% pids=[343671 ]
+  step= 9600000 | eps/s=   819 | success= 81.5% | miss= 13.9% | elapsed=11722.4s
+[14:35:04] step=1200384 success=0.1% pids=[343671 ]
+  step= 9700000 | eps/s=   818 | success= 81.4% | miss= 14.1% | elapsed=11852.5s
+[14:36:03] Training: step=9700000 success=81.4% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:37:04] step=1200384 success=0.1% pids=[343671 ]
+  step= 9800000 | eps/s=   819 | success= 81.9% | miss= 14.1% | elapsed=11969.1s
+[14:39:04] step=1200384 success=0.1% pids=[343671 ]
+  step= 9900000 | eps/s=   819 | success= 81.9% | miss= 14.0% | elapsed=12083.0s
+[14:41:03] Training: step=9900000 success=81.9% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:41:04] step=1200384 success=0.1% pids=[343671 ]
+  step=10000000 | eps/s=   820 | success= 81.6% | miss= 13.9% | elapsed=12200.6s
+[14:43:04] step=1200384 success=0.1% pids=[343671 ]
+  step=10100000 | eps/s=   820 | success= 82.0% | miss= 13.9% | elapsed=12315.3s
+[14:45:04] step=1200384 success=0.1% pids=[343671 ]
+  step=10200000 | eps/s=   821 | success= 82.3% | miss= 14.1% | elapsed=12431.4s
+[14:46:03] Training: step=10200000 success=82.3% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:47:04] step=1200384 success=0.1% pids=[343671 ]
+  step=10300000 | eps/s=   821 | success= 82.5% | miss= 14.1% | elapsed=12548.9s
+[14:49:04] step=1200384 success=0.1% pids=[343671 ]
+  step=10400000 | eps/s=   820 | success= 82.4% | miss= 13.8% | elapsed=12676.3s
+[14:51:03] Training: step=10400000 success=82.4% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:51:04] step=1200384 success=0.1% pids=[343671 ]
+  step=10500000 | eps/s=   821 | success= 81.9% | miss= 13.8% | elapsed=12794.4s
+[14:53:04] step=1200384 success=0.1% pids=[343671 ]
+  step=10600000 | eps/s=   821 | success= 81.8% | miss= 14.0% | elapsed=12909.0s
+[14:55:05] step=1200384 success=0.1% pids=[343671 ]
+  step=10700000 | eps/s=   821 | success= 82.1% | miss= 13.8% | elapsed=13025.5s
+[14:56:03] Training: step=10700000 success=82.1% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[14:57:05] step=1200384 success=0.1% pids=[343671 ]
+  step=10800000 | eps/s=   821 | success= 82.0% | miss= 13.9% | elapsed=13151.1s
+[14:59:05] step=1200384 success=0.1% pids=[343671 ]
+  step=10900000 | eps/s=   821 | success= 81.9% | miss= 13.7% | elapsed=13268.9s
+[15:01:03] Training: step=10900000 success=81.9% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[15:01:05] step=1200384 success=0.1% pids=[343671 ]
+  step=11000000 | eps/s=   822 | success= 81.8% | miss= 13.8% | elapsed=13382.3s
+[15:03:05] step=1200384 success=0.1% pids=[343671 ]
+  step=11100000 | eps/s=   822 | success= 82.0% | miss= 13.8% | elapsed=13496.4s
+  step=11200000 | eps/s=   823 | success= 82.1% | miss= 13.9% | elapsed=13612.1s
+[15:05:05] step=1200384 success=0.1% pids=[343671 ]
+[15:06:03] Training: step=11200000 success=82.1% pids=[298428 316283 343671 ] watchdog=1 switch=1
+  step=11300000 | eps/s=   823 | success= 82.2% | miss= 13.9% | elapsed=13725.6s
+[15:07:05] step=1200384 success=0.1% pids=[343671 ]
+[15:09:05] step=1200384 success=0.1% pids=[343671 ]
+  step=11400000 | eps/s=   822 | success= 82.4% | miss= 13.8% | elapsed=13869.6s
+[15:11:04] Training: step=11400000 success=82.4% pids=[298428 316283 343671 ] watchdog=1 switch=1
+[15:11:05] step=1200384 success=0.1% pids=[343671 ]
+  step=11500000 | eps/s=   822 | success= 82.5% | miss= 13.5% | elapsed=13995.1s
+[15:13:05] step=1200384 success=0.1% pids=[343671 ]
+  step=11600000 | eps/s=   822 | success= 82.0% | miss= 13.9% | elapsed=14113.8s
+  step=11700000 | eps/s=   825 | success= 81.9% | miss= 13.7% | elapsed=14185.6s
+[15:15:05] step=1200384 success=0.1% pids=[keine]
+[15:15:05] Training nicht aktiv. Warte...
+  step=11800000 | eps/s=   828 | success= 82.2% | miss= 13.8% | elapsed=14255.7s
+[15:16:04] Training: step=11800000 success=82.2% pids=[298428 316283 ] watchdog=1 switch=1
+  step=11900000 | eps/s=   831 | success= 82.2% | miss= 13.7% | elapsed=14328.4s
+  step=12000000 | eps/s=   833 | success= 82.3% | miss= 13.5% | elapsed=14404.3s
+  step=12100000 | eps/s=   836 | success= 82.3% | miss= 13.7% | elapsed=14479.1s
+  step=12200000 | eps/s=   838 | success= 82.1% | miss= 13.9% | elapsed=14549.8s
+[15:21:04] Training: step=12200000 success=82.1% pids=[298428 316283 ] watchdog=1 switch=1
+  step=12300000 | eps/s=   841 | success= 82.7% | miss= 13.6% | elapsed=14620.3s
+[15:22:05] step=1200384 success=0.1% pids=[keine]
+[15:22:05] Training nicht aktiv. Warte...
+  step=12400000 | eps/s=   844 | success= 82.3% | miss= 13.7% | elapsed=14692.4s
+  step=12500000 | eps/s=   847 | success= 82.5% | miss= 13.6% | elapsed=14762.1s
+  step=12600000 | eps/s=   849 | success= 82.5% | miss= 13.5% | elapsed=14834.0s
+[15:26:04] Training: step=12600000 success=82.5% pids=[298428 316283 ] watchdog=1 switch=1
+  step=12700000 | eps/s=   852 | success= 82.3% | miss= 13.6% | elapsed=14903.7s
+  step=12800000 | eps/s=   855 | success= 82.4% | miss= 13.7% | elapsed=14973.6s
+  step=12900000 | eps/s=   857 | success= 82.7% | miss= 13.5% | elapsed=15047.2s
+[15:29:05] step=1200384 success=0.1% pids=[keine]
+[15:29:05] Training nicht aktiv. Warte...
+  step=13000000 | eps/s=   860 | success= 82.3% | miss= 13.7% | elapsed=15121.6s
+[15:31:04] Training: step=13000000 success=82.3% pids=[298428 316283 ] watchdog=1 switch=1
+  step=13100000 | eps/s=   862 | success= 82.4% | miss= 13.6% | elapsed=15195.3s
+  step=13200000 | eps/s=   865 | success= 82.2% | miss= 13.7% | elapsed=15265.6s
+  step=13300000 | eps/s=   867 | success= 82.4% | miss= 13.5% | elapsed=15338.1s
+  step=13400000 | eps/s=   870 | success= 82.1% | miss= 13.4% | elapsed=15408.4s
+[15:36:04] Training: step=13400000 success=82.1% pids=[298428 316283 ] watchdog=1 switch=1
+[15:36:05] step=1200384 success=0.1% pids=[keine]
+[15:36:05] Training nicht aktiv. Warte...
+  step=13500000 | eps/s=   872 | success= 82.4% | miss= 13.5% | elapsed=15478.9s
+  step=13600000 | eps/s=   874 | success= 82.4% | miss= 13.5% | elapsed=15552.1s
+  step=13700000 | eps/s=   877 | success= 82.6% | miss= 13.6% | elapsed=15622.5s
+  step=13800000 | eps/s=   879 | success= 82.7% | miss= 13.6% | elapsed=15694.1s
+  step=13900000 | eps/s=   882 | success= 82.7% | miss= 13.6% | elapsed=15763.3s
+[15:41:04] Training: step=13900000 success=82.7% pids=[298428 316283 ] watchdog=1 switch=1
+  step=14000000 | eps/s=   884 | success= 83.1% | miss= 13.4% | elapsed=15833.0s
+[15:43:06] step=1200384 success=0.1% pids=[keine]
+[15:43:06] Training nicht aktiv. Warte...
+  step=14100000 | eps/s=   886 | success= 82.2% | miss= 13.6% | elapsed=15905.3s
+  step=14200000 | eps/s=   889 | success= 82.2% | miss= 13.6% | elapsed=15975.5s
+  step=14300000 | eps/s=   891 | success= 82.7% | miss= 13.5% | elapsed=16047.9s
+[15:46:04] Training: step=14300000 success=82.7% pids=[298428 316283 ] watchdog=1 switch=1
+  step=14400000 | eps/s=   893 | success= 82.8% | miss= 13.5% | elapsed=16118.3s
+  step=14500000 | eps/s=   896 | success= 82.4% | miss= 13.5% | elapsed=16190.0s
+  step=14600000 | eps/s=   898 | success= 82.9% | miss= 13.3% | elapsed=16259.3s
+[15:50:06] step=1200384 success=0.1% pids=[keine]
+[15:50:06] Training nicht aktiv. Warte...
+  step=14700000 | eps/s=   900 | success= 82.8% | miss= 13.4% | elapsed=16328.6s
+[15:51:04] Training: step=14700000 success=82.8% pids=[298428 316283 ] watchdog=1 switch=1
+  step=14800000 | eps/s=   902 | success= 82.9% | miss= 13.5% | elapsed=16400.2s
+  step=14900000 | eps/s=   905 | success= 82.6% | miss= 13.4% | elapsed=16469.5s
+  step=15000000 | eps/s=   907 | success= 82.3% | miss= 13.6% | elapsed=16541.1s
+  step=15100000 | eps/s=   909 | success= 83.2% | miss= 13.3% | elapsed=16611.3s
+[15:56:05] Training: step=15100000 success=83.2% pids=[298428 316283 ] watchdog=1 switch=1
+  step=15200000 | eps/s=   911 | success= 83.0% | miss= 13.4% | elapsed=16681.1s
+[15:57:06] step=1200384 success=0.1% pids=[keine]
+[15:57:06] Training nicht aktiv. Warte...
+  step=15300000 | eps/s=   913 | success= 82.7% | miss= 13.4% | elapsed=16752.8s
+  step=15400000 | eps/s=   915 | success= 83.0% | miss= 13.4% | elapsed=16822.4s
+  step=15500000 | eps/s=   917 | success= 83.1% | miss= 13.4% | elapsed=16894.2s
+  step=15600000 | eps/s=   920 | success= 83.2% | miss= 13.2% | elapsed=16965.3s
+[16:01:05] Training: step=15600000 success=83.2% pids=[298428 316283 ] watchdog=1 switch=1
+  step=15700000 | eps/s=   921 | success= 83.0% | miss= 13.2% | elapsed=17038.3s
+  step=15800000 | eps/s=   923 | success= 82.5% | miss= 13.3% | elapsed=17109.0s
+[16:04:06] step=1200384 success=0.1% pids=[keine]
+[16:04:06] Training nicht aktiv. Warte...
+  step=15900000 | eps/s=   926 | success= 82.8% | miss= 13.3% | elapsed=17179.7s
+  step=16000000 | eps/s=   927 | success= 82.8% | miss= 13.4% | elapsed=17252.0s
+[16:06:05] Training: step=16000000 success=82.8% pids=[298428 316283 ] watchdog=1 switch=1
+  step=16100000 | eps/s=   929 | success= 83.0% | miss= 13.5% | elapsed=17321.4s
+  step=16200000 | eps/s=   931 | success= 83.3% | miss= 13.3% | elapsed=17393.0s
+  step=16300000 | eps/s=   933 | success= 83.1% | miss= 13.5% | elapsed=17462.4s
+  step=16400000 | eps/s=   935 | success= 83.1% | miss= 13.2% | elapsed=17532.2s
+[16:11:05] Training: step=16400000 success=83.1% pids=[298428 316283 ] watchdog=1 switch=1
+[16:11:06] step=1200384 success=0.1% pids=[keine]
+[16:11:06] Training nicht aktiv. Warte...
+  step=16500000 | eps/s=   937 | success= 82.8% | miss= 13.1% | elapsed=17603.7s
+  step=16600000 | eps/s=   939 | success= 83.3% | miss= 13.1% | elapsed=17673.0s
+  step=16700000 | eps/s=   941 | success= 83.3% | miss= 13.2% | elapsed=17744.8s
+  step=16800000 | eps/s=   943 | success= 83.1% | miss= 13.2% | elapsed=17814.3s
+[16:16:05] Training: step=16800000 success=83.1% pids=[298428 316283 ] watchdog=1 switch=1
+  step=16900000 | eps/s=   945 | success= 83.4% | miss= 13.1% | elapsed=17883.8s
+  step=17000000 | eps/s=   947 | success= 83.1% | miss= 13.2% | elapsed=17954.9s
+[16:18:06] step=1200384 success=0.1% pids=[keine]
+[16:18:06] Training nicht aktiv. Warte...
+  step=17100000 | eps/s=   949 | success= 83.2% | miss= 13.2% | elapsed=18024.6s
+  step=17200000 | eps/s=   950 | success= 83.5% | miss= 13.1% | elapsed=18096.5s
+  step=17300000 | eps/s=   952 | success= 83.1% | miss= 13.2% | elapsed=18166.2s
+[16:21:05] Training: step=17300000 success=83.1% pids=[298428 316283 ] watchdog=1 switch=1
+  step=17400000 | eps/s=   954 | success= 83.0% | miss= 13.2% | elapsed=18237.9s
+  step=17500000 | eps/s=   956 | success= 82.7% | miss= 13.2% | elapsed=18307.3s
+  step=17600000 | eps/s=   958 | success= 82.8% | miss= 13.1% | elapsed=18376.9s
+[16:25:06] step=1200384 success=0.1% pids=[keine]
+[16:25:06] Training nicht aktiv. Warte...
+  step=17700000 | eps/s=   959 | success= 83.2% | miss= 13.1% | elapsed=18448.3s
+[16:26:05] Training: step=17700000 success=83.2% pids=[298428 316283 ] watchdog=1 switch=1
+  step=17800000 | eps/s=   961 | success= 83.1% | miss= 13.1% | elapsed=18517.9s
+  step=17900000 | eps/s=   963 | success= 83.3% | miss= 13.1% | elapsed=18589.6s
+  step=18000000 | eps/s=   965 | success= 82.9% | miss= 13.2% | elapsed=18659.0s
+  step=18100000 | eps/s=   966 | success= 82.9% | miss= 13.2% | elapsed=18728.4s
+[16:31:05] Training: step=18100000 success=82.9% pids=[298428 316283 ] watchdog=1 switch=1
+  step=18200000 | eps/s=   968 | success= 83.4% | miss= 13.2% | elapsed=18800.0s
+[16:32:06] step=1200384 success=0.1% pids=[keine]
+[16:32:06] Training nicht aktiv. Warte...
+  step=18300000 | eps/s=   970 | success= 83.6% | miss= 13.1% | elapsed=18869.5s
+  step=18400000 | eps/s=   971 | success= 83.7% | miss= 13.0% | elapsed=18941.2s
+  step=18500000 | eps/s=   973 | success= 83.5% | miss= 13.0% | elapsed=19011.2s
+[16:36:05] Training: step=18500000 success=83.5% pids=[298428 316283 ] watchdog=1 switch=1
+  step=18600000 | eps/s=   975 | success= 83.1% | miss= 13.0% | elapsed=19083.1s
+  step=18700000 | eps/s=   976 | success= 82.8% | miss= 13.1% | elapsed=19152.8s
+  step=18800000 | eps/s=   978 | success= 83.2% | miss= 13.0% | elapsed=19222.2s
+[16:39:06] step=1200384 success=0.1% pids=[keine]
+[16:39:06] Training nicht aktiv. Warte...
+  step=18900000 | eps/s=   980 | success= 83.4% | miss= 12.9% | elapsed=19293.9s
+  step=19000000 | eps/s=   981 | success= 83.0% | miss= 13.1% | elapsed=19363.6s
+[16:41:05] Training: step=19000000 success=83.0% pids=[298428 316283 ] watchdog=1 switch=1
+  step=19100000 | eps/s=   983 | success= 82.9% | miss= 13.0% | elapsed=19435.4s
+  step=19200000 | eps/s=   984 | success= 83.1% | miss= 13.1% | elapsed=19505.2s
+  step=19300000 | eps/s=   986 | success= 83.4% | miss= 13.0% | elapsed=19574.8s
+  step=19400000 | eps/s=   987 | success= 83.5% | miss= 13.0% | elapsed=19646.3s
+[16:46:05] Training: step=19400000 success=83.5% pids=[298428 316283 ] watchdog=1 switch=1
+[16:46:06] step=1200384 success=0.1% pids=[keine]
+[16:46:06] Training nicht aktiv. Warte...
+  step=19500000 | eps/s=   989 | success= 83.3% | miss= 13.1% | elapsed=19716.0s
+  step=19600000 | eps/s=   991 | success= 83.1% | miss= 13.1% | elapsed=19787.6s
+  step=19700000 | eps/s=   992 | success= 83.2% | miss= 13.0% | elapsed=19857.4s
+  step=19800000 | eps/s=   994 | success= 83.2% | miss= 13.2% | elapsed=19927.1s
+[16:51:06] Training: step=19800000 success=83.2% pids=[298428 316283 ] watchdog=1 switch=1
+  step=19900000 | eps/s=   995 | success= 83.3% | miss= 13.1% | elapsed=19998.5s
+  step=20000000 | eps/s=   997 | success= 83.7% | miss= 13.2% | elapsed=20067.9s
+[16:53:06] step=1200384 success=0.1% pids=[keine]
+[16:53:06] Training nicht aktiv. Warte...
+  step=20100000 | eps/s=   998 | success= 83.4% | miss= 12.9% | elapsed=20139.6s
+  step=20200000 | eps/s=  1000 | success= 83.7% | miss= 12.9% | elapsed=20209.3s
+[16:56:06] Training: step=20200000 success=83.7% pids=[298428 316283 ] watchdog=1 switch=1
+  step=20300000 | eps/s=  1001 | success= 83.7% | miss= 13.0% | elapsed=20280.7s
+  step=20400000 | eps/s=  1002 | success= 83.5% | miss= 13.0% | elapsed=20350.3s
+  step=20500000 | eps/s=  1004 | success= 83.3% | miss= 12.9% | elapsed=20419.9s
+  step=20600000 | eps/s=  1005 | success= 82.9% | miss= 13.1% | elapsed=20491.7s
+[17:00:06] step=1200384 success=0.1% pids=[keine]
+[17:00:06] Training nicht aktiv. Warte...
+  step=20700000 | eps/s=  1007 | success= 83.3% | miss= 12.9% | elapsed=20561.2s
+[17:01:06] Training: step=20700000 success=83.3% pids=[298428 316283 ] watchdog=1 switch=1
+  step=20800000 | eps/s=  1008 | success= 83.5% | miss= 12.7% | elapsed=20633.5s
+  step=20900000 | eps/s=  1009 | success= 83.5% | miss= 12.8% | elapsed=20703.4s
+  step=21000000 | eps/s=  1011 | success= 83.6% | miss= 12.6% | elapsed=20773.4s
+  step=21100000 | eps/s=  1012 | success= 83.6% | miss= 12.7% | elapsed=20845.2s
+[17:06:06] Training: step=21100000 success=83.6% pids=[298428 316283 ] watchdog=1 switch=1
+  step=21200000 | eps/s=  1014 | success= 83.6% | miss= 12.8% | elapsed=20914.7s
+[17:07:06] step=1200384 success=0.1% pids=[keine]
+[17:07:06] Training nicht aktiv. Warte...
+  step=21300000 | eps/s=  1015 | success= 83.6% | miss= 12.7% | elapsed=20986.3s
+  step=21400000 | eps/s=  1016 | success= 83.8% | miss= 12.8% | elapsed=21056.7s
+  step=21500000 | eps/s=  1018 | success= 83.7% | miss= 12.9% | elapsed=21129.1s
+[17:11:06] Training: step=21500000 success=83.7% pids=[298428 316283 ] watchdog=1 switch=1
+  step=21600000 | eps/s=  1019 | success= 83.8% | miss= 12.9% | elapsed=21198.7s
+  step=21700000 | eps/s=  1020 | success= 83.8% | miss= 12.9% | elapsed=21268.3s
+  step=21800000 | eps/s=  1022 | success= 83.7% | miss= 12.9% | elapsed=21340.3s
+[17:14:06] step=1200384 success=0.1% pids=[keine]
+[17:14:06] Training nicht aktiv. Warte...
+  step=21900000 | eps/s=  1023 | success= 83.5% | miss= 13.1% | elapsed=21410.2s
+[17:16:06] Training: step=21900000 success=83.5% pids=[298428 316283 ] watchdog=1 switch=1

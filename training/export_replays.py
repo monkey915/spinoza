@@ -4,24 +4,24 @@ import argparse
 import json
 import numpy as np
 from stable_baselines3 import PPO
-from spinoza import SimEnv
+from env import TableTennisEnv
 
 
 def export_replays(model_path, output_path, n_replays=20, difficulty=1, seed=12345):
     """Run the model on random serves and export full replay data."""
     model = PPO.load(model_path)
-    env = SimEnv(seed=seed, difficulty=difficulty)
+    env = TableTennisEnv(seed=seed, difficulty=difficulty)
 
     replays = []
     outcomes_count = {}
 
     for i in range(n_replays * 3):  # generate extras, keep best mix
-        obs = env.reset()
+        obs, _ = env.reset()
         obs_np = np.array(obs, dtype=np.float32)
         action, _ = model.predict(obs_np, deterministic=True)
         action_list = [float(a) for a in action]
 
-        replay = env.replay(action_list)
+        replay = env.sim.replay(action_list)
         outcome = replay["outcome"]
         outcomes_count[outcome] = outcomes_count.get(outcome, 0) + 1
 
@@ -29,7 +29,7 @@ def export_replays(model_path, output_path, n_replays=20, difficulty=1, seed=123
         def round_traj(traj):
             return [[round(v, 4) for v in pt] for pt in traj]
 
-        replays.append({
+        entry = {
             "id": i,
             "outcome": outcome,
             "reward": round(replay["reward"], 3),
@@ -40,7 +40,10 @@ def export_replays(model_path, output_path, n_replays=20, difficulty=1, seed=123
             "paddle": {k: round(v, 4) for k, v in replay["paddle"].items()},
             "contact_pos": [round(v, 4) for v in replay.get("contact_pos", [0, 0, 0])],
             "landing": [round(v, 4) for v in replay.get("landing", [])],
-        })
+        }
+        if "hit_omega" in replay:
+            entry["hit_omega"] = [round(v, 2) for v in replay["hit_omega"]]
+        replays.append(entry)
 
     # Select a good mix: ~60% successes, ~30% misses, ~10% other
     successes = [r for r in replays if r["outcome"] == "success"]

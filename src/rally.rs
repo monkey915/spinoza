@@ -7,8 +7,10 @@ use crate::table::Table;
 /// Observation frame: ball position at a simulated "camera" sample time
 pub type ObsFrame = [f64; 3]; // [x, y, z]
 
-/// How many past ball positions the agent can see
-pub const OBS_FRAMES: usize = 10;
+/// How many past ball positions the agent can see.
+/// 30 frames @ ~60 Hz ≈ 500 ms — covers the complete post-bounce trajectory,
+/// giving the network enough curvature data to infer spin strength and direction.
+pub const OBS_FRAMES: usize = 30;
 
 /// Simulated camera frame interval (~60Hz)
 const OBS_DT: f64 = 1.0 / 60.0;
@@ -61,6 +63,7 @@ pub struct ReplayData {
     pub return_bounces: Vec<(f64, Vec3)>,
     pub paddle_action: PaddleAction,
     pub paddle_contact_pos: Option<Vec3>,
+    pub hit_omega: Option<Vec3>,
     pub outcome: RallyOutcome,
     pub reward: f64,
 }
@@ -216,7 +219,7 @@ pub fn evaluate_return(
                 .map(|s| {
                     let dx = s.pos.x - action.paddle_x;
                     let dy = s.pos.y - action.paddle_y;
-                    let dz = s.pos.z - action.paddle_z.max(table.surface_z());
+                    let dz = s.pos.z - action.paddle_z.max(table.surface_z() + 0.09);
                     (dx * dx + dy * dy + dz * dz).sqrt()
                 })
                 .fold(f64::MAX, f64::min);
@@ -242,7 +245,7 @@ pub fn evaluate_return(
         }
         PaddleResult::Hit(hit_state) => {
             let return_result = simulate_full(hit_state, table, 1);
-            evaluate_return_result(&return_result, table)
+            evaluate_return_result(&return_result, table, &ball_at_paddle, &hit_state)
         }
     }
 }
@@ -288,6 +291,7 @@ pub fn run_rally_replay(
         return_bounces: Vec::new(),
         paddle_action: action.clone(),
         paddle_contact_pos: None,
+        hit_omega: None,
         outcome,
         reward: 0.0,
     };
@@ -364,6 +368,7 @@ pub fn run_rally_replay(
                 return_bounces: Vec::new(),
                 paddle_action: action.clone(),
                 paddle_contact_pos: None,
+                hit_omega: None,
                 outcome: RallyOutcome::PaddleMiss { miss_distance: 1.0 },
                 reward: -0.3,
             };
@@ -378,6 +383,7 @@ pub fn run_rally_replay(
             return_bounces: Vec::new(),
             paddle_action: action.clone(),
             paddle_contact_pos: Some(ball_at_paddle.pos),
+            hit_omega: None,
             outcome: RallyOutcome::PaddleMiss { miss_distance: table.contact_z() - ball_at_paddle.pos.z },
             reward: -0.2,
         };
@@ -394,6 +400,7 @@ pub fn run_rally_replay(
                 return_bounces: Vec::new(),
                 paddle_action: action.clone(),
                 paddle_contact_pos: Some(ball_at_paddle.pos),
+                hit_omega: None,
                 outcome: RallyOutcome::PaddleMiss { miss_distance },
                 reward: -0.1 - miss_distance.min(1.0) * 0.2,
             }
@@ -416,7 +423,7 @@ pub fn run_rally_replay(
             let return_bounces: Vec<(f64, Vec3)> = return_result.bounces.iter()
                 .map(|b| (contact_time + b.time, b.landing)).collect();
 
-            let (outcome, reward) = evaluate_return_result(&return_result, table);
+            let (outcome, reward) = evaluate_return_result(&return_result, table, &ball_at_paddle, &hit_state);
 
             ReplayData {
                 serve_trajectory: serve_traj,
@@ -425,6 +432,7 @@ pub fn run_rally_replay(
                 return_bounces,
                 paddle_action: action.clone(),
                 paddle_contact_pos: Some(contact_pos),
+                hit_omega: Some(hit_state.omega),
                 outcome,
                 reward,
             }
@@ -434,16 +442,30 @@ pub fn run_rally_replay(
 
 /// Evaluate the return simulation result with smooth reward gradients.
 ///
-/// Reward structure:
-///   Contact:       +0.3 (always, since we got a Hit)
-///   Net cleared:   +0.2 (additive)
-///   On table:      +0.5 (additive)
-///   Placement:     0.0 - 0.2 bonus for edges
-///   Near-miss:     smooth gradient based on distance from table (up to +0.4)
-///   Direction:     +0.1 if ball heads toward opponent without crossing net
+/// Reward structure — **aggressive profile v6**:
+///   Ziel: Balance zwischen "Ball auf Tisch bringen" und "Topspin lernen".
+///   Base-Reward hoch genug dass Tischlandung sich lohnt (auch mit Backspin),
+///   aber Topspin-Bonus so dominant dass er langfristig die beste Strategie ist.
+///
+///   Base rewards (solid foundation):
+///     Contact:            +0.30  (always, since we got a Hit)
+///     Net cleared:        +0.20
+///     On table (success): +0.50  → 1.00 total
+///
+///   Quality bonuses (only on success):
+///     Apex timing:        0.00–1.00  ball descending at contact — STARK
+///     Net-skim:          -0.50–1.00  sweet spot 2–5cm über Netz
+///     Return speed:      -0.20–0.30  fast = bonus, slow = penalty
+///     Return spin:       -1.00–3.00  topspin = HAUPTANREIZ, backspin = Strafe
+///     Placement:          0.00–0.20  landing near edges/baseline
+///
+///   Gradient: Topspin(5.50) >>> Neutral(2.50) >> Block(0.50) > Near-miss(0.30)
+///   EV@20%: topspin=1.10 > block=0.50 → Agent lernt Topspin zu bevorzugen
 fn evaluate_return_result(
     return_result: &crate::simulation::SimResult,
     table: &Table,
+    ball_at_contact: &BallState,
+    hit_state: &BallState,
 ) -> (RallyOutcome, f64) {
     let half_y = table.length / 2.0;
     let net_top_z = table.surface_z() + table.net_height;
@@ -465,14 +487,73 @@ fn evaluate_return_result(
 
     let hit_net = z_at_net.is_some_and(|z| z < net_top_z);
 
+    // ── Quality bonuses (applied only on success) ────────────────────────
+    //
+    // Apex timing: STARKER Anreiz, den Ball am höchsten Punkt zu treffen.
+    // Profis treffen den Ball kurz nach dem Apex — maximale Kontrolle.
+    // Full bonus at apex (vz=0), linearly fades to zero at vz=-2.0 m/s.
+    let apex_bonus = {
+        let vz = ball_at_contact.vel.z;
+        if vz >= 0.0 {
+            0.0                                     // still ascending – no bonus
+        } else if vz > -2.0 {
+            (1.0 + vz / 2.0) * 1.00                // 1.00 at apex → 0.0 at -2 m/s
+        } else {
+            0.0                                     // well past apex – no bonus
+        }
+    };
+
+    // Net clearance: Sweet-Spot bei 2–5 cm über dem Netz.
+    // Zu knapp (<2cm) ist riskant (Netz!), zu hoch (>10cm) ist ein Lob.
+    //   0–2 cm  → +0.50..+1.00 (gut aber riskant, aufsteigend zum sweet spot)
+    //   2–5 cm  → +1.00 (perfekt: aggressiv aber sicher)
+    //   5–10 cm → +1.00..0.00 (linearer Abfall)
+    //   10–30cm → 0.00..-0.50 (Lob-Strafe)
+    let net_skim_bonus = match z_at_net {
+        Some(z) if z >= net_top_z => {
+            let clearance = z - net_top_z;
+            if clearance <= 0.02 {
+                0.50 + (clearance / 0.02) * 0.50        // 0–2cm: 0.50→1.00
+            } else if clearance <= 0.05 {
+                1.00                                      // 2–5cm: perfect sweet spot
+            } else if clearance <= 0.10 {
+                1.00 * (1.0 - (clearance - 0.05) / 0.05) // 5–10cm: 1.00→0.00
+            } else {
+                -((clearance - 0.10) / 0.20).min(1.0) * 0.50  // 10–30cm: 0.00→-0.50
+            }
+        }
+        _ => 0.0,
+    };
+
+    // Return speed bonus: faster return gives opponent less reaction time.
+    let speed_bonus = {
+        let v = hit_state.vel.norm();
+        if v < 3.0 {
+            -0.20 * (1.0 - v / 3.0)  // penalty for very slow returns
+        } else {
+            (v / 12.0).min(1.0) * 0.30
+        }
+    };
+
+    // Spin bonus: TOPSPIN ist der HAUPTANREIZ (bis +3.0).
+    // Backspin wird bestraft (-1.0) aber nicht so brutal dass der Agent
+    // lieber den Ball verfehlt als ihn auf den Tisch zu bringen.
+    // Gradient: topspin_success(5.5) >>> neutral(2.5) >> backspin(0.5) > miss(0.3)
+    // Koordinatensystem: Return in -Y-Richtung → Topspin = omega.x > 0.
+    let spin_bonus = {
+        let omega_x = hit_state.omega.x;
+        if omega_x > 0.0 {
+            (omega_x / 50.0).min(1.0) * 3.0        // topspin: up to +3.0
+        } else {
+            (omega_x / 100.0).max(-1.0) * 1.00     // backspin: up to -1.00
+        }
+    };
+
     if hit_net {
-        // Hit the net — partial reward based on how close the ball was to clearing
         let z = z_at_net.unwrap();
         let clearance_ratio = (z / net_top_z).clamp(0.0, 1.0);
-        // 0.3 contact + 0.0-0.15 based on how close to clearing
         (RallyOutcome::ReturnHitNet, 0.3 + clearance_ratio * 0.15)
     } else if !crossed_net {
-        // Ball didn't cross net — small direction bonus if it headed toward opponent
         let first_vel_y = return_result.trajectory.first()
             .map(|(_, s)| s.vel.y)
             .unwrap_or(0.0);
@@ -485,7 +566,7 @@ fn evaluate_return_result(
                 && b.landing.x >= 0.0
                 && b.landing.x <= table.width =>
             {
-                // SUCCESS — landed on the server's half
+                // SUCCESS — base reward + quality bonuses (topspin dominates)
                 let lx = b.landing.x;
                 let ly = b.landing.y;
                 let edge_x = (lx / table.width - 0.5).abs() * 2.0;
@@ -493,12 +574,12 @@ fn evaluate_return_result(
                 let placement_bonus = (edge_x + edge_y) * 0.1;
                 (
                     RallyOutcome::Success { landing_x: lx, landing_y: ly },
-                    0.3 + 0.2 + 0.5 + placement_bonus,
+                    0.3 + 0.2 + 0.5 + placement_bonus
+                        + apex_bonus + net_skim_bonus + speed_bonus + spin_bonus,
                 )
             }
             _ => {
-                // Crossed net but missed the table. Compute near-miss gradient:
-                // Find where the ball would hit the table surface plane (z = surface_z)
+                // Crossed net but missed the table — near-miss gradient.
                 let ground_landing = return_result.trajectory.windows(2).find_map(|w| {
                     let prev = &w[0].1;
                     let curr = &w[1].1;
@@ -518,20 +599,16 @@ fn evaluate_return_result(
 
                 let near_miss_bonus = match ground_landing {
                     Some(land) => {
-                        // Distance from landing point to nearest table edge
                         let dx = if land.x < 0.0 { -land.x }
                                  else if land.x > table.width { land.x - table.width }
                                  else { 0.0 };
-                        let dy = if land.y >= half_y { land.y - half_y }
-                                 else { 0.0 };
+                        let dy = if land.y >= half_y { land.y - half_y } else { 0.0 };
                         let dist = (dx * dx + dy * dy).sqrt();
-                        // Up to +0.4 bonus, decaying over 2m distance
                         (1.0 - (dist / 2.0).min(1.0)) * 0.4
                     }
                     None => 0.0,
                 };
 
-                // 0.3 contact + 0.2 net cleared + near-miss bonus
                 (RallyOutcome::ReturnMissedTable, 0.3 + 0.2 + near_miss_bonus)
             }
         }

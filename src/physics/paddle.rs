@@ -43,9 +43,18 @@ fn paddle_normal(tilt_x: f64, tilt_z: f64) -> Vec3 {
 ///
 /// Default swing direction is toward -Y (hitting back toward server).
 /// Elevation rotates upward from the horizontal swing plane.
+///
+/// Biomechanical constraint: the effective swing speed decreases with
+/// elevation — you can smash hard forward but not swing 12 m/s straight up.
+/// Formula: effective_speed = speed × cos(elevation)^0.6
+/// At 0° (flat smash):  100% speed
+/// At 30° (topspin loop): ~82% speed
+/// At 45° (heavy loop):   ~71% speed
+/// At 57° (max elevation): ~63% speed
 fn swing_velocity(speed: f64, elevation: f64) -> Vec3 {
-    let vy = -speed * elevation.cos();
-    let vz = speed * elevation.sin();
+    let effective_speed = speed * elevation.cos().abs().powf(0.6);
+    let vy = -effective_speed * elevation.cos();
+    let vz = effective_speed * elevation.sin();
     Vec3::new(0.0, vy, vz)
 }
 
@@ -73,19 +82,21 @@ pub fn apply_paddle_hit(
     table_surface_z: f64,
     paddle_radius: f64,
 ) -> PaddleResult {
-    // Clamp paddle_z to be at or above the table surface
-    let paddle_z = action.paddle_z.max(table_surface_z);
+    // Clamp paddle_z to be above the table surface (with clearance for paddle radius)
+    let min_paddle_z = table_surface_z + 0.09;
+    let paddle_z = action.paddle_z.max(min_paddle_z);
 
     let paddle_pos = Vec3::new(action.paddle_x, action.paddle_y, paddle_z);
 
     // Distance from ball to paddle center (in xz plane, since y is matched)
+    // Use paddle_radius + BALL_RADIUS so the ball's edge (not just center) counts
     let dx = ball.pos.x - paddle_pos.x;
     let dz = ball.pos.z - paddle_pos.z;
     let dist = (dx * dx + dz * dz).sqrt();
 
-    if dist > paddle_radius {
+    if dist > paddle_radius + BALL_RADIUS {
         return PaddleResult::Miss {
-            miss_distance: dist - paddle_radius,
+            miss_distance: dist - paddle_radius - BALL_RADIUS,
         };
     }
 

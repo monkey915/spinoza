@@ -191,14 +191,16 @@ scene.add(tableModel);
 
 // ===== Ball =====
 
-const VISUAL_BALL_SCALE = 1.5; // slightly larger for visibility
+const VISUAL_BALL_SCALE = 1.0; // true physical size
 const ballGeo = new THREE.SphereGeometry(
   BALL_RADIUS * VISUAL_BALL_SCALE,
   32,
   32,
 );
 const ballMat = new THREE.MeshStandardMaterial({
-  color: 0xffeeee,
+  color: 0xffffff,
+  emissive: 0xffffff,
+  emissiveIntensity: 0.15,
   roughness: 0.3,
   metalness: 0.05,
 });
@@ -386,10 +388,13 @@ function updateBallPosition(t) {
   if (omegaNorm > 5) {
     arrowHelper.visible = true;
     arrowHelper.position.copy(ballMesh.position);
+    // Arrow shows rotation axis per right-hand rule (omega vector)
+    // IMPORTANT: omega is a pseudo-vector — the Y/Z swap in s2t (det=-1)
+    // requires negation to preserve correct rotation direction in Three.js
     const dir = s2t(
-      state.omega.x / omegaNorm,
-      state.omega.y / omegaNorm,
-      state.omega.z / omegaNorm,
+      -state.omega.x / omegaNorm,
+      -state.omega.y / omegaNorm,
+      -state.omega.z / omegaNorm,
     ).normalize();
     arrowHelper.setDirection(dir);
     arrowHelper.setLength(
@@ -401,11 +406,24 @@ function updateBallPosition(t) {
     arrowHelper.visible = false;
   }
 
-  // Rotate ball based on spin (visual only)
-  const dt = 0.016; // approximate frame time
-  ballMesh.rotation.x += state.omega.z * dt * animSpeed;
-  ballMesh.rotation.y += state.omega.y * dt * animSpeed;
-  ballMesh.rotation.z += state.omega.x * dt * animSpeed;
+  // Live spin overlay
+  const spinOverlay = document.getElementById("spin-overlay");
+  if (spinOverlay) {
+    if (omegaNorm > 1) {
+      const label = state.omega.x > 10 ? "Topspin" : state.omega.x < -10 ? "Backspin" : "Sidespin";
+      const color = state.omega.x > 10 ? "#44ff66" : state.omega.x < -10 ? "#ff6644" : "#ffcc44";
+      spinOverlay.innerHTML = `<span style="color:${color}">⟳ ${Math.round(omegaNorm)} rad/s ${label}</span>`;
+      spinOverlay.style.display = "block";
+    } else {
+      spinOverlay.style.display = "none";
+    }
+  }
+
+  // Rotate ball based on spin (pseudo-vector: negate + Y/Z swap)
+  const dt = 0.016;
+  ballMesh.rotation.x += -state.omega.x * dt * animSpeed;
+  ballMesh.rotation.y += -state.omega.z * dt * animSpeed;
+  ballMesh.rotation.z += -state.omega.y * dt * animSpeed;
 }
 
 // ===== UI Controls =====
@@ -643,11 +661,12 @@ let replayPauseBetween = 1.2; // seconds pause between replays
 let replayPauseTimer = 0;
 let returnTrajectoryLine = null;
 let paddleMesh = null;
+let swingArrow = null;
 
-// Paddle mesh (flat disc)
+// Paddle mesh (flat disc + handle to the side like a human holds it)
 function createPaddleMesh() {
   const group = new THREE.Group();
-  const discGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.005, 32);
+  const discGeo = new THREE.CylinderGeometry(0.085, 0.085, 0.015, 32);
   const discMat = new THREE.MeshStandardMaterial({
     color: 0xcc2222,
     roughness: 0.6,
@@ -657,14 +676,14 @@ function createPaddleMesh() {
   disc.castShadow = true;
   group.add(disc);
 
-  // Handle
+  // Handle — positioned to the side, direction set dynamically in showReplay
   const handleGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.12, 8);
   const handleMat = new THREE.MeshStandardMaterial({
     color: 0x664422,
     roughness: 0.8,
   });
   const handle = new THREE.Mesh(handleGeo, handleMat);
-  handle.position.y = -0.065;
+  handle.name = "paddle-handle";
   group.add(handle);
 
   group.visible = false;
@@ -672,7 +691,17 @@ function createPaddleMesh() {
   return group;
 }
 
+// Swing direction arrow (cyan arrow showing swing vector)
+function createSwingArrow() {
+  const dir = new THREE.Vector3(0, 0, 1);
+  const arrow = new THREE.ArrowHelper(dir, new THREE.Vector3(), 0.3, 0x00ddff, 0.06, 0.04);
+  arrow.visible = false;
+  scene.add(arrow);
+  return arrow;
+}
+
 paddleMesh = createPaddleMesh();
+swingArrow = createSwingArrow();
 
 function clearReturnVisualization() {
   if (returnTrajectoryLine) {
@@ -681,6 +710,7 @@ function clearReturnVisualization() {
     returnTrajectoryLine = null;
   }
   paddleMesh.visible = false;
+  if (swingArrow) swingArrow.visible = false;
 }
 
 function loadReplay(replay) {
@@ -711,8 +741,9 @@ function loadReplay(replay) {
 
   // Merge into unified timeline for animation
   // Trim serve trajectory at paddle contact point so ball doesn't fly through paddle
+  // Only trim on actual contact (not paddle_miss — ball flies past)
   let trimmedServeTraj = serveTraj;
-  if (replay.contact_pos && replay.contact_pos.length === 3 && serveTraj.length > 1) {
+  if (replay.outcome !== "paddle_miss" && replay.contact_pos && replay.contact_pos.length === 3 && serveTraj.length > 1) {
     const contactY = replay.contact_pos[1]; // paddle Y position
     let cutIdx = serveTraj.length;
     for (let i = 1; i < serveTraj.length; i++) {
@@ -794,17 +825,43 @@ function loadReplay(replay) {
     bounceMarkers.push(ring);
   }
 
-  // Paddle position
-  if (replay.contact_pos && replay.contact_pos.length === 3) {
-    const cp = replay.contact_pos;
-    paddleMesh.position.copy(s2t(cp[0], cp[1], cp[2]));
-    // Orient paddle based on tilt
-    const pa = replay.paddle;
+  // Paddle position — use actual paddle coordinates, not ball contact point
+  const pa = replay.paddle;
+  if (pa) {
+    paddleMesh.position.copy(s2t(pa.paddle_x, pa.paddle_y, pa.paddle_z));
     paddleMesh.rotation.set(0, 0, 0);
     paddleMesh.rotateX(-Math.PI / 2); // face forward (along Y)
     paddleMesh.rotateX(pa.tilt_x || 0);
     paddleMesh.rotateZ(pa.tilt_z || 0);
+
+    // Handle direction: point toward nearest side (like a human holding it)
+    const tableCenterX = 1.525 / 2; // 0.7625m
+    const handleDir = pa.paddle_x > tableCenterX ? -1 : 1; // left side → handle right, right side → handle left
+    const handle = paddleMesh.getObjectByName("paddle-handle");
+    if (handle) {
+      handle.rotation.set(0, 0, Math.PI / 2); // rotate cylinder to horizontal
+      handle.position.set(handleDir * 0.075, 0, -0.02); // offset to the side + slightly down
+    }
+
     paddleMesh.visible = true;
+
+    // Swing direction arrow: shows the swing vector (direction + speed)
+    // Sim coords: swing is in -Y direction (toward opponent), elevated by swing_elevation
+    // swing_elevation > 0 = upward component, < 0 = downward
+    if (swingArrow && pa.swing_speed) {
+      const elev = pa.swing_elevation || 0;
+      const spd = pa.swing_speed || 5;
+      // Swing direction in sim coords: forward (-Y) + upward (Z) component
+      const sy = -Math.cos(elev); // forward component (toward opponent)
+      const sz = Math.sin(elev);   // upward component
+      // Convert sim (x,y,z) → Three.js (x,z,y) via s2t convention
+      const dir = new THREE.Vector3(0, sz, sy).normalize();
+      const arrowLen = 0.15 + (spd / 12.0) * 0.25; // length scales with speed
+      swingArrow.position.copy(s2t(pa.paddle_x, pa.paddle_y, pa.paddle_z));
+      swingArrow.setDirection(dir);
+      swingArrow.setLength(arrowLen, 0.06, 0.04);
+      swingArrow.visible = true;
+    }
   }
 
   // Use merged trajectory for ball animation
@@ -843,19 +900,43 @@ function updateReplayInfo(replay) {
       <span>Outcome</span>
       <span style="color:${color}; font-weight:bold;">${outcomeLabel}</span>
     </div>
-    <div class="info-row"><span>Reward</span><span>${replay.reward.toFixed(3)}</span></div>
+    <div class="info-row"><span>Reward</span><span style="color:${replay.reward > 2 ? '#44ff66' : replay.reward > 1 ? '#88cc44' : replay.reward > 0 ? '#ffaa44' : '#ff4444'}; font-weight:bold;">${replay.reward.toFixed(3)}</span></div>
   `;
 
   const pa = replay.paddle;
+  const tiltDeg = ((pa.tilt_x || 0) * 180 / Math.PI).toFixed(1);
+  const tiltLabel = pa.tilt_x > 0.05 ? "geschlossen" : pa.tilt_x < -0.05 ? "offen" : "vertikal";
+  const tiltColor = pa.tilt_x > 0.05 ? "#44aaff" : pa.tilt_x < -0.05 ? "#ffaa44" : "#aaaaaa";
+  const elevDeg = ((pa.swing_elevation || 0) * 180 / Math.PI).toFixed(1);
   html += `
     <div class="info-row"><span>Paddle X</span><span>${pa.paddle_x.toFixed(3)} m</span></div>
     <div class="info-row"><span>Paddle Y</span><span>${(pa.paddle_y || 0).toFixed(3)} m</span></div>
     <div class="info-row"><span>Paddle Z</span><span>${pa.paddle_z.toFixed(3)} m</span></div>
-    <div class="info-row"><span>Swing</span><span>${pa.swing_speed.toFixed(1)} m/s</span></div>
+    <div class="info-row"><span>Swing</span><span>${pa.swing_speed.toFixed(1)} m/s ↗${elevDeg}°</span></div>
+    <div class="info-row">
+      <span>Schläger</span>
+      <span style="color:${tiltColor}; font-weight:bold;">${tiltDeg}° ${tiltLabel}</span>
+    </div>
   `;
 
   if (replay.landing && replay.landing.length === 2) {
     html += `<div class="info-row"><span>Landing</span><span>x=${replay.landing[0].toFixed(3)} y=${replay.landing[1].toFixed(3)}</span></div>`;
+  }
+
+  if (replay.hit_omega) {
+    const ox = replay.hit_omega[0];
+    const spinLabel = ox > 10 ? "🔄 Topspin" : ox < -10 ? "🔃 Backspin" : "— Flat";
+    const spinColor = ox > 10 ? "#44ff66" : ox < -10 ? "#ff6644" : "#aaaaaa";
+    html += `
+      <div class="info-row">
+        <span>Spin type</span>
+        <span style="color:${spinColor}; font-weight:bold;">${spinLabel}</span>
+      </div>
+      <div class="info-row">
+        <span>ω.x (topspin)</span>
+        <span>${ox.toFixed(1)} rad/s</span>
+      </div>
+    `;
   }
 
   info.innerHTML = html;
@@ -863,7 +944,7 @@ function updateReplayInfo(replay) {
 
 document.getElementById("replay-load").addEventListener("click", async () => {
   try {
-    const resp = await fetch("replays.json");
+    const resp = await fetch(`replays.json?t=${Date.now()}`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}: replays.json not found`);
     replayData = await resp.json();
     document.getElementById("replay-controls").style.display = "block";
@@ -938,6 +1019,112 @@ function showReplay(index) {
     `${replayIndex + 1} / ${replays.length}`;
   loadReplay(replays[replayIndex]);
 }
+
+// ===== Live Training Monitor =====
+
+let liveAutoInterval = null;
+
+function drawLiveChart(history) {
+  const canvas = document.getElementById("live-chart");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  if (!history || history.length < 2) return;
+
+  ctx.fillStyle = "#0d0d1a";
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid lines at 25/50/75%
+  ctx.strokeStyle = "#2a2a40";
+  ctx.lineWidth = 1;
+  [25, 50, 75].forEach(pct => {
+    const cy = H - (pct / 100) * H;
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+    ctx.fillStyle = "#444466"; ctx.font = "9px monospace";
+    ctx.fillText(`${pct}%`, 2, cy - 2);
+  });
+
+  // Success rate line
+  ctx.strokeStyle = "#ff8844";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  history.forEach((pt, i) => {
+    const x = (i / (history.length - 1)) * W;
+    const y = H - (pt.success / 100) * H;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Dot at last point
+  const last = history[history.length - 1];
+  const lx = W - 3;
+  const ly = H - (last.success / 100) * H;
+  ctx.fillStyle = "#ff8844";
+  ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI * 2); ctx.fill();
+}
+
+async function fetchLiveStats() {
+  const statusEl = document.getElementById("live-status");
+  try {
+    const resp = await fetch(`training_live.json?t=${Date.now()}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} – training_live.json nicht gefunden`);
+    const data = await resp.json();
+
+    document.getElementById("live-stats").style.display = "block";
+    document.getElementById("live-chart").style.display = "block";
+    document.getElementById("live-stage").textContent   = `Stage ${data.stage}`;
+    document.getElementById("live-steps").textContent   = `${(data.step / 1e6).toFixed(2)}M`;
+    document.getElementById("live-success").textContent = `${data.success.toFixed(1)}%`;
+    document.getElementById("live-eps").textContent     = `${data.eps_s.toFixed(0)}`;
+
+    const mins = Math.floor(data.elapsed / 60);
+    const hrs  = Math.floor(mins / 60);
+    document.getElementById("live-elapsed").textContent =
+      hrs > 0 ? `${hrs}h ${mins % 60}min` : `${mins}min`;
+
+    statusEl.textContent = `Letzte Aktualisierung: ${data.last_update}`;
+    drawLiveChart(data.history);
+  } catch (e) {
+    statusEl.textContent = `⚠ ${e.message}`;
+  }
+}
+
+document.getElementById("live-refresh").addEventListener("click", fetchLiveStats);
+
+document.getElementById("live-auto").addEventListener("click", (e) => {
+  const btn = e.currentTarget;
+  if (liveAutoInterval) {
+    clearInterval(liveAutoInterval);
+    liveAutoInterval = null;
+    btn.textContent = "Auto 3min";
+    btn.classList.remove("btn-accent");
+  } else {
+    fetchLiveStats();
+    liveAutoInterval = setInterval(fetchLiveStats, 180_000);
+    btn.textContent = "⏸ Stop Auto";
+    btn.classList.add("btn-accent");
+  }
+});
+
+document.getElementById("live-replay-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("live-replay-btn");
+  try {
+    btn.textContent = "⏳ Lade…";
+    const resp = await fetch(`replays_live.json?t=${Date.now()}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    replayData = await resp.json();
+    document.getElementById("replay-controls").style.display = "block";
+    showReplay(0);
+    camera.position.copy(s2t(-1.5, 1.37, 1.2));
+    controls.target.copy(s2t(0.76, 1.37, 0.76));
+    controls.update();
+    btn.textContent = "✓ Live geladen";
+    btn.classList.add("btn-accent");
+  } catch (e) {
+    btn.textContent = "Live Replays";
+    document.getElementById("live-status").textContent = `⚠ Replay-Fehler: ${e.message}`;
+  }
+});
 
 // ===== Init =====
 

@@ -1,0 +1,15 @@
+=== spinoza RL Training ===
+  n_envs=64, difficulty=1
+  total_timesteps=20000000
+  policy=MLP [512, 512]
+
+  lr=0.0003 → 1e-05 (linear decay)
+  model params: 622,607
+
+  step=  100032 | eps/s=  4390 | success=  0.0% | miss= 99.8% | elapsed= 22.8s
+  step=  200064 | eps/s=  4362 | success=  0.0% | miss= 99.2% | elapsed= 45.9s
+  step=  300096 | eps/s=  4344 | success=  0.1% | miss= 96.7% | elapsed= 69.1s
+  step=  400128 | eps/s=  4333 | success=  0.1% | miss= 95.2% | elapsed= 92.3s
+  step=  500160 | eps/s=  4358 | success=  0.1% | miss= 94.9% | elapsed=114.8s
+  step=  600192 | eps/s=  4357 | success=  0.0% | miss= 94.7% | elapsed=137.8s
+  step=  700224 | eps/s=  4359 | success=  0.1% | miss= 94.4% | elapsed=160.7s

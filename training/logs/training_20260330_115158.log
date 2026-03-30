@@ -1,0 +1,36 @@
+[11:51:58] === Baue Rust-Modul (maturin build --release) ===
+🔗 Found pyo3 bindings
+🐍 Found CPython 3.12 at /usr/bin/python3
+    Finished `release` profile [optimized] target(s) in 0.03s
+📦 Built wheel for CPython 3.12 to /home/sefo/devel/spinoza/target/wheels/spinoza-0.1.0-cp312-cp312-manylinux_2_34_x86_64.whl
+Defaulting to user installation because normal site-packages is not writeable
+Processing ./target/wheels/spinoza-0.1.0-cp312-cp312-linux_x86_64.whl
+Installing collected packages: spinoza
+  Attempting uninstall: spinoza
+    Found existing installation: spinoza 0.1.0
+    Uninstalling spinoza-0.1.0:
+      Successfully uninstalled spinoza-0.1.0
+Successfully installed spinoza-0.1.0
+spinoza OK
+[11:52:00] 
+[11:52:00] === Stage 1: Kein Spin | 20M Steps | lr=3e-4→1e-5 (decay) | ent=0.01 ===
+=== spinoza RL Training ===
+  n_envs=64, difficulty=1
+  total_timesteps=20000000
+  policy=MLP [512, 512]
+
+  lr=0.0003 → 1e-05 (linear decay)
+  model params: 622,607
+
+  step=  100032 | eps/s=  3108 | success=  0.0% | miss= 99.9% | elapsed= 32.2s
+  step=  200064 | eps/s=  2882 | success=  0.0% | miss= 99.2% | elapsed= 69.4s
+  step=  300096 | eps/s=  2861 | success=  0.1% | miss= 96.7% | elapsed=104.9s
+  step=  400128 | eps/s=  2771 | success=  0.0% | miss= 95.3% | elapsed=144.4s
+  step=  500160 | eps/s=  2665 | success=  0.1% | miss= 94.8% | elapsed=187.7s
+  step=  600192 | eps/s=  2672 | success=  0.1% | miss= 94.6% | elapsed=224.6s
+  step=  700224 | eps/s=  2717 | success=  0.1% | miss= 94.4% | elapsed=257.7s
+  step=  800256 | eps/s=  2732 | success=  0.1% | miss= 94.2% | elapsed=292.9s
+  step=  900288 | eps/s=  2760 | success=  0.1% | miss= 93.8% | elapsed=326.2s
+  step= 1000320 | eps/s=  2760 | success=  0.1% | miss= 93.4% | elapsed=362.4s
+  step= 1100352 | eps/s=  2765 | success=  0.1% | miss= 93.1% | elapsed=398.0s
+  step= 1200384 | eps/s=  2785 | success=  0.1% | miss= 92.8% | elapsed=431.0s

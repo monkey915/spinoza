@@ -17,9 +17,14 @@ pub fn acceleration(state: &BallState) -> Vec3 {
     let drag_factor = -0.5 * CD * AIR_DENSITY * BALL_AREA * speed / BALL_MASS;
     let drag = vel * drag_factor;
 
-    // Magnus: F_M = C_L · ρ · A · (ω × v)  →  a = F/m
-    // (Empirical form matching table-tennis experiments: proportional to |ω×v|)
-    let magnus_factor = CL * AIR_DENSITY * BALL_AREA * BALL_RADIUS / BALL_MASS;
+    // Magnus: F_M = C_L(S) · ρ · A · r · (ω × v) / m
+    // S-dependent lift coefficient saturates at high spin to match real TT ball data.
+    // S = r·|ω| / |v|  (spin parameter, dimensionless)
+    // C_L(S) = CL * (1 - exp(-CL_K · S))
+    let omega_norm = state.omega.norm();
+    let spin_param = BALL_RADIUS * omega_norm / speed;
+    let cl = CL * (1.0 - (-CL_K * spin_param).exp());
+    let magnus_factor = cl * AIR_DENSITY * BALL_AREA * BALL_RADIUS / BALL_MASS;
     let magnus = state.omega.cross(vel) * magnus_factor;
 
     gravity + drag + magnus

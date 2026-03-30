@@ -1,0 +1,1046 @@
+[16:38:01] === Watchdog gestartet (PID 185269) ===
+[16:40:01] step=1400448 success=0.1% pids=[180940 180996 ]
+[16:42:01] step=1900608 success=0.2% pids=[180940 180996 ]
+[16:44:01] step=2300736 success=0.3% pids=[180940 180996 ]
+[16:46:01] step=2800896 success=0.3% pids=[180940 180996 ]
+[16:48:01] step=3301056 success=0.4% pids=[180940 180996 ]
+[16:48:01] EINGRIFF: Kaltstart-Stagnation: 0.4% nach 3301056 Steps
+[16:54:49] === Watchdog gestartet (PID 188866) ===
+[16:56:49] step=400128 success=0.1% pids=[185661 185711 ]
+[16:58:49] step=900288 success=0.1% pids=[185661 185711 ]
+[17:00:49] step=1400448 success=0.2% pids=[185661 185711 ]
+[17:02:49] step=1900608 success=0.3% pids=[185661 185711 ]
+[17:04:49] step=2400768 success=0.3% pids=[185661 185711 ]
+[17:06:50] step=2900928 success=0.4% pids=[185661 185711 ]
+[17:08:50] step=3401088 success=0.5% pids=[185661 185711 ]
+[17:10:50] step=3901248 success=0.8% pids=[185661 185711 ]
+[17:12:50] step=4401408 success=1.0% pids=[185661 185711 ]
+[17:14:50] step=4901568 success=1.0% pids=[185661 185711 ]
+[17:16:50] step=5401728 success=1.6% pids=[185661 185711 ]
+[17:18:50] step=5901888 success=1.9% pids=[185661 185711 ]
+[17:20:50] step=6402048 success=1.9% pids=[185661 185711 ]
+[17:22:50] step=6902208 success=2.0% pids=[185661 185711 ]
+[17:24:50] step=7402368 success=2.8% pids=[185661 185711 ]
+[17:26:50] step=7902528 success=3.2% pids=[185661 185711 ]
+[17:28:50] step=8402688 success=3.3% pids=[185661 185711 ]
+[17:30:50] step=8802816 success=3.6% pids=[185661 185711 ]
+[17:32:50] step=9302976 success=4.3% pids=[185661 185711 ]
+[17:34:50] step=9803136 success=4.5% pids=[185661 185711 ]
+[17:36:50] step=500160 success=3.6% pids=[185661 190943 ]
+[17:38:50] step=1400448 success=3.6% pids=[185661 190943 ]
+[17:40:51] step=2300736 success=3.4% pids=[185661 190943 ]
+[17:42:51] step=3201024 success=3.6% pids=[185661 190943 ]
+[17:44:51] step=4101312 success=3.5% pids=[185661 190943 ]
+[17:46:51] step=5101632 success=3.7% pids=[185661 190943 ]
+[17:48:51] step=6001920 success=4.3% pids=[185661 190943 ]
+[17:50:00] === Watchdog gestartet (PID 198748) ===
+[17:52:01] step=400128 success=0.0% pids=[195533 195583 ]
+[17:54:01] step=900288 success=0.1% pids=[195533 195583 ]
+[17:56:01] step=1500480 success=0.2% pids=[195533 195583 ]
+[17:58:01] step=2000640 success=0.3% pids=[195533 195583 ]
+[18:00:01] step=2500800 success=0.3% pids=[195533 195583 ]
+[18:02:01] step=3000960 success=0.4% pids=[195533 195583 ]
+[18:04:01] step=3501120 success=0.6% pids=[195533 195583 ]
+[18:06:01] step=4001280 success=0.8% pids=[195533 195583 ]
+[18:08:01] step=4501440 success=1.4% pids=[195533 195583 ]
+[18:10:01] step=5001600 success=1.4% pids=[195533 195583 ]
+[18:12:01] step=5601792 success=2.2% pids=[195533 195583 ]
+[18:14:01] step=6101952 success=2.7% pids=[195533 195583 ]
+[18:16:01] step=6602112 success=2.6% pids=[195533 195583 ]
+[18:18:01] step=7102272 success=3.4% pids=[195533 195583 ]
+[18:20:01] step=7602432 success=5.4% pids=[195533 195583 ]
+[18:22:01] step=8102592 success=6.2% pids=[195533 195583 ]
+[18:24:01] step=8502720 success=8.6% pids=[195533 195583 ]
+[18:26:02] step=9002880 success=11.0% pids=[195533 195583 ]
+[18:28:02] step=9503040 success=13.0% pids=[195533 195583 ]
+[18:30:02] step=10003200 success=17.0% pids=[195533 195583 ]
+[18:32:02] step=10503360 success=20.3% pids=[195533 195583 ]
+[18:34:02] step=11003520 success=24.6% pids=[195533 195583 ]
+[18:36:02] step=11503680 success=28.0% pids=[195533 195583 ]
+[18:38:02] step=12003840 success=31.0% pids=[195533 195583 ]
+[18:40:02] step=12504000 success=33.3% pids=[195533 195583 ]
+[18:42:02] step=13004160 success=38.2% pids=[195533 195583 ]
+[18:44:02] step=13504320 success=41.8% pids=[195533 195583 ]
+[18:46:02] step=13904448 success=44.3% pids=[195533 195583 ]
+[18:48:02] step=14404608 success=47.7% pids=[195533 195583 ]
+[18:50:02] step=14904768 success=49.8% pids=[195533 195583 ]
+[18:52:02] step=15304896 success=51.8% pids=[195533 195583 ]
+[18:54:02] step=15805056 success=54.6% pids=[195533 195583 ]
+[18:56:02] step=16305216 success=57.5% pids=[195533 195583 ]
+[18:58:03] step=16805376 success=59.3% pids=[195533 195583 ]
+[19:00:03] step=17305536 success=61.8% pids=[195533 195583 ]
+[19:02:03] step=17805696 success=62.6% pids=[195533 195583 ]
+[19:04:03] step=18205824 success=64.5% pids=[195533 195583 ]
+[19:06:03] step=18705984 success=65.5% pids=[195533 195583 ]
+[19:08:03] step=19206144 success=66.4% pids=[195533 195583 ]
+[19:10:03] step=19706304 success=68.1% pids=[195533 195583 ]
+[19:12:03] step=300096 success=49.8% pids=[195533 201666 ]
+[19:14:03] step=1200384 success=51.2% pids=[195533 201666 ]
+[19:16:03] step=2000640 success=45.2% pids=[195533 201666 ]
+[19:18:03] step=2900928 success=42.4% pids=[195533 201666 ]
+[19:20:03] step=3801216 success=51.8% pids=[195533 201666 ]
+[19:22:03] step=4701504 success=51.8% pids=[195533 201666 ]
+[19:24:03] step=5601792 success=42.7% pids=[195533 201666 ]
+[19:26:03] step=6502080 success=54.8% pids=[195533 201666 ]
+[19:28:03] step=7302336 success=54.5% pids=[195533 201666 ]
+[19:30:04] step=8102592 success=56.5% pids=[195533 201666 ]
+[19:32:04] step=9002880 success=52.7% pids=[195533 201666 ]
+[19:34:04] step=9803136 success=54.8% pids=[195533 201666 ]
+[19:36:04] step=10703424 success=54.6% pids=[195533 201666 ]
+[19:38:04] step=11503680 success=55.6% pids=[195533 201666 ]
+[19:40:04] step=12303936 success=57.8% pids=[195533 201666 ]
+[19:42:04] step=13004160 success=55.4% pids=[195533 201666 ]
+[19:44:04] step=13704384 success=53.7% pids=[195533 201666 ]
+[19:46:04] step=14304576 success=58.8% pids=[195533 201666 ]
+[19:48:04] step=15004800 success=60.6% pids=[195533 201666 ]
+[19:50:04] step=15604992 success=60.5% pids=[195533 201666 ]
+[19:52:04] step=16205184 success=62.6% pids=[195533 201666 ]
+[19:54:04] step=16905408 success=63.1% pids=[195533 201666 ]
+[19:56:04] step=17505600 success=63.3% pids=[195533 201666 ]
+[19:58:04] step=18105792 success=64.9% pids=[195533 201666 ]
+[20:00:05] step=18705984 success=65.1% pids=[195533 201666 ]
+[20:02:05] step=19306176 success=64.5% pids=[195533 201666 ]
+[20:04:05] step=19906368 success=65.4% pids=[195533 201666 ]
+[20:06:05] step=400128 success=51.2% pids=[195533 207171 ]
+[20:08:05] step=1000320 success=51.6% pids=[195533 207171 ]
+[20:10:05] step=1500480 success=52.9% pids=[195533 207171 ]
+[20:12:05] step=2100672 success=52.9% pids=[195533 207171 ]
+[20:14:05] step=2600832 success=53.2% pids=[195533 207171 ]
+[20:16:05] step=3201024 success=53.6% pids=[195533 207171 ]
+[20:18:05] step=3701184 success=53.2% pids=[195533 207171 ]
+[20:20:05] step=4201344 success=54.3% pids=[195533 207171 ]
+[20:22:05] step=4801536 success=53.9% pids=[195533 207171 ]
+[20:24:05] step=5301696 success=53.6% pids=[195533 207171 ]
+[20:26:05] step=5901888 success=53.9% pids=[195533 207171 ]
+[20:28:05] step=6402048 success=54.3% pids=[195533 207171 ]
+[20:30:05] step=7002240 success=54.6% pids=[195533 207171 ]
+[20:32:06] step=7502400 success=54.8% pids=[195533 207171 ]
+[20:34:06] step=8002560 success=55.1% pids=[195533 207171 ]
+[20:36:06] step=8602752 success=55.1% pids=[195533 207171 ]
+[20:38:06] step=9102912 success=55.3% pids=[195533 207171 ]
+[20:40:06] step=9703104 success=55.6% pids=[195533 207171 ]
+[20:42:06] step=10203264 success=54.8% pids=[195533 207171 ]
+[20:44:06] step=10803456 success=55.6% pids=[195533 207171 ]
+[20:46:06] step=11303616 success=55.9% pids=[195533 207171 ]
+[20:48:06] step=11803776 success=55.9% pids=[195533 207171 ]
+[20:50:06] step=12403968 success=55.9% pids=[195533 207171 ]
+[20:52:06] step=12904128 success=56.2% pids=[195533 207171 ]
+[20:54:06] step=13504320 success=56.4% pids=[195533 207171 ]
+[20:56:06] step=14004480 success=55.9% pids=[195533 207171 ]
+[20:58:06] step=14604672 success=56.5% pids=[195533 207171 ]
+[21:00:06] step=15104832 success=56.4% pids=[195533 207171 ]
+[21:02:06] step=15604992 success=56.6% pids=[195533 207171 ]
+[21:04:07] step=16205184 success=56.7% pids=[195533 207171 ]
+[21:06:07] step=16705344 success=56.8% pids=[195533 207171 ]
+[21:08:07] step=17205504 success=57.2% pids=[195533 207171 ]
+[21:10:07] step=17805696 success=57.0% pids=[195533 207171 ]
+[21:12:07] step=18305856 success=57.2% pids=[195533 207171 ]
+[21:14:07] step=18906048 success=57.9% pids=[195533 207171 ]
+[21:16:07] step=19406208 success=57.6% pids=[195533 207171 ]
+[21:18:07] step=19906368 success=57.7% pids=[195533 207171 ]
+[21:20:07] step=20506560 success=57.4% pids=[195533 207171 ]
+[21:22:07] step=21006720 success=58.1% pids=[195533 207171 ]
+[21:24:07] step=21506880 success=57.8% pids=[195533 207171 ]
+[21:26:07] step=22107072 success=58.2% pids=[195533 207171 ]
+[21:28:07] step=22607232 success=58.2% pids=[195533 207171 ]
+[21:30:07] step=23207424 success=58.1% pids=[195533 207171 ]
+[21:32:07] step=23707584 success=58.8% pids=[195533 207171 ]
+[21:34:07] step=24207744 success=58.8% pids=[195533 207171 ]
+[21:36:08] step=24807936 success=58.6% pids=[195533 207171 ]
+[21:38:08] step=25308096 success=58.8% pids=[195533 207171 ]
+[21:40:08] step=25908288 success=59.2% pids=[195533 207171 ]
+[21:42:08] step=26408448 success=58.7% pids=[195533 207171 ]
+[21:44:08] step=26908608 success=59.1% pids=[195533 207171 ]
+[21:46:08] step=27508800 success=59.1% pids=[195533 207171 ]
+[21:48:08] step=28008960 success=58.9% pids=[195533 207171 ]
+[21:50:08] step=28509120 success=59.4% pids=[195533 207171 ]
+[21:52:08] step=29109312 success=59.8% pids=[195533 207171 ]
+[21:54:08] step=29609472 success=59.7% pids=[195533 207171 ]
+[20:52:13] === Watchdog gestartet (PID 221709) ===
+[20:54:13] step=900288 success=0.1% pids=[217257 217307 ]
+[20:56:13] step=1400448 success=0.1% pids=[217257 217307 ]
+[20:58:13] step=1900608 success=0.2% pids=[217257 217307 ]
+[21:00:13] step=2400768 success=0.3% pids=[217257 217307 ]
+[21:02:13] step=2900928 success=0.3% pids=[217257 217307 ]
+[21:04:13] step=3501120 success=0.3% pids=[217257 217307 ]
+[21:06:13] step=4001280 success=0.4% pids=[217257 217307 ]
+[21:08:13] step=4501440 success=0.6% pids=[217257 217307 ]
+[21:10:14] step=5001600 success=0.8% pids=[217257 217307 ]
+[21:12:14] step=5501760 success=0.7% pids=[217257 217307 ]
+[21:14:14] step=6001920 success=0.8% pids=[217257 217307 ]
+[21:16:14] step=6502080 success=1.2% pids=[217257 217307 ]
+[21:18:14] step=7002240 success=1.5% pids=[217257 217307 ]
+[21:20:14] step=7502400 success=2.0% pids=[217257 217307 ]
+[21:21:18] === Watchdog gestartet (PID 223960) ===
+[21:23:18] step=8202624 success=3.2% pids=[217257 217307 ]
+[21:25:18] step=8702784 success=3.6% pids=[217257 217307 ]
+[21:27:18] step=9202944 success=5.0% pids=[217257 217307 ]
+[21:29:19] step=9703104 success=6.1% pids=[217257 217307 ]
+[21:31:19] step=10203264 success=7.5% pids=[217257 217307 ]
+[21:33:19] step=10703424 success=9.1% pids=[217257 217307 ]
+[21:35:19] step=11203584 success=10.9% pids=[217257 217307 ]
+[21:37:19] step=11703744 success=12.1% pids=[217257 217307 ]
+[21:39:19] step=12303936 success=14.4% pids=[217257 217307 ]
+[21:41:19] step=12704064 success=16.3% pids=[217257 217307 ]
+[21:43:19] step=13204224 success=18.8% pids=[217257 217307 ]
+[21:45:19] step=13704384 success=21.1% pids=[217257 217307 ]
+[21:47:19] step=14204544 success=22.9% pids=[217257 217307 ]
+[21:49:19] step=14704704 success=24.5% pids=[217257 217307 ]
+[21:51:19] step=15204864 success=28.6% pids=[217257 217307 ]
+[21:53:19] step=15705024 success=30.4% pids=[217257 217307 ]
+[21:55:19] step=16205184 success=33.9% pids=[217257 217307 ]
+[21:57:19] step=16705344 success=35.0% pids=[217257 217307 ]
+[21:59:19] step=17205504 success=37.4% pids=[217257 217307 ]
+[22:01:19] step=17705664 success=38.2% pids=[217257 217307 ]
+[22:03:20] step=18205824 success=40.5% pids=[217257 217307 ]
+[22:05:20] step=18705984 success=41.4% pids=[217257 217307 ]
+[22:07:20] step=19106112 success=41.8% pids=[217257 217307 ]
+[22:09:20] step=19606272 success=43.2% pids=[217257 217307 ]
+[22:11:20] step=200064 success=30.5% pids=[217257 226277 ]
+[22:13:20] step=1100352 success=30.0% pids=[217257 226277 ]
+[22:15:20] step=2100672 success=31.8% pids=[217257 226277 ]
+[22:17:20] step=3000960 success=31.0% pids=[217257 226277 ]
+[22:19:20] step=3901248 success=29.1% pids=[217257 226277 ]
+[22:21:20] step=4801536 success=29.4% pids=[217257 226277 ]
+[22:23:20] step=5701824 success=34.7% pids=[217257 226277 ]
+[22:25:20] step=6602112 success=35.5% pids=[217257 226277 ]
+[22:27:20] step=7402368 success=37.0% pids=[217257 226277 ]
+[22:29:20] step=8302656 success=27.5% pids=[217257 226277 ]
+[22:31:20] step=9202944 success=32.4% pids=[217257 226277 ]
+[22:33:21] step=10103232 success=36.9% pids=[217257 226277 ]
+[22:35:21] step=10903488 success=40.1% pids=[217257 226277 ]
+[22:37:21] step=11803776 success=40.0% pids=[217257 226277 ]
+[22:39:21] step=12604032 success=37.7% pids=[217257 226277 ]
+[22:41:21] step=13404288 success=39.3% pids=[217257 226277 ]
+[22:43:21] step=14204544 success=39.4% pids=[217257 226277 ]
+[22:45:21] step=15004800 success=38.7% pids=[217257 226277 ]
+[22:47:21] step=15905088 success=41.9% pids=[217257 226277 ]
+[22:49:21] step=16605312 success=43.4% pids=[217257 226277 ]
+[22:51:21] step=17305536 success=44.0% pids=[217257 226277 ]
+[22:53:21] step=17905728 success=45.2% pids=[217257 226277 ]
+[22:55:21] step=18605952 success=44.9% pids=[217257 226277 ]
+[22:57:21] step=19306176 success=47.6% pids=[217257 226277 ]
+[22:59:21] step=20006400 success=48.9% pids=[217257 226277 ]
+[23:01:21] step=20606592 success=48.0% pids=[217257 226277 ]
+[23:03:21] step=21306816 success=50.6% pids=[217257 226277 ]
+[23:05:22] step=21907008 success=51.8% pids=[217257 226277 ]
+[23:07:22] step=22507200 success=52.4% pids=[217257 226277 ]
+[23:09:22] step=23207424 success=53.5% pids=[217257 226277 ]
+[23:11:22] step=23807616 success=53.9% pids=[217257 226277 ]
+[23:13:22] step=24407808 success=53.6% pids=[217257 226277 ]
+[23:15:22] step=24907968 success=54.5% pids=[217257 233483 ]
+[23:17:22] step=500160 success=38.8% pids=[217257 233483 ]
+[23:19:22] step=1000320 success=40.1% pids=[217257 233483 ]
+[23:21:22] step=1600512 success=41.1% pids=[217257 233483 ]
+[23:23:22] step=2100672 success=41.4% pids=[217257 233483 ]
+[23:25:22] step=2700864 success=41.9% pids=[217257 233483 ]
+[23:27:22] step=3201024 success=42.1% pids=[217257 233483 ]
+[23:29:22] step=3701184 success=42.3% pids=[217257 233483 ]
+[23:31:22] step=4301376 success=42.6% pids=[217257 233483 ]
+[23:33:22] step=4801536 success=42.8% pids=[217257 233483 ]
+[23:35:23] step=5401728 success=43.4% pids=[217257 233483 ]
+[23:37:23] step=5901888 success=43.5% pids=[217257 233483 ]
+[23:39:23] step=6502080 success=43.3% pids=[217257 233483 ]
+[23:41:23] step=7002240 success=43.7% pids=[217257 233483 ]
+[23:43:23] step=7502400 success=43.6% pids=[217257 233483 ]
+[23:45:23] step=8102592 success=44.2% pids=[217257 233483 ]
+[23:47:23] step=8602752 success=44.2% pids=[217257 233483 ]
+[23:49:23] step=9202944 success=44.3% pids=[217257 233483 ]
+[23:51:23] step=9703104 success=44.8% pids=[217257 233483 ]
+[23:53:23] step=10203264 success=44.8% pids=[217257 233483 ]
+[23:55:23] step=10803456 success=44.7% pids=[217257 233483 ]
+[23:57:23] step=11303616 success=45.6% pids=[217257 233483 ]
+[23:59:23] step=11903808 success=45.7% pids=[217257 233483 ]
+[00:01:23] step=12403968 success=45.6% pids=[217257 233483 ]
+[00:03:23] step=13004160 success=46.2% pids=[217257 233483 ]
+[00:05:23] step=13504320 success=46.2% pids=[217257 233483 ]
+[00:07:24] step=14104512 success=46.3% pids=[217257 233483 ]
+[00:09:24] step=14604672 success=46.4% pids=[217257 233483 ]
+[00:11:24] step=15104832 success=46.2% pids=[217257 233483 ]
+[00:13:24] step=15705024 success=46.4% pids=[217257 233483 ]
+[00:15:24] step=16205184 success=46.8% pids=[217257 233483 ]
+[00:17:24] step=16805376 success=46.9% pids=[217257 233483 ]
+[00:19:24] step=17305536 success=47.0% pids=[217257 233483 ]
+[00:21:24] step=17905728 success=47.5% pids=[217257 233483 ]
+[00:23:24] step=18405888 success=47.4% pids=[217257 233483 ]
+[00:25:24] step=18906048 success=47.1% pids=[217257 233483 ]
+[00:27:24] step=19506240 success=48.0% pids=[217257 233483 ]
+[00:29:24] step=20006400 success=48.0% pids=[217257 233483 ]
+[00:31:24] step=20606592 success=48.0% pids=[217257 233483 ]
+[00:33:24] step=21106752 success=48.3% pids=[217257 233483 ]
+[00:35:24] step=21706944 success=48.7% pids=[217257 233483 ]
+[00:37:24] step=22207104 success=48.4% pids=[217257 233483 ]
+[00:39:25] step=22807296 success=48.8% pids=[217257 233483 ]
+[00:41:25] step=23307456 success=48.7% pids=[217257 233483 ]
+[00:43:25] step=23807616 success=48.9% pids=[217257 233483 ]
+[00:45:25] step=24407808 success=48.9% pids=[217257 233483 ]
+[00:47:25] step=24907968 success=49.0% pids=[217257 233483 ]
+[00:49:25] step=25508160 success=49.5% pids=[217257 233483 ]
+[00:51:25] step=26008320 success=49.6% pids=[217257 233483 ]
+[00:53:25] step=26608512 success=49.5% pids=[217257 233483 ]
+[00:55:25] step=27108672 success=50.2% pids=[217257 233483 ]
+[00:57:25] step=27708864 success=50.1% pids=[217257 233483 ]
+[00:59:25] step=28209024 success=50.0% pids=[217257 233483 ]
+[01:01:25] step=28809216 success=50.1% pids=[217257 233483 ]
+[01:03:25] step=29309376 success=50.4% pids=[217257 233483 ]
+[01:05:25] step=29809536 success=50.3% pids=[217257 233483 ]
+[01:07:25] step=30409728 success=50.8% pids=[217257 233483 ]
+[01:09:26] step=30909888 success=50.8% pids=[217257 233483 ]
+[01:11:26] step=31510080 success=50.7% pids=[217257 233483 ]
+[01:13:26] step=32010240 success=51.1% pids=[217257 233483 ]
+[01:15:26] step=32510400 success=51.3% pids=[217257 233483 ]
+[01:17:26] step=33110592 success=51.0% pids=[217257 233483 ]
+[01:19:26] step=33610752 success=51.5% pids=[217257 233483 ]
+[01:21:26] step=34210944 success=51.7% pids=[217257 233483 ]
+[01:23:26] step=34711104 success=51.5% pids=[217257 233483 ]
+[01:25:26] step=35311296 success=52.1% pids=[217257 233483 ]
+[01:27:26] step=35811456 success=51.8% pids=[217257 233483 ]
+[01:29:26] step=36311616 success=52.1% pids=[217257 233483 ]
+[01:31:26] step=36911808 success=52.4% pids=[217257 233483 ]
+[01:33:26] step=37411968 success=52.0% pids=[217257 233483 ]
+[01:35:26] step=38012160 success=52.3% pids=[217257 233483 ]
+[01:37:26] step=38512320 success=52.5% pids=[217257 233483 ]
+[01:39:27] step=39112512 success=52.5% pids=[217257 233483 ]
+[01:41:27] step=39612672 success=52.6% pids=[217257 233483 ]
+[16:45:33] === Watchdog gestartet (PID 252974) ===
+[16:47:33] step=900288 success=0.1% pids=[248321 248371 ]
+[16:49:33] step=1400448 success=0.1% pids=[248321 248371 ]
+[16:51:33] step=1900608 success=0.2% pids=[248321 248371 ]
+[16:53:33] step=2400768 success=0.2% pids=[248321 248371 ]
+[16:55:34] step=2900928 success=0.3% pids=[248321 248371 ]
+[16:57:34] step=3301056 success=0.2% pids=[keine]
+[16:57:34] Training nicht aktiv. Warte...
+[17:04:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:06:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:08:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:10:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:12:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:14:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:16:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:18:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:20:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:22:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:24:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:26:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:28:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:30:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:32:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:34:34] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:36:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:38:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:40:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:42:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:44:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:46:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:48:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:50:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:52:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:54:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:56:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[17:58:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:00:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:02:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:04:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:06:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:08:35] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:10:36] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:12:36] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:14:36] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:16:36] step=3301056 success=0.2% pids=[254455 254458 254459 ]
+[18:18:36] step=3301056 success=0.2% pids=[keine]
+[18:18:36] Training nicht aktiv. Warte...
+[18:25:36] step=3301056 success=0.2% pids=[266990 266992 266993 ]
+[18:27:36] Kein Fortschritt im Log.
+[18:29:36] step=500160 success=0.0% pids=[271457 271459 271508 ]
+[18:31:36] step=1000320 success=0.1% pids=[271457 271459 271508 ]
+[18:33:36] step=1600512 success=0.1% pids=[271457 271459 271508 ]
+[18:35:36] step=2100672 success=0.2% pids=[271457 271459 271508 ]
+[18:37:36] step=2600832 success=0.2% pids=[271457 271459 271508 ]
+[18:39:36] step=3100992 success=0.3% pids=[271457 271459 271508 ]
+[18:41:36] step=3601152 success=0.4% pids=[271457 271459 271508 ]
+[18:43:36] step=4101312 success=0.6% pids=[271457 271459 271508 ]
+[18:45:36] step=4601472 success=0.9% pids=[271457 271459 271508 ]
+[18:47:36] step=5201664 success=1.4% pids=[271457 271459 271508 ]
+[18:49:36] step=5601792 success=2.1% pids=[271457 271459 271508 ]
+[18:51:37] step=6201984 success=2.9% pids=[271457 271459 271508 ]
+[18:53:37] step=6702144 success=4.0% pids=[271457 271459 271508 ]
+[18:55:37] step=7202304 success=4.5% pids=[271457 271459 271508 ]
+[18:57:37] step=7702464 success=5.1% pids=[271457 271459 271508 ]
+[18:59:37] step=8202624 success=6.5% pids=[271457 271459 271508 ]
+[19:01:37] step=8702784 success=7.8% pids=[271457 271459 271508 ]
+[19:03:37] step=9202944 success=11.2% pids=[271457 271459 271508 ]
+[19:05:37] step=9703104 success=13.1% pids=[271457 271459 271508 ]
+[19:07:37] step=10203264 success=15.2% pids=[271457 271459 271508 ]
+[19:09:37] step=10703424 success=19.5% pids=[271457 271459 271508 ]
+[19:11:37] step=11203584 success=23.6% pids=[271457 271459 271508 ]
+[19:13:37] step=11603712 success=25.4% pids=[271457 271459 271508 ]
+[19:15:37] step=12103872 success=28.1% pids=[271457 271459 271508 ]
+[19:17:37] step=12604032 success=32.3% pids=[271457 271459 271508 ]
+[19:19:37] step=13104192 success=36.0% pids=[271457 271459 271508 ]
+[19:21:37] step=13604352 success=38.2% pids=[271457 271459 271508 ]
+[19:23:37] step=14104512 success=41.5% pids=[271457 271459 271508 ]
+[19:25:38] step=14604672 success=48.3% pids=[271457 271459 271508 ]
+[19:27:38] step=15004800 success=50.7% pids=[271457 271459 271508 ]
+[19:29:38] step=15504960 success=53.3% pids=[271457 271459 271508 ]
+[19:31:38] step=16005120 success=56.6% pids=[271457 271459 271508 ]
+[19:33:38] step=16505280 success=59.1% pids=[271457 271459 271508 ]
+[19:35:38] step=17005440 success=61.8% pids=[271457 271459 271508 ]
+[19:37:38] step=17405568 success=62.7% pids=[271457 271459 271508 ]
+[19:39:38] step=17905728 success=65.4% pids=[271457 271459 271508 ]
+[19:41:38] step=18405888 success=66.7% pids=[271457 271459 271508 ]
+[19:43:38] step=18906048 success=68.5% pids=[271457 271459 271508 ]
+[19:45:38] step=19306176 success=69.1% pids=[271457 271459 271508 ]
+[19:47:38] step=19806336 success=70.1% pids=[271457 271459 271508 ]
+[19:49:38] step=500160 success=50.9% pids=[271457 271459 279654 ]
+[19:51:38] step=1400448 success=54.0% pids=[271457 271459 279654 ]
+[19:53:38] step=2200704 success=56.3% pids=[271457 271459 279654 ]
+[19:55:38] step=3100992 success=53.9% pids=[271457 271459 279654 ]
+[19:57:39] step=3901248 success=56.6% pids=[271457 271459 279654 ]
+[19:59:39] step=4801536 success=57.9% pids=[271457 271459 279654 ]
+[20:01:39] step=5601792 success=55.3% pids=[271457 271459 279654 ]
+[20:03:39] step=6502080 success=58.2% pids=[271457 271459 279654 ]
+[20:05:39] step=7302336 success=57.6% pids=[271457 271459 279654 ]
+[20:07:39] step=8202624 success=58.8% pids=[271457 271459 279654 ]
+[20:09:39] step=9002880 success=58.4% pids=[271457 271459 279654 ]
+[20:11:39] step=9803136 success=58.8% pids=[271457 271459 279654 ]
+[20:13:39] step=10603392 success=60.5% pids=[271457 271459 279654 ]
+[20:15:39] step=11403648 success=58.2% pids=[271457 271459 279654 ]
+[20:17:39] step=12203904 success=59.8% pids=[271457 271459 279654 ]
+[20:19:39] step=13004160 success=60.0% pids=[271457 271459 279654 ]
+[20:21:39] step=13704384 success=62.8% pids=[271457 271459 279654 ]
+[20:23:39] step=14504640 success=59.3% pids=[271457 271459 279654 ]
+[20:25:39] step=15204864 success=62.8% pids=[271457 271459 279654 ]
+[20:27:39] step=16005120 success=62.8% pids=[271457 271459 279654 ]
+[20:29:40] step=16605312 success=64.0% pids=[271457 271459 279654 ]
+[20:31:40] step=17305536 success=65.4% pids=[271457 271459 279654 ]
+[20:33:40] step=18005760 success=66.8% pids=[271457 271459 279654 ]
+[20:35:40] step=18605952 success=66.4% pids=[271457 271459 279654 ]
+[20:37:40] step=19306176 success=66.9% pids=[271457 271459 279654 ]
+[20:39:40] step=19906368 success=68.1% pids=[271457 271459 279654 ]
+[20:41:40] step=20506560 success=69.1% pids=[271457 271459 279654 ]
+[20:43:40] step=21106752 success=69.7% pids=[271457 271459 279654 ]
+[20:45:40] step=21706944 success=70.5% pids=[271457 271459 279654 ]
+[20:47:40] step=22307136 success=70.0% pids=[271457 271459 279654 ]
+[20:49:40] step=22907328 success=70.9% pids=[271457 271459 279654 ]
+[20:51:40] step=23507520 success=71.9% pids=[271457 271459 279654 ]
+[20:53:40] step=24107712 success=72.3% pids=[271457 271459 279654 ]
+[20:55:40] step=24707904 success=72.8% pids=[271457 271459 279654 ]
+[20:57:40] step=200064 success=53.9% pids=[271457 271459 286995 ]
+[20:59:41] step=800256 success=59.3% pids=[271457 271459 286995 ]
+[21:01:41] step=1300416 success=59.8% pids=[271457 271459 286995 ]
+[21:03:41] step=1800576 success=61.1% pids=[271457 271459 286995 ]
+[21:05:41] step=2400768 success=61.5% pids=[271457 271459 286995 ]
+[21:07:41] step=2900928 success=61.1% pids=[271457 271459 286995 ]
+[21:09:41] step=3401088 success=61.6% pids=[271457 271459 286995 ]
+[21:11:41] step=4001280 success=61.5% pids=[271457 271459 286995 ]
+[21:13:41] step=4501440 success=62.1% pids=[271457 271459 286995 ]
+[21:15:41] step=5001600 success=62.2% pids=[271457 271459 286995 ]
+[21:17:41] step=5601792 success=62.5% pids=[271457 271459 286995 ]
+[21:19:41] step=6101952 success=62.1% pids=[271457 271459 286995 ]
+[21:21:41] step=6602112 success=62.9% pids=[271457 271459 286995 ]
+[21:23:41] step=7102272 success=63.0% pids=[271457 271459 286995 ]
+[21:25:41] step=7702464 success=62.2% pids=[271457 271459 286995 ]
+[21:27:41] step=8202624 success=63.0% pids=[271457 271459 286995 ]
+[21:29:41] step=8702784 success=63.5% pids=[271457 271459 286995 ]
+[21:31:42] step=9302976 success=63.3% pids=[271457 271459 286995 ]
+[21:33:42] step=9803136 success=63.5% pids=[271457 271459 286995 ]
+[21:35:42] step=10303296 success=63.2% pids=[271457 271459 286995 ]
+[21:37:42] step=10803456 success=63.7% pids=[271457 271459 286995 ]
+[21:39:42] step=11403648 success=64.0% pids=[271457 271459 286995 ]
+[21:41:42] step=11903808 success=63.8% pids=[271457 271459 286995 ]
+[21:43:42] step=12403968 success=63.9% pids=[271457 271459 286995 ]
+[21:45:42] step=12904128 success=64.1% pids=[271457 271459 286995 ]
+[21:47:42] step=13504320 success=64.3% pids=[271457 271459 286995 ]
+[21:49:42] step=14004480 success=64.4% pids=[271457 271459 286995 ]
+[21:51:42] step=14504640 success=64.5% pids=[271457 271459 286995 ]
+[21:53:42] step=15104832 success=64.5% pids=[271457 271459 286995 ]
+[21:55:42] step=15604992 success=64.6% pids=[271457 271459 286995 ]
+[21:57:42] step=16105152 success=64.6% pids=[271457 271459 286995 ]
+[21:59:42] step=16705344 success=65.0% pids=[271457 271459 286995 ]
+[22:01:42] step=17205504 success=65.2% pids=[271457 271459 286995 ]
+[22:03:43] step=17705664 success=65.2% pids=[271457 271459 286995 ]
+[22:05:43] step=18205824 success=65.2% pids=[271457 271459 286995 ]
+[22:07:43] step=18705984 success=65.4% pids=[271457 271459 286995 ]
+[22:09:43] step=19206144 success=65.5% pids=[271457 271459 286995 ]
+[22:11:43] step=19706304 success=65.7% pids=[271457 271459 286995 ]
+[22:13:43] step=20306496 success=65.6% pids=[271457 271459 286995 ]
+[22:15:43] step=20806656 success=65.7% pids=[271457 271459 286995 ]
+[22:17:43] step=21306816 success=65.8% pids=[271457 271459 286995 ]
+[22:19:43] step=21907008 success=65.9% pids=[271457 271459 286995 ]
+[22:21:43] step=22407168 success=66.1% pids=[271457 271459 286995 ]
+[22:23:43] step=22907328 success=65.8% pids=[271457 271459 286995 ]
+[22:25:43] step=23407488 success=66.3% pids=[271457 271459 286995 ]
+[22:27:43] step=24007680 success=66.3% pids=[271457 271459 286995 ]
+[22:29:43] step=24507840 success=66.6% pids=[271457 271459 286995 ]
+[22:31:43] step=25008000 success=66.3% pids=[271457 271459 286995 ]
+[22:33:44] step=25508160 success=66.2% pids=[271457 271459 286995 ]
+[22:35:44] step=26108352 success=66.9% pids=[271457 271459 286995 ]
+[22:37:44] step=26608512 success=67.1% pids=[271457 271459 286995 ]
+[22:39:44] step=27108672 success=67.2% pids=[271457 271459 286995 ]
+[22:41:44] step=27708864 success=66.9% pids=[271457 271459 286995 ]
+[22:43:44] step=28209024 success=67.3% pids=[271457 271459 286995 ]
+[22:45:44] step=28709184 success=67.2% pids=[271457 271459 286995 ]
+[22:47:44] step=29309376 success=67.0% pids=[271457 271459 286995 ]
+[22:49:44] step=29809536 success=67.0% pids=[271457 271459 286995 ]
+[22:51:44] step=30309696 success=67.3% pids=[271457 271459 286995 ]
+[22:53:44] step=30809856 success=67.3% pids=[271457 271459 286995 ]
+[22:55:44] step=31410048 success=67.9% pids=[271457 271459 286995 ]
+[22:57:44] step=31910208 success=67.7% pids=[271457 271459 286995 ]
+[22:59:44] step=32410368 success=68.1% pids=[271457 271459 286995 ]
+[23:01:44] step=33010560 success=68.0% pids=[271457 271459 286995 ]
+[23:03:45] step=33510720 success=67.4% pids=[271457 271459 286995 ]
+[23:05:45] step=34010880 success=67.8% pids=[271457 271459 286995 ]
+[23:07:45] step=34611072 success=68.1% pids=[271457 271459 286995 ]
+[23:09:45] step=35111232 success=68.1% pids=[271457 271459 286995 ]
+[23:11:45] step=35611392 success=68.2% pids=[271457 271459 286995 ]
+[23:13:45] step=36111552 success=68.7% pids=[271457 271459 286995 ]
+[23:15:45] step=36711744 success=68.7% pids=[271457 271459 286995 ]
+[23:17:45] step=37211904 success=68.5% pids=[271457 271459 286995 ]
+[23:19:45] step=37712064 success=68.6% pids=[271457 271459 286995 ]
+[23:21:45] step=38212224 success=68.7% pids=[271457 271459 286995 ]
+[23:23:45] step=38812416 success=68.6% pids=[271457 271459 286995 ]
+[23:25:45] step=39312576 success=68.9% pids=[271457 271459 286995 ]
+[23:27:45] step=39812736 success=68.9% pids=[271457 271459 286995 ]
+[23:30:43] === Watchdog gestartet (PID 300629) ===
+[23:32:43] Kein Fortschritt im Log.
+[23:34:43] Kein Fortschritt im Log.
+[23:36:43] Kein Fortschritt im Log.
+[23:38:43] Kein Fortschritt im Log.
+[23:40:43] Kein Fortschritt im Log.
+[23:42:43] Kein Fortschritt im Log.
+[23:44:43] Kein Fortschritt im Log.
+[23:46:43] Kein Fortschritt im Log.
+[23:48:43] Kein Fortschritt im Log.
+[23:50:43] Kein Fortschritt im Log.
+[23:52:43] Kein Fortschritt im Log.
+[23:54:43] Kein Fortschritt im Log.
+[23:56:43] Kein Fortschritt im Log.
+[23:58:43] Kein Fortschritt im Log.
+[00:00:43] Kein Fortschritt im Log.
+[00:02:43] Kein Fortschritt im Log.
+[00:04:43] Kein Fortschritt im Log.
+[00:06:43] Kein Fortschritt im Log.
+[00:08:43] Kein Fortschritt im Log.
+[00:10:43] Kein Fortschritt im Log.
+[00:12:43] Kein Fortschritt im Log.
+[00:14:43] Kein Fortschritt im Log.
+[00:16:43] Kein Fortschritt im Log.
+[00:18:43] Kein Fortschritt im Log.
+[00:20:43] Kein Fortschritt im Log.
+[00:22:43] Kein Fortschritt im Log.
+[00:24:43] Kein Fortschritt im Log.
+[00:26:43] Kein Fortschritt im Log.
+[00:28:43] Kein Fortschritt im Log.
+[00:30:43] Kein Fortschritt im Log.
+[00:32:43] Kein Fortschritt im Log.
+[00:34:43] Kein Fortschritt im Log.
+[00:36:43] Kein Fortschritt im Log.
+[00:38:43] Kein Fortschritt im Log.
+[00:40:43] Kein Fortschritt im Log.
+[00:42:43] Kein Fortschritt im Log.
+[00:44:43] Kein Fortschritt im Log.
+[00:46:43] Kein Fortschritt im Log.
+[00:48:43] Kein Fortschritt im Log.
+[00:50:43] Kein Fortschritt im Log.
+[00:52:43] Kein Fortschritt im Log.
+[00:54:43] Kein Fortschritt im Log.
+[00:56:43] Kein Fortschritt im Log.
+[00:58:43] Kein Fortschritt im Log.
+[01:00:43] Kein Fortschritt im Log.
+[01:02:43] Kein Fortschritt im Log.
+[01:04:43] Kein Fortschritt im Log.
+[01:06:43] Kein Fortschritt im Log.
+[01:08:43] Kein Fortschritt im Log.
+[01:10:43] Kein Fortschritt im Log.
+[01:12:43] Kein Fortschritt im Log.
+[01:14:43] Kein Fortschritt im Log.
+[01:16:43] Kein Fortschritt im Log.
+[01:18:43] Kein Fortschritt im Log.
+[01:20:43] Kein Fortschritt im Log.
+[01:22:43] Kein Fortschritt im Log.
+[01:24:43] Kein Fortschritt im Log.
+[01:26:43] Kein Fortschritt im Log.
+[01:28:43] Kein Fortschritt im Log.
+[01:30:43] Kein Fortschritt im Log.
+[01:32:43] Kein Fortschritt im Log.
+[01:34:43] Kein Fortschritt im Log.
+[01:36:43] Kein Fortschritt im Log.
+[01:38:43] Kein Fortschritt im Log.
+[01:40:43] Kein Fortschritt im Log.
+[01:42:43] Kein Fortschritt im Log.
+[01:44:43] Kein Fortschritt im Log.
+[01:46:43] Kein Fortschritt im Log.
+[01:48:44] Kein Fortschritt im Log.
+[01:50:44] Kein Fortschritt im Log.
+[01:52:44] Kein Fortschritt im Log.
+[01:54:44] Kein Fortschritt im Log.
+[01:56:44] Kein Fortschritt im Log.
+[01:58:44] Kein Fortschritt im Log.
+[02:00:44] Kein Fortschritt im Log.
+[02:02:44] Kein Fortschritt im Log.
+[02:04:44] Kein Fortschritt im Log.
+[02:06:44] Kein Fortschritt im Log.
+[02:08:44] Kein Fortschritt im Log.
+[02:10:44] Kein Fortschritt im Log.
+[02:12:44] Kein Fortschritt im Log.
+[02:14:44] Kein Fortschritt im Log.
+[02:16:44] Kein Fortschritt im Log.
+[02:18:44] Kein Fortschritt im Log.
+[02:20:44] Kein Fortschritt im Log.
+[02:22:44] Kein Fortschritt im Log.
+[02:24:44] Kein Fortschritt im Log.
+[02:26:44] Kein Fortschritt im Log.
+[02:28:44] Kein Fortschritt im Log.
+[02:30:44] Kein Fortschritt im Log.
+[02:32:44] Kein Fortschritt im Log.
+[02:34:44] Kein Fortschritt im Log.
+[02:36:44] Kein Fortschritt im Log.
+[02:38:44] Kein Fortschritt im Log.
+[02:40:44] Kein Fortschritt im Log.
+[02:42:44] Kein Fortschritt im Log.
+[02:44:44] Kein Fortschritt im Log.
+[02:46:44] Kein Fortschritt im Log.
+[02:48:44] Kein Fortschritt im Log.
+[02:50:44] Kein Fortschritt im Log.
+[02:52:44] Kein Fortschritt im Log.
+[02:54:44] Kein Fortschritt im Log.
+[02:56:44] Kein Fortschritt im Log.
+[02:58:44] Kein Fortschritt im Log.
+[03:00:44] Kein Fortschritt im Log.
+[03:02:44] Kein Fortschritt im Log.
+[03:04:44] Kein Fortschritt im Log.
+[03:06:44] Kein Fortschritt im Log.
+[03:08:44] Kein Fortschritt im Log.
+[03:10:44] Kein Fortschritt im Log.
+[03:12:44] Kein Fortschritt im Log.
+[03:14:44] Kein Fortschritt im Log.
+[03:16:44] Kein Fortschritt im Log.
+[03:18:44] Kein Fortschritt im Log.
+[03:20:44] Kein Fortschritt im Log.
+[03:22:44] Kein Fortschritt im Log.
+[03:24:44] Kein Fortschritt im Log.
+[03:26:44] Kein Fortschritt im Log.
+[03:28:44] Kein Fortschritt im Log.
+[03:30:44] Kein Fortschritt im Log.
+[03:32:44] Kein Fortschritt im Log.
+[03:34:44] Kein Fortschritt im Log.
+[03:36:44] Kein Fortschritt im Log.
+[03:38:44] Kein Fortschritt im Log.
+[03:40:44] Kein Fortschritt im Log.
+[03:42:44] Kein Fortschritt im Log.
+[03:44:44] Kein Fortschritt im Log.
+[03:46:44] Kein Fortschritt im Log.
+[03:48:44] Kein Fortschritt im Log.
+[03:50:44] Kein Fortschritt im Log.
+[03:52:44] Kein Fortschritt im Log.
+[03:54:44] Kein Fortschritt im Log.
+[03:56:44] Kein Fortschritt im Log.
+[03:58:44] Kein Fortschritt im Log.
+[04:00:44] Kein Fortschritt im Log.
+[04:02:44] Kein Fortschritt im Log.
+[04:04:44] Kein Fortschritt im Log.
+[04:06:44] Kein Fortschritt im Log.
+[04:08:44] Kein Fortschritt im Log.
+[04:10:44] Kein Fortschritt im Log.
+[04:12:44] Kein Fortschritt im Log.
+[04:14:44] Kein Fortschritt im Log.
+[04:16:44] Kein Fortschritt im Log.
+[04:18:44] Kein Fortschritt im Log.
+[04:20:44] Kein Fortschritt im Log.
+[04:22:44] Kein Fortschritt im Log.
+[04:24:44] Kein Fortschritt im Log.
+[04:26:44] Kein Fortschritt im Log.
+[04:28:44] Kein Fortschritt im Log.
+[04:30:44] Kein Fortschritt im Log.
+[04:32:44] Kein Fortschritt im Log.
+[04:34:44] Kein Fortschritt im Log.
+[04:36:44] Kein Fortschritt im Log.
+[04:38:44] Kein Fortschritt im Log.
+[04:40:44] Kein Fortschritt im Log.
+[04:42:44] Kein Fortschritt im Log.
+[04:44:44] Kein Fortschritt im Log.
+[04:46:44] Kein Fortschritt im Log.
+[04:48:44] Kein Fortschritt im Log.
+[04:50:44] Kein Fortschritt im Log.
+[04:52:44] Kein Fortschritt im Log.
+[04:54:44] Kein Fortschritt im Log.
+[04:56:44] Kein Fortschritt im Log.
+[04:58:44] Kein Fortschritt im Log.
+[05:00:45] Kein Fortschritt im Log.
+[05:02:45] Kein Fortschritt im Log.
+[05:04:45] Kein Fortschritt im Log.
+[05:06:45] Kein Fortschritt im Log.
+[05:08:45] Kein Fortschritt im Log.
+[05:10:45] Kein Fortschritt im Log.
+[05:12:45] Kein Fortschritt im Log.
+[05:14:45] Kein Fortschritt im Log.
+[05:16:45] Kein Fortschritt im Log.
+[05:18:45] Kein Fortschritt im Log.
+[05:20:45] Kein Fortschritt im Log.
+[05:22:45] Kein Fortschritt im Log.
+[05:24:45] Kein Fortschritt im Log.
+[05:26:45] Kein Fortschritt im Log.
+[05:28:45] Kein Fortschritt im Log.
+[05:30:45] Kein Fortschritt im Log.
+[05:32:45] Kein Fortschritt im Log.
+[05:34:45] Kein Fortschritt im Log.
+[05:36:45] Kein Fortschritt im Log.
+[05:38:45] Kein Fortschritt im Log.
+[05:40:45] Kein Fortschritt im Log.
+[05:42:45] Kein Fortschritt im Log.
+[05:44:45] Kein Fortschritt im Log.
+[05:46:45] Kein Fortschritt im Log.
+[05:48:45] Kein Fortschritt im Log.
+[05:50:45] Kein Fortschritt im Log.
+[05:52:45] Kein Fortschritt im Log.
+[05:54:45] Kein Fortschritt im Log.
+[05:56:45] Kein Fortschritt im Log.
+[05:58:45] Kein Fortschritt im Log.
+[06:00:45] Kein Fortschritt im Log.
+[06:02:45] Kein Fortschritt im Log.
+[06:04:45] Kein Fortschritt im Log.
+[06:06:45] Kein Fortschritt im Log.
+[06:08:45] Kein Fortschritt im Log.
+[06:10:45] Kein Fortschritt im Log.
+[06:12:45] Kein Fortschritt im Log.
+[06:14:45] Kein Fortschritt im Log.
+[06:16:45] Kein Fortschritt im Log.
+[06:18:45] Kein Fortschritt im Log.
+[06:20:45] Kein Fortschritt im Log.
+[06:22:45] Kein Fortschritt im Log.
+[06:24:45] Kein Fortschritt im Log.
+[06:26:45] Kein Fortschritt im Log.
+[06:28:45] Kein Fortschritt im Log.
+[06:30:45] Kein Fortschritt im Log.
+[06:32:45] Kein Fortschritt im Log.
+[06:34:45] Kein Fortschritt im Log.
+[06:36:45] Kein Fortschritt im Log.
+[06:38:45] Kein Fortschritt im Log.
+[06:40:45] Kein Fortschritt im Log.
+[06:42:45] Kein Fortschritt im Log.
+[06:44:45] Kein Fortschritt im Log.
+[06:46:45] Kein Fortschritt im Log.
+[06:48:45] Kein Fortschritt im Log.
+[06:50:45] Kein Fortschritt im Log.
+[06:52:45] Kein Fortschritt im Log.
+[06:54:45] Kein Fortschritt im Log.
+[06:56:45] Kein Fortschritt im Log.
+[06:58:45] Kein Fortschritt im Log.
+[07:00:45] Kein Fortschritt im Log.
+[07:02:45] Kein Fortschritt im Log.
+[07:04:45] Kein Fortschritt im Log.
+[07:06:45] Kein Fortschritt im Log.
+[07:08:45] Kein Fortschritt im Log.
+[07:10:45] Kein Fortschritt im Log.
+[07:12:45] Kein Fortschritt im Log.
+[07:14:45] Kein Fortschritt im Log.
+[07:16:45] Kein Fortschritt im Log.
+[07:18:45] Kein Fortschritt im Log.
+[07:20:45] Kein Fortschritt im Log.
+[07:22:45] Kein Fortschritt im Log.
+[07:24:45] Kein Fortschritt im Log.
+[07:26:45] Kein Fortschritt im Log.
+[07:28:45] Kein Fortschritt im Log.
+[07:30:45] Kein Fortschritt im Log.
+[07:32:45] Kein Fortschritt im Log.
+[07:34:45] Kein Fortschritt im Log.
+[07:36:45] Kein Fortschritt im Log.
+[07:38:45] Kein Fortschritt im Log.
+[07:40:45] Kein Fortschritt im Log.
+[07:42:45] Kein Fortschritt im Log.
+[07:44:45] Kein Fortschritt im Log.
+[07:46:45] Kein Fortschritt im Log.
+[07:48:45] Kein Fortschritt im Log.
+[07:50:45] Kein Fortschritt im Log.
+[07:52:45] Kein Fortschritt im Log.
+[07:54:45] Kein Fortschritt im Log.
+[07:56:45] Kein Fortschritt im Log.
+[07:58:45] Kein Fortschritt im Log.
+[08:00:45] Kein Fortschritt im Log.
+[08:02:45] Kein Fortschritt im Log.
+[08:04:45] Kein Fortschritt im Log.
+[08:06:45] Kein Fortschritt im Log.
+[08:08:45] Kein Fortschritt im Log.
+[08:10:45] Kein Fortschritt im Log.
+[08:12:45] Kein Fortschritt im Log.
+[08:14:46] Kein Fortschritt im Log.
+[08:16:46] Kein Fortschritt im Log.
+[08:18:46] Kein Fortschritt im Log.
+[08:20:46] Kein Fortschritt im Log.
+[08:22:46] Kein Fortschritt im Log.
+[08:24:46] Kein Fortschritt im Log.
+[08:26:46] Kein Fortschritt im Log.
+[08:28:46] Kein Fortschritt im Log.
+[08:30:46] Kein Fortschritt im Log.
+[08:32:46] Kein Fortschritt im Log.
+[08:34:46] Kein Fortschritt im Log.
+[08:36:46] Kein Fortschritt im Log.
+[08:38:46] Kein Fortschritt im Log.
+[08:40:46] Kein Fortschritt im Log.
+[08:42:46] Kein Fortschritt im Log.
+[08:44:46] Kein Fortschritt im Log.
+[08:46:46] Kein Fortschritt im Log.
+[08:48:46] Kein Fortschritt im Log.
+[08:50:46] Kein Fortschritt im Log.
+[08:52:46] Kein Fortschritt im Log.
+[08:54:46] Kein Fortschritt im Log.
+[08:56:46] Kein Fortschritt im Log.
+[08:58:46] Kein Fortschritt im Log.
+[09:00:46] Kein Fortschritt im Log.
+[09:02:46] Kein Fortschritt im Log.
+[09:04:46] Kein Fortschritt im Log.
+[09:06:46] Kein Fortschritt im Log.
+[09:08:46] Kein Fortschritt im Log.
+[09:10:46] Kein Fortschritt im Log.
+[09:12:46] Kein Fortschritt im Log.
+[09:14:46] Kein Fortschritt im Log.
+[09:16:46] Kein Fortschritt im Log.
+[09:18:46] Kein Fortschritt im Log.
+[09:20:46] Kein Fortschritt im Log.
+[09:22:46] Kein Fortschritt im Log.
+[09:24:46] Kein Fortschritt im Log.
+[09:26:46] Kein Fortschritt im Log.
+[09:28:46] Kein Fortschritt im Log.
+[09:30:46] Kein Fortschritt im Log.
+[09:32:46] Kein Fortschritt im Log.
+[09:34:46] Kein Fortschritt im Log.
+[09:36:46] Kein Fortschritt im Log.
+[09:38:46] Kein Fortschritt im Log.
+[09:40:46] Kein Fortschritt im Log.
+[09:42:46] Kein Fortschritt im Log.
+[09:44:46] Kein Fortschritt im Log.
+[09:46:46] Kein Fortschritt im Log.
+[09:48:46] Kein Fortschritt im Log.
+[09:50:46] Kein Fortschritt im Log.
+[09:52:46] Kein Fortschritt im Log.
+[09:54:46] Kein Fortschritt im Log.
+[09:56:46] Kein Fortschritt im Log.
+[09:58:46] Kein Fortschritt im Log.
+[10:00:46] Kein Fortschritt im Log.
+[10:02:46] Kein Fortschritt im Log.
+[10:04:46] Kein Fortschritt im Log.
+[10:06:46] Kein Fortschritt im Log.
+[10:08:46] Kein Fortschritt im Log.
+[10:10:46] Kein Fortschritt im Log.
+[10:12:46] step=300096 success=0.1% pids=[310299 310300 310350 ]
+[10:14:46] step=700224 success=0.1% pids=[310299 310300 310350 ]
+[10:16:46] step=1100352 success=0.1% pids=[310299 310300 310350 ]
+[10:18:46] step=1500480 success=0.1% pids=[310299 310300 310350 ]
+[10:20:46] step=1800576 success=0.2% pids=[310299 310300 310350 ]
+[10:22:47] step=2200704 success=0.3% pids=[310299 310300 310350 ]
+[10:24:47] step=2600832 success=0.3% pids=[310299 310300 310350 ]
+[10:26:47] step=2900928 success=0.3% pids=[310299 310300 310350 ]
+[10:28:47] step=3301056 success=0.4% pids=[310299 310300 310350 ]
+[10:30:47] step=3701184 success=0.4% pids=[310299 310300 310350 ]
+[10:32:47] step=4101312 success=0.5% pids=[310299 310300 310350 ]
+[10:34:47] step=4401408 success=0.7% pids=[310299 310300 310350 ]
+[10:36:47] step=4801536 success=1.1% pids=[310299 310300 310350 ]
+[10:38:47] step=5101632 success=1.4% pids=[310299 310300 310350 ]
+[10:40:47] step=5501760 success=2.0% pids=[310299 310300 310350 ]
+[10:42:47] step=5801856 success=2.5% pids=[310299 310300 310350 ]
+[10:44:47] step=6101952 success=2.5% pids=[310299 310300 310350 ]
+[10:46:47] step=6302016 success=3.2% pids=[310299 310300 310350 ]
+[10:48:48] step=6602112 success=3.4% pids=[310299 310300 310350 ]
+[10:50:48] step=6902208 success=3.6% pids=[310299 310300 310350 ]
+[10:52:48] step=7202304 success=3.9% pids=[310299 310300 310350 ]
+[10:54:48] step=7502400 success=4.1% pids=[310299 310300 310350 ]
+[10:56:48] step=7802496 success=4.2% pids=[310299 310300 310350 ]
+[10:58:48] step=8002560 success=4.8% pids=[310299 310300 310350 ]
+[11:00:48] step=8402688 success=5.8% pids=[310299 310300 310350 ]
+[11:02:48] step=8702784 success=7.6% pids=[310299 310300 310350 ]
+[11:04:48] step=9102912 success=9.1% pids=[310299 310300 310350 ]
+[11:06:48] step=9403008 success=10.4% pids=[310299 310300 310350 ]
+[11:08:48] step=9703104 success=11.0% pids=[310299 310300 310350 ]
+[11:10:48] step=10103232 success=14.3% pids=[310299 310300 310350 ]
+[11:12:49] step=10403328 success=15.1% pids=[310299 310300 310350 ]
+[11:14:49] step=10803456 success=16.0% pids=[310299 310300 310350 ]
+[11:16:49] step=11103552 success=21.3% pids=[310299 310300 310350 ]
+[11:18:49] step=11503680 success=23.4% pids=[310299 310300 310350 ]
+[11:20:49] step=11803776 success=26.6% pids=[310299 310300 310350 ]
+[11:22:49] step=12103872 success=29.2% pids=[310299 310300 310350 ]
+[11:24:49] step=12504000 success=33.5% pids=[310299 310300 310350 ]
+[11:26:49] step=12804096 success=35.5% pids=[310299 310300 310350 ]
+[11:28:49] step=13104192 success=37.7% pids=[310299 310300 310350 ]
+[11:30:49] step=13504320 success=40.5% pids=[310299 310300 310350 ]
+[11:32:49] step=13804416 success=44.1% pids=[310299 310300 310350 ]
+[11:34:49] step=14204544 success=45.4% pids=[310299 310300 310350 ]
+[11:36:49] step=14504640 success=47.9% pids=[310299 310300 310350 ]
+[11:38:50] step=14804736 success=50.0% pids=[310299 310300 310350 ]
+[11:40:50] step=15104832 success=52.0% pids=[310299 310300 310350 ]
+[11:42:50] step=15404928 success=54.5% pids=[310299 310300 310350 ]
+[11:44:50] step=15705024 success=55.7% pids=[keine]
+[11:44:50] Training nicht aktiv. Warte...
+[11:51:50] step=500160 success=0.1% pids=[320828 320829 320879 ]
+[11:51:50] EINGRIFF: KOLLAPS: 54.5% -> 0.1%
+[11:51:53] Training gestoppt.
+[11:51:58] Starte Training neu...
+[11:51:58] Training gestartet (PID 330043)
+[11:51:58] === Baue Rust-Modul (maturin build --release) ===
+🔗 Found pyo3 bindings
+🐍 Found CPython 3.12 at /usr/bin/python3
+    Finished `release` profile [optimized] target(s) in 0.03s
+📦 Built wheel for CPython 3.12 to /home/sefo/devel/spinoza/target/wheels/spinoza-0.1.0-cp312-cp312-manylinux_2_34_x86_64.whl
+Defaulting to user installation because normal site-packages is not writeable
+Processing ./target/wheels/spinoza-0.1.0-cp312-cp312-linux_x86_64.whl
+Installing collected packages: spinoza
+  Attempting uninstall: spinoza
+    Found existing installation: spinoza 0.1.0
+    Uninstalling spinoza-0.1.0:
+      Successfully uninstalled spinoza-0.1.0
+Successfully installed spinoza-0.1.0
+spinoza OK
+[11:52:00] 
+[11:52:00] === Stage 1: Kein Spin | 20M Steps | lr=3e-4→1e-5 (decay) | ent=0.01 ===
+=== spinoza RL Training ===
+  n_envs=64, difficulty=1
+  total_timesteps=20000000
+  policy=MLP [512, 512]
+
+  lr=0.0003 → 1e-05 (linear decay)
+  model params: 622,607
+
+  step=  100032 | eps/s=  3108 | success=  0.0% | miss= 99.9% | elapsed= 32.2s
+  step=  200064 | eps/s=  2882 | success=  0.0% | miss= 99.2% | elapsed= 69.4s
+  step=  300096 | eps/s=  2861 | success=  0.1% | miss= 96.7% | elapsed=104.9s
+[11:53:58] step=300096 success=0.1% pids=[330043 330096 ]
+  step=  400128 | eps/s=  2771 | success=  0.0% | miss= 95.3% | elapsed=144.4s
+  step=  500160 | eps/s=  2665 | success=  0.1% | miss= 94.8% | elapsed=187.7s
+  step=  600192 | eps/s=  2672 | success=  0.1% | miss= 94.6% | elapsed=224.6s
+[11:55:58] step=600192 success=0.1% pids=[330043 330096 ]
+  step=  700224 | eps/s=  2717 | success=  0.1% | miss= 94.4% | elapsed=257.7s
+  step=  800256 | eps/s=  2732 | success=  0.1% | miss= 94.2% | elapsed=292.9s
+  step=  900288 | eps/s=  2760 | success=  0.1% | miss= 93.8% | elapsed=326.2s
+[11:57:58] step=900288 success=0.1% pids=[330043 330096 ]
+  step= 1000320 | eps/s=  2760 | success=  0.1% | miss= 93.4% | elapsed=362.4s
+  step= 1100352 | eps/s=  2765 | success=  0.1% | miss= 93.1% | elapsed=398.0s
+  step= 1200384 | eps/s=  2785 | success=  0.1% | miss= 92.8% | elapsed=431.0s
+Terminated
+[11:59:58] step=1200384 success=0.1% pids=[keine]
+[11:59:58] Training nicht aktiv. Warte...
+[12:06:58] step=1200384 success=0.1% pids=[keine]
+[12:06:58] Training nicht aktiv. Warte...
+[12:13:58] step=1200384 success=0.1% pids=[337041 ]
+[12:15:58] step=1200384 success=0.1% pids=[337041 ]
+[12:17:58] step=1200384 success=0.1% pids=[337041 ]
+[12:19:59] step=1200384 success=0.1% pids=[337041 ]
+[12:21:59] step=1200384 success=0.1% pids=[337041 ]
+[12:23:59] step=1200384 success=0.1% pids=[337041 ]
+[12:25:59] step=1200384 success=0.1% pids=[337041 ]
+[12:27:59] step=1200384 success=0.1% pids=[337041 ]
+[12:29:59] step=1200384 success=0.1% pids=[337041 ]
+[12:31:59] step=1200384 success=0.1% pids=[337041 ]
+[12:33:59] step=1200384 success=0.1% pids=[337041 ]
+[12:35:59] step=1200384 success=0.1% pids=[337041 ]
+[12:37:59] step=1200384 success=0.1% pids=[337041 ]
+[12:39:59] step=1200384 success=0.1% pids=[337041 ]
+[12:41:59] step=1200384 success=0.1% pids=[337041 ]
+[12:43:59] step=1200384 success=0.1% pids=[337041 ]
+[12:46:00] step=1200384 success=0.1% pids=[337041 ]
+[12:48:00] step=1200384 success=0.1% pids=[337041 ]
+[12:50:00] step=1200384 success=0.1% pids=[337041 ]
+[12:52:00] step=1200384 success=0.1% pids=[337041 ]
+[12:54:00] step=1200384 success=0.1% pids=[337041 ]
+[12:56:00] step=1200384 success=0.1% pids=[337041 ]
+[12:58:00] step=1200384 success=0.1% pids=[337041 ]
+[13:00:00] step=1200384 success=0.1% pids=[337041 ]
+[13:02:00] step=1200384 success=0.1% pids=[337041 ]
+[13:04:00] step=1200384 success=0.1% pids=[337041 ]
+[13:06:00] step=1200384 success=0.1% pids=[337041 ]
+[13:08:00] step=1200384 success=0.1% pids=[337041 ]
+[13:10:00] step=1200384 success=0.1% pids=[337041 ]
+[13:12:01] step=1200384 success=0.1% pids=[keine]
+[13:12:01] Training nicht aktiv. Warte...
+[13:19:01] step=1200384 success=0.1% pids=[343671 ]
+[13:21:01] step=1200384 success=0.1% pids=[343671 ]
+[13:23:01] step=1200384 success=0.1% pids=[343671 ]
+[13:25:01] step=1200384 success=0.1% pids=[343671 ]
+[13:27:01] step=1200384 success=0.1% pids=[343671 ]
+[13:29:01] step=1200384 success=0.1% pids=[343671 ]
+[13:31:01] step=1200384 success=0.1% pids=[343671 ]
+[13:33:01] step=1200384 success=0.1% pids=[343671 ]
+[13:35:01] step=1200384 success=0.1% pids=[343671 ]
+[13:37:01] step=1200384 success=0.1% pids=[343671 ]
+[13:39:01] step=1200384 success=0.1% pids=[343671 ]
+[13:41:01] step=1200384 success=0.1% pids=[343671 ]
+[13:43:02] step=1200384 success=0.1% pids=[343671 ]
+[13:45:02] step=1200384 success=0.1% pids=[343671 ]
+[13:47:02] step=1200384 success=0.1% pids=[343671 ]
+[13:49:02] step=1200384 success=0.1% pids=[343671 ]
+[13:51:02] step=1200384 success=0.1% pids=[343671 ]
+[13:53:02] step=1200384 success=0.1% pids=[343671 ]
+[13:55:02] step=1200384 success=0.1% pids=[343671 ]
+[13:57:02] step=1200384 success=0.1% pids=[343671 ]
+[13:59:02] step=1200384 success=0.1% pids=[343671 ]
+[14:01:02] step=1200384 success=0.1% pids=[343671 ]
+[14:03:02] step=1200384 success=0.1% pids=[343671 ]
+[14:05:02] step=1200384 success=0.1% pids=[343671 ]
+[14:07:03] step=1200384 success=0.1% pids=[343671 ]
+[14:09:03] step=1200384 success=0.1% pids=[343671 ]
+[14:11:03] step=1200384 success=0.1% pids=[343671 ]
+[14:13:03] step=1200384 success=0.1% pids=[343671 ]
+[14:15:03] step=1200384 success=0.1% pids=[343671 ]
+[14:17:03] step=1200384 success=0.1% pids=[343671 ]
+[14:19:03] step=1200384 success=0.1% pids=[343671 ]
+[14:21:03] step=1200384 success=0.1% pids=[343671 ]
+[14:23:03] step=1200384 success=0.1% pids=[343671 ]
+[14:25:03] step=1200384 success=0.1% pids=[343671 ]
+[14:27:03] step=1200384 success=0.1% pids=[343671 ]
+[14:29:03] step=1200384 success=0.1% pids=[343671 ]
+[14:31:04] step=1200384 success=0.1% pids=[343671 ]
+[14:33:04] step=1200384 success=0.1% pids=[343671 ]
+[14:35:04] step=1200384 success=0.1% pids=[343671 ]
+[14:37:04] step=1200384 success=0.1% pids=[343671 ]
+[14:39:04] step=1200384 success=0.1% pids=[343671 ]
+[14:41:04] step=1200384 success=0.1% pids=[343671 ]
+[14:43:04] step=1200384 success=0.1% pids=[343671 ]
+[14:45:04] step=1200384 success=0.1% pids=[343671 ]
+[14:47:04] step=1200384 success=0.1% pids=[343671 ]
+[14:49:04] step=1200384 success=0.1% pids=[343671 ]
+[14:51:04] step=1200384 success=0.1% pids=[343671 ]
+[14:53:04] step=1200384 success=0.1% pids=[343671 ]
+[14:55:05] step=1200384 success=0.1% pids=[343671 ]
+[14:57:05] step=1200384 success=0.1% pids=[343671 ]
+[14:59:05] step=1200384 success=0.1% pids=[343671 ]
+[15:01:05] step=1200384 success=0.1% pids=[343671 ]
+[15:03:05] step=1200384 success=0.1% pids=[343671 ]
+[15:05:05] step=1200384 success=0.1% pids=[343671 ]
+[15:07:05] step=1200384 success=0.1% pids=[343671 ]
+[15:09:05] step=1200384 success=0.1% pids=[343671 ]
+[15:11:05] step=1200384 success=0.1% pids=[343671 ]
+[15:13:05] step=1200384 success=0.1% pids=[343671 ]
+[15:15:05] step=1200384 success=0.1% pids=[keine]
+[15:15:05] Training nicht aktiv. Warte...
+[15:22:05] step=1200384 success=0.1% pids=[keine]
+[15:22:05] Training nicht aktiv. Warte...
+[15:29:05] step=1200384 success=0.1% pids=[keine]
+[15:29:05] Training nicht aktiv. Warte...
+[15:36:05] step=1200384 success=0.1% pids=[keine]
+[15:36:05] Training nicht aktiv. Warte...
+[15:43:06] step=1200384 success=0.1% pids=[keine]
+[15:43:06] Training nicht aktiv. Warte...
+[15:50:06] step=1200384 success=0.1% pids=[keine]
+[15:50:06] Training nicht aktiv. Warte...
+[15:57:06] step=1200384 success=0.1% pids=[keine]
+[15:57:06] Training nicht aktiv. Warte...
+[16:04:06] step=1200384 success=0.1% pids=[keine]
+[16:04:06] Training nicht aktiv. Warte...
+[16:11:06] step=1200384 success=0.1% pids=[keine]
+[16:11:06] Training nicht aktiv. Warte...
+[16:18:06] step=1200384 success=0.1% pids=[keine]
+[16:18:06] Training nicht aktiv. Warte...
+[16:25:06] step=1200384 success=0.1% pids=[keine]
+[16:25:06] Training nicht aktiv. Warte...
+[16:32:06] step=1200384 success=0.1% pids=[keine]
+[16:32:06] Training nicht aktiv. Warte...
+[16:39:06] step=1200384 success=0.1% pids=[keine]
+[16:39:06] Training nicht aktiv. Warte...
+[16:46:06] step=1200384 success=0.1% pids=[keine]
+[16:46:06] Training nicht aktiv. Warte...
+[16:53:06] step=1200384 success=0.1% pids=[keine]
+[16:53:06] Training nicht aktiv. Warte...
+[17:00:06] step=1200384 success=0.1% pids=[keine]
+[17:00:06] Training nicht aktiv. Warte...
+[17:07:06] step=1200384 success=0.1% pids=[keine]
+[17:07:06] Training nicht aktiv. Warte...
+[17:14:06] step=1200384 success=0.1% pids=[keine]
+[17:14:06] Training nicht aktiv. Warte...

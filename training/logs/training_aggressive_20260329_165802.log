@@ -1,0 +1,217 @@
+=== spinoza RL Training ===
+  n_envs=64, difficulty=1
+  total_timesteps=20000000
+  policy=MLP [512, 512]
+
+  lr=0.0003 → 1e-05 (linear decay)
+  model params: 622,607
+
+  step=  100032 | eps/s=  4364 | success=  0.0% | miss= 99.9% | elapsed= 22.9s
+  step=  200064 | eps/s=  4332 | success=  0.0% | miss= 99.6% | elapsed= 46.2s
+  step=  300096 | eps/s=  4328 | success=  0.1% | miss= 97.7% | elapsed= 69.3s
+  step=  400128 | eps/s=  4314 | success=  0.1% | miss= 96.6% | elapsed= 92.8s
+  step=  500160 | eps/s=  4330 | success=  0.1% | miss= 96.3% | elapsed=115.5s
+  step=  600192 | eps/s=  4346 | success=  0.1% | miss= 96.2% | elapsed=138.1s
+  step=  700224 | eps/s=  4351 | success=  0.1% | miss= 96.2% | elapsed=160.9s
+  step=  800256 | eps/s=  4350 | success=  0.1% | miss= 95.8% | elapsed=184.0s
+  step=  900288 | eps/s=  4354 | success=  0.1% | miss= 95.6% | elapsed=206.8s
+  step= 1000320 | eps/s=  4312 | success=  0.1% | miss= 95.3% | elapsed=232.0s
+  step= 1100352 | eps/s=  4311 | success=  0.1% | miss= 95.3% | elapsed=255.2s
+  step= 1200384 | eps/s=  4315 | success=  0.1% | miss= 94.9% | elapsed=278.2s
+  step= 1300416 | eps/s=  4309 | success=  0.1% | miss= 94.8% | elapsed=301.8s
+  step= 1400448 | eps/s=  4305 | success=  0.1% | miss= 94.4% | elapsed=325.3s
+  step= 1500480 | eps/s=  4305 | success=  0.1% | miss= 94.4% | elapsed=348.5s
+  step= 1600512 | eps/s=  4308 | success=  0.1% | miss= 94.2% | elapsed=371.5s
+  step= 1700544 | eps/s=  4305 | success=  0.1% | miss= 93.8% | elapsed=395.0s
+  step= 1800576 | eps/s=  4308 | success=  0.1% | miss= 93.7% | elapsed=418.0s
+  step= 1900608 | eps/s=  4283 | success=  0.2% | miss= 93.3% | elapsed=443.7s
+  step= 2000640 | eps/s=  4281 | success=  0.2% | miss= 93.1% | elapsed=467.3s
+  step= 2100672 | eps/s=  4285 | success=  0.2% | miss= 93.0% | elapsed=490.3s
+  step= 2200704 | eps/s=  4283 | success=  0.2% | miss= 92.6% | elapsed=513.8s
+  step= 2300736 | eps/s=  4283 | success=  0.2% | miss= 92.3% | elapsed=537.2s
+  step= 2400768 | eps/s=  4284 | success=  0.2% | miss= 92.0% | elapsed=560.5s
+  step= 2500800 | eps/s=  4287 | success=  0.2% | miss= 91.8% | elapsed=583.3s
+  step= 2600832 | eps/s=  4287 | success=  0.2% | miss= 91.8% | elapsed=606.6s
+  step= 2700864 | eps/s=  4287 | success=  0.2% | miss= 91.2% | elapsed=630.0s
+  step= 2800896 | eps/s=  4286 | success=  0.2% | miss= 90.9% | elapsed=653.5s
+  step= 2900928 | eps/s=  4271 | success=  0.2% | miss= 90.7% | elapsed=679.2s
+  step= 3000960 | eps/s=  4272 | success=  0.1% | miss= 90.9% | elapsed=702.4s
+  step= 3100992 | eps/s=  4273 | success=  0.1% | miss= 91.0% | elapsed=725.8s
+  step= 3201024 | eps/s=  4272 | success=  0.2% | miss= 90.9% | elapsed=749.3s
+  step= 3301056 | eps/s=  4272 | success=  0.2% | miss= 90.1% | elapsed=772.6s
+  step= 3401088 | eps/s=  4272 | success=  0.2% | miss= 89.7% | elapsed=796.1s
+  step= 3501120 | eps/s=  4272 | success=  0.2% | miss= 90.0% | elapsed=819.5s
+  step= 3601152 | eps/s=  4272 | success=  0.2% | miss= 90.0% | elapsed=843.1s
+  step= 3701184 | eps/s=  4271 | success=  0.2% | miss= 89.3% | elapsed=866.6s
+  step= 3801216 | eps/s=  4259 | success=  0.2% | miss= 89.0% | elapsed=892.5s
+  step= 3901248 | eps/s=  4259 | success=  0.2% | miss= 88.5% | elapsed=916.0s
+  step= 4001280 | eps/s=  4258 | success=  0.2% | miss= 88.3% | elapsed=939.7s
+  step= 4101312 | eps/s=  4258 | success=  0.1% | miss= 88.6% | elapsed=963.1s
+  step= 4201344 | eps/s=  4259 | success=  0.2% | miss= 88.4% | elapsed=986.5s
+  step= 4301376 | eps/s=  4259 | success=  0.2% | miss= 87.8% | elapsed=1010.0s
+  step= 4401408 | eps/s=  4260 | success=  0.2% | miss= 87.7% | elapsed=1033.2s
+  step= 4501440 | eps/s=  4259 | success=  0.2% | miss= 87.3% | elapsed=1056.8s
+  step= 4601472 | eps/s=  4258 | success=  0.2% | miss= 87.2% | elapsed=1080.6s
+  step= 4701504 | eps/s=  4259 | success=  0.2% | miss= 86.9% | elapsed=1104.0s
+  step= 4801536 | eps/s=  4248 | success=  0.2% | miss= 86.5% | elapsed=1130.2s
+  step= 4901568 | eps/s=  4248 | success=  0.2% | miss= 86.3% | elapsed=1153.9s
+  step= 5001600 | eps/s=  4249 | success=  0.2% | miss= 86.0% | elapsed=1177.1s
+  step= 5101632 | eps/s=  4248 | success=  0.1% | miss= 85.9% | elapsed=1200.9s
+  step= 5201664 | eps/s=  4249 | success=  0.2% | miss= 86.0% | elapsed=1224.3s
+  step= 5301696 | eps/s=  4248 | success=  0.2% | miss= 85.7% | elapsed=1248.0s
+  step= 5401728 | eps/s=  4249 | success=  0.1% | miss= 85.5% | elapsed=1271.3s
+  step= 5501760 | eps/s=  4249 | success=  0.1% | miss= 85.4% | elapsed=1294.7s
+  step= 5601792 | eps/s=  4249 | success=  0.1% | miss= 85.8% | elapsed=1318.4s
+  step= 5701824 | eps/s=  4240 | success=  0.1% | miss= 85.8% | elapsed=1344.8s
+  step= 5801856 | eps/s=  4240 | success=  0.2% | miss= 84.9% | elapsed=1368.2s
+  step= 5901888 | eps/s=  4239 | success=  0.2% | miss= 84.4% | elapsed=1392.1s
+  step= 6001920 | eps/s=  4239 | success=  0.2% | miss= 84.0% | elapsed=1416.0s
+  step= 6101952 | eps/s=  4237 | success=  0.1% | miss= 83.5% | elapsed=1440.1s
+  step= 6201984 | eps/s=  4235 | success=  0.2% | miss= 83.2% | elapsed=1464.6s
+  step= 6302016 | eps/s=  4230 | success=  0.2% | miss= 82.4% | elapsed=1489.9s
+  step= 6402048 | eps/s=  4229 | success=  0.2% | miss= 82.7% | elapsed=1514.0s
+  step= 6502080 | eps/s=  4229 | success=  0.2% | miss= 82.7% | elapsed=1537.7s
+  step= 6602112 | eps/s=  4229 | success=  0.2% | miss= 82.7% | elapsed=1561.2s
+  step= 6702144 | eps/s=  4222 | success=  0.2% | miss= 82.7% | elapsed=1587.5s
+  step= 6802176 | eps/s=  4222 | success=  0.2% | miss= 82.6% | elapsed=1611.2s
+  step= 6902208 | eps/s=  4223 | success=  0.2% | miss= 82.0% | elapsed=1634.6s
+  step= 7002240 | eps/s=  4223 | success=  0.2% | miss= 81.6% | elapsed=1658.1s
+  step= 7102272 | eps/s=  4224 | success=  0.2% | miss= 81.4% | elapsed=1681.5s
+  step= 7202304 | eps/s=  4224 | success=  0.3% | miss= 81.3% | elapsed=1705.1s
+  step= 7302336 | eps/s=  4225 | success=  0.2% | miss= 80.8% | elapsed=1728.4s
+  step= 7402368 | eps/s=  4226 | success=  0.3% | miss= 80.0% | elapsed=1751.7s
+  step= 7502400 | eps/s=  4226 | success=  0.3% | miss= 79.9% | elapsed=1775.4s
+  step= 7602432 | eps/s=  4218 | success=  0.3% | miss= 79.4% | elapsed=1802.6s
+  step= 7702464 | eps/s=  4219 | success=  0.3% | miss= 78.7% | elapsed=1825.9s
+  step= 7802496 | eps/s=  4220 | success=  0.4% | miss= 78.5% | elapsed=1849.0s
+  step= 7902528 | eps/s=  4220 | success=  0.5% | miss= 78.3% | elapsed=1872.8s
+  step= 8002560 | eps/s=  4219 | success=  0.5% | miss= 77.6% | elapsed=1896.6s
+  step= 8102592 | eps/s=  4220 | success=  0.5% | miss= 77.3% | elapsed=1920.1s
+  step= 8202624 | eps/s=  4219 | success=  0.6% | miss= 76.7% | elapsed=1944.3s
+  step= 8302656 | eps/s=  4219 | success=  0.7% | miss= 76.3% | elapsed=1967.7s
+  step= 8402688 | eps/s=  4221 | success=  0.8% | miss= 75.4% | elapsed=1990.9s
+  step= 8502720 | eps/s=  4219 | success=  0.9% | miss= 75.1% | elapsed=2015.1s
+  step= 8602752 | eps/s=  4214 | success=  1.0% | miss= 74.4% | elapsed=2041.3s
+  step= 8702784 | eps/s=  4215 | success=  1.0% | miss= 74.4% | elapsed=2064.5s
+  step= 8802816 | eps/s=  4215 | success=  1.1% | miss= 73.7% | elapsed=2088.6s
+  step= 8902848 | eps/s=  4215 | success=  1.2% | miss= 73.4% | elapsed=2112.4s
+  step= 9002880 | eps/s=  4213 | success=  1.2% | miss= 73.1% | elapsed=2136.8s
+  step= 9102912 | eps/s=  4214 | success=  1.3% | miss= 73.5% | elapsed=2160.2s
+  step= 9202944 | eps/s=  4214 | success=  1.4% | miss= 72.6% | elapsed=2184.0s
+  step= 9302976 | eps/s=  4213 | success=  1.6% | miss= 72.0% | elapsed=2208.2s
+  step= 9403008 | eps/s=  4213 | success=  1.8% | miss= 71.5% | elapsed=2231.9s
+  step= 9503040 | eps/s=  4209 | success=  1.9% | miss= 70.8% | elapsed=2257.9s
+  step= 9603072 | eps/s=  4209 | success=  2.2% | miss= 70.6% | elapsed=2281.4s
+  step= 9703104 | eps/s=  4209 | success=  2.2% | miss= 69.7% | elapsed=2305.3s
+  step= 9803136 | eps/s=  4208 | success=  2.5% | miss= 69.3% | elapsed=2329.4s
+  step= 9903168 | eps/s=  4208 | success=  2.5% | miss= 68.9% | elapsed=2353.2s
+  step=10003200 | eps/s=  4209 | success=  2.7% | miss= 68.9% | elapsed=2376.6s
+  step=10103232 | eps/s=  4209 | success=  2.8% | miss= 68.2% | elapsed=2400.4s
+  step=10203264 | eps/s=  4209 | success=  2.8% | miss= 67.7% | elapsed=2424.0s
+  step=10303296 | eps/s=  4208 | success=  2.9% | miss= 67.0% | elapsed=2448.5s
+  step=10403328 | eps/s=  4208 | success=  2.9% | miss= 66.6% | elapsed=2472.2s
+  step=10503360 | eps/s=  4204 | success=  3.2% | miss= 65.9% | elapsed=2498.3s
+  step=10603392 | eps/s=  4204 | success=  3.2% | miss= 65.4% | elapsed=2522.1s
+  step=10703424 | eps/s=  4205 | success=  3.3% | miss= 65.4% | elapsed=2545.5s
+  step=10803456 | eps/s=  4205 | success=  3.5% | miss= 64.1% | elapsed=2569.1s
+  step=10903488 | eps/s=  4205 | success=  3.5% | miss= 64.0% | elapsed=2593.2s
+  step=11003520 | eps/s=  4204 | success=  3.7% | miss= 63.4% | elapsed=2617.4s
+  step=11103552 | eps/s=  4204 | success=  3.7% | miss= 62.9% | elapsed=2641.5s
+  step=11203584 | eps/s=  4203 | success=  3.9% | miss= 62.1% | elapsed=2665.8s
+  step=11303616 | eps/s=  4202 | success=  4.2% | miss= 61.4% | elapsed=2690.0s
+  step=11403648 | eps/s=  4197 | success=  4.3% | miss= 60.6% | elapsed=2716.8s
+  step=11503680 | eps/s=  4197 | success=  4.4% | miss= 59.8% | elapsed=2740.8s
+  step=11603712 | eps/s=  4197 | success=  4.8% | miss= 59.4% | elapsed=2764.6s
+  step=11703744 | eps/s=  4197 | success=  4.7% | miss= 58.6% | elapsed=2788.4s
+  step=11803776 | eps/s=  4198 | success=  4.8% | miss= 58.2% | elapsed=2811.9s
+  step=11903808 | eps/s=  4198 | success=  5.2% | miss= 57.3% | elapsed=2835.7s
+  step=12003840 | eps/s=  4197 | success=  5.2% | miss= 57.1% | elapsed=2860.0s
+  step=12103872 | eps/s=  4196 | success=  5.2% | miss= 56.3% | elapsed=2884.6s
+  step=12203904 | eps/s=  4196 | success=  5.4% | miss= 56.2% | elapsed=2908.3s
+  step=12303936 | eps/s=  4197 | success=  5.5% | miss= 55.5% | elapsed=2931.5s
+  step=12403968 | eps/s=  4194 | success=  5.7% | miss= 55.1% | elapsed=2957.5s
+  step=12504000 | eps/s=  4195 | success=  5.8% | miss= 54.2% | elapsed=2980.7s
+  step=12604032 | eps/s=  4195 | success=  5.9% | miss= 53.7% | elapsed=3004.6s
+  step=12704064 | eps/s=  4195 | success=  6.1% | miss= 53.6% | elapsed=3028.5s
+  step=12804096 | eps/s=  4195 | success=  6.2% | miss= 53.6% | elapsed=3052.6s
+  step=12904128 | eps/s=  4194 | success=  6.4% | miss= 52.4% | elapsed=3076.5s
+  step=13004160 | eps/s=  4194 | success=  6.5% | miss= 51.9% | elapsed=3100.8s
+  step=13104192 | eps/s=  4193 | success=  6.8% | miss= 50.9% | elapsed=3125.1s
+  step=13204224 | eps/s=  4192 | success=  6.9% | miss= 50.8% | elapsed=3149.5s
+  step=13304256 | eps/s=  4189 | success=  7.0% | miss= 50.0% | elapsed=3176.3s
+  step=13404288 | eps/s=  4188 | success=  7.3% | miss= 49.1% | elapsed=3200.7s
+  step=13504320 | eps/s=  4188 | success=  7.4% | miss= 48.7% | elapsed=3224.4s
+  step=13604352 | eps/s=  4189 | success=  7.5% | miss= 48.2% | elapsed=3247.9s
+  step=13704384 | eps/s=  4189 | success=  7.7% | miss= 47.9% | elapsed=3271.8s
+  step=13804416 | eps/s=  4188 | success=  7.7% | miss= 48.0% | elapsed=3296.0s
+  step=13904448 | eps/s=  4188 | success=  7.9% | miss= 46.7% | elapsed=3320.4s
+  step=14004480 | eps/s=  4187 | success=  8.4% | miss= 46.4% | elapsed=3344.6s
+  step=14104512 | eps/s=  4187 | success=  8.3% | miss= 46.3% | elapsed=3368.6s
+  step=14204544 | eps/s=  4187 | success=  8.7% | miss= 45.2% | elapsed=3392.8s
+  step=14304576 | eps/s=  4183 | success=  9.0% | miss= 44.2% | elapsed=3419.5s
+  step=14404608 | eps/s=  4184 | success=  9.0% | miss= 44.2% | elapsed=3442.9s
+  step=14504640 | eps/s=  4184 | success=  9.4% | miss= 43.4% | elapsed=3466.8s
+  step=14604672 | eps/s=  4183 | success=  9.4% | miss= 43.0% | elapsed=3491.5s
+  step=14704704 | eps/s=  4183 | success=  9.4% | miss= 43.2% | elapsed=3515.3s
+  step=14804736 | eps/s=  4183 | success=  9.9% | miss= 41.8% | elapsed=3539.6s
+  step=14904768 | eps/s=  4182 | success= 10.1% | miss= 41.1% | elapsed=3563.9s
+  step=15004800 | eps/s=  4181 | success= 10.4% | miss= 40.5% | elapsed=3588.5s
+  step=15104832 | eps/s=  4182 | success= 10.4% | miss= 40.1% | elapsed=3612.2s
+  step=15204864 | eps/s=  4179 | success= 10.5% | miss= 39.7% | elapsed=3638.4s
+  step=15304896 | eps/s=  4179 | success= 10.6% | miss= 39.3% | elapsed=3662.2s
+  step=15404928 | eps/s=  4179 | success= 10.9% | miss= 38.8% | elapsed=3685.9s
+  step=15504960 | eps/s=  4179 | success= 10.5% | miss= 39.7% | elapsed=3709.9s
+  step=15604992 | eps/s=  4180 | success= 10.9% | miss= 39.1% | elapsed=3733.4s
+  step=15705024 | eps/s=  4180 | success= 11.1% | miss= 37.9% | elapsed=3757.3s
+  step=15805056 | eps/s=  4180 | success= 11.1% | miss= 37.8% | elapsed=3781.0s
+  step=15905088 | eps/s=  4181 | success= 11.6% | miss= 37.1% | elapsed=3804.4s
+  step=16005120 | eps/s=  4181 | success= 11.5% | miss= 37.4% | elapsed=3828.5s
+  step=16105152 | eps/s=  4180 | success= 11.9% | miss= 36.5% | elapsed=3852.7s
+  step=16205184 | eps/s=  4178 | success= 12.1% | miss= 36.2% | elapsed=3879.1s
+  step=16305216 | eps/s=  4178 | success= 12.2% | miss= 36.0% | elapsed=3902.8s
+  step=16405248 | eps/s=  4178 | success= 12.5% | miss= 35.4% | elapsed=3926.6s
+  step=16505280 | eps/s=  4178 | success= 12.5% | miss= 35.4% | elapsed=3950.3s
+  step=16605312 | eps/s=  4178 | success= 12.5% | miss= 34.8% | elapsed=3974.1s
+  step=16705344 | eps/s=  4179 | success= 13.0% | miss= 34.4% | elapsed=3997.7s
+  step=16805376 | eps/s=  4179 | success= 13.4% | miss= 33.7% | elapsed=4021.3s
+  step=16905408 | eps/s=  4179 | success= 13.4% | miss= 33.4% | elapsed=4045.0s
+  step=17005440 | eps/s=  4179 | success= 13.4% | miss= 32.9% | elapsed=4068.9s
+  step=17105472 | eps/s=  4177 | success= 13.6% | miss= 33.1% | elapsed=4094.8s
+  step=17205504 | eps/s=  4177 | success= 13.7% | miss= 32.6% | elapsed=4118.8s
+  step=17305536 | eps/s=  4177 | success= 13.9% | miss= 32.1% | elapsed=4142.8s
+  step=17405568 | eps/s=  4177 | success= 14.2% | miss= 31.8% | elapsed=4166.7s
+  step=17505600 | eps/s=  4177 | success= 14.3% | miss= 31.4% | elapsed=4190.6s
+  step=17605632 | eps/s=  4178 | success= 14.3% | miss= 31.1% | elapsed=4214.0s
+  step=17705664 | eps/s=  4178 | success= 14.9% | miss= 30.8% | elapsed=4237.9s
+  step=17805696 | eps/s=  4178 | success= 14.9% | miss= 30.2% | elapsed=4261.8s
+  step=17905728 | eps/s=  4178 | success= 14.8% | miss= 30.3% | elapsed=4285.9s
+  step=18005760 | eps/s=  4178 | success= 15.1% | miss= 29.8% | elapsed=4309.6s
+  step=18105792 | eps/s=  4176 | success= 15.3% | miss= 29.5% | elapsed=4335.9s
+  step=18205824 | eps/s=  4175 | success= 15.3% | miss= 29.6% | elapsed=4360.3s
+  step=18305856 | eps/s=  4175 | success= 15.6% | miss= 29.2% | elapsed=4385.1s
+  step=18405888 | eps/s=  4175 | success= 15.8% | miss= 28.9% | elapsed=4408.6s
+  step=18505920 | eps/s=  4175 | success= 15.7% | miss= 28.8% | elapsed=4432.3s
+  step=18605952 | eps/s=  4176 | success= 15.8% | miss= 28.7% | elapsed=4455.9s
+  step=18705984 | eps/s=  4176 | success= 15.8% | miss= 28.3% | elapsed=4479.5s
+  step=18806016 | eps/s=  4176 | success= 16.1% | miss= 28.2% | elapsed=4503.4s
+  step=18906048 | eps/s=  4176 | success= 16.4% | miss= 28.0% | elapsed=4527.1s
+  step=19006080 | eps/s=  4174 | success= 16.3% | miss= 27.8% | elapsed=4553.6s
+  step=19106112 | eps/s=  4173 | success= 16.4% | miss= 27.7% | elapsed=4578.2s
+  step=19206144 | eps/s=  4173 | success= 16.4% | miss= 27.5% | elapsed=4602.7s
+  step=19306176 | eps/s=  4172 | success= 16.7% | miss= 27.3% | elapsed=4627.6s
+  step=19406208 | eps/s=  4172 | success= 16.7% | miss= 27.4% | elapsed=4652.0s
+  step=19506240 | eps/s=  4172 | success= 16.6% | miss= 26.9% | elapsed=4675.4s
+  step=19606272 | eps/s=  4172 | success= 16.7% | miss= 26.9% | elapsed=4699.2s
+  step=19706304 | eps/s=  4172 | success= 16.6% | miss= 26.9% | elapsed=4723.1s
+  step=19806336 | eps/s=  4172 | success= 17.0% | miss= 26.8% | elapsed=4747.1s
+  step=19906368 | eps/s=  4172 | success= 17.1% | miss= 26.8% | elapsed=4771.1s
+
+  Training complete in 4798.0s
+  Avg throughput: 4168 timesteps/sec
+  Model saved to models/ppo_aggressive_stage1
+
+=== Evaluation (100 episodes) ===
+  success: 74%
+  return_missed_table: 24%
+  paddle_miss: 2%
+  avg reward: 1.868

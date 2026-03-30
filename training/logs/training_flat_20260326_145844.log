@@ -1,0 +1,30 @@
+[14:58:44] === Stage 2 | flache Bahn Reward | lr=1e-5 | n_epochs=5 | target_kl=0.01 ===
+=== spinoza RL Training ===
+  n_envs=64, difficulty=2
+  total_timesteps=20000000
+  policy=MLP [512, 512]
+
+  lr=1e-05
+  Loading pretrained model: models/ppo_stage1_checkpoints/ckpt_9000000_steps
+  model params: 622,607
+
+  step=  100032 | eps/s=  7646 | success= 14.7% | miss= 67.9% | elapsed= 13.1s
+  step=  200064 | eps/s=  7652 | success= 13.8% | miss= 68.0% | elapsed= 26.1s
+  step=  300096 | eps/s=  7553 | success= 13.0% | miss= 67.7% | elapsed= 39.7s
+  step=  400128 | eps/s=  7464 | success= 13.9% | miss= 66.6% | elapsed= 53.6s
+  step=  500160 | eps/s=  7558 | success= 17.3% | miss= 66.3% | elapsed= 66.2s
+  step=  600192 | eps/s=  7596 | success= 16.8% | miss= 65.9% | elapsed= 79.0s
+  step=  700224 | eps/s=  7610 | success= 16.9% | miss= 65.7% | elapsed= 92.0s
+  step=  800256 | eps/s=  7644 | success= 18.1% | miss= 65.7% | elapsed=104.7s
+  step=  900288 | eps/s=  7665 | success= 17.0% | miss= 64.6% | elapsed=117.5s
+  step= 1000320 | eps/s=  7646 | success= 14.7% | miss= 65.2% | elapsed=130.8s
+  step= 1100352 | eps/s=  7633 | success= 14.3% | miss= 65.5% | elapsed=144.1s
+  step= 1200384 | eps/s=  7642 | success= 13.0% | miss= 70.7% | elapsed=157.1s
+  step= 1300416 | eps/s=  7642 | success= 13.1% | miss= 72.8% | elapsed=170.2s
+  step= 1400448 | eps/s=  7647 | success= 15.7% | miss= 68.5% | elapsed=183.1s
+  step= 1500480 | eps/s=  7644 | success= 16.2% | miss= 66.9% | elapsed=196.3s
+  step= 1600512 | eps/s=  7642 | success= 16.6% | miss= 65.9% | elapsed=209.4s
+  step= 1700544 | eps/s=  7635 | success= 18.0% | miss= 64.6% | elapsed=222.7s
+  step= 1800576 | eps/s=  7623 | success= 18.3% | miss= 64.2% | elapsed=236.2s
+  step= 1900608 | eps/s=  7621 | success= 17.4% | miss= 65.4% | elapsed=249.4s
+  step= 2000640 | eps/s=  7612 | success= 17.8% | miss= 63.6% | elapsed=262.8s

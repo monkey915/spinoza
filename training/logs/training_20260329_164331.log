@@ -1,0 +1,57 @@
+[16:43:31] === Baue Rust-Modul (maturin build --release) ===
+🔗 Found pyo3 bindings
+🐍 Found CPython 3.12 at /usr/bin/python3
+    Finished `release` profile [optimized] target(s) in 0.03s
+📦 Built wheel for CPython 3.12 to /home/sefo/devel/spinoza/target/wheels/spinoza-0.1.0-cp312-cp312-manylinux_2_34_x86_64.whl
+Defaulting to user installation because normal site-packages is not writeable
+Processing ./target/wheels/spinoza-0.1.0-cp312-cp312-linux_x86_64.whl
+Installing collected packages: spinoza
+  Attempting uninstall: spinoza
+    Found existing installation: spinoza 0.1.0
+    Uninstalling spinoza-0.1.0:
+      Successfully uninstalled spinoza-0.1.0
+Successfully installed spinoza-0.1.0
+spinoza OK
+[16:43:33] 
+[16:43:33] === Stage 1: Kein Spin | 20M Steps | lr=3e-4→1e-5 (decay) | ent=0.01 ===
+=== spinoza RL Training ===
+  n_envs=64, difficulty=1
+  total_timesteps=20000000
+  policy=MLP [512, 512]
+
+  lr=0.0003 → 1e-05 (linear decay)
+  model params: 622,607
+
+  step=  100032 | eps/s=  4367 | success=  0.0% | miss= 99.9% | elapsed= 22.9s
+  step=  200064 | eps/s=  4382 | success=  0.0% | miss= 99.7% | elapsed= 45.7s
+  step=  300096 | eps/s=  4359 | success=  0.1% | miss= 98.0% | elapsed= 68.8s
+  step=  400128 | eps/s=  4340 | success=  0.1% | miss= 96.7% | elapsed= 92.2s
+  step=  500160 | eps/s=  4325 | success=  0.1% | miss= 96.4% | elapsed=115.6s
+  step=  600192 | eps/s=  4319 | success=  0.1% | miss= 96.2% | elapsed=139.0s
+  step=  700224 | eps/s=  4325 | success=  0.1% | miss= 96.0% | elapsed=161.9s
+  step=  800256 | eps/s=  4314 | success=  0.1% | miss= 95.8% | elapsed=185.5s
+  step=  900288 | eps/s=  4306 | success=  0.1% | miss= 95.7% | elapsed=209.1s
+  step= 1000320 | eps/s=  4256 | success=  0.1% | miss= 95.5% | elapsed=235.0s
+  step= 1100352 | eps/s=  4247 | success=  0.1% | miss= 95.4% | elapsed=259.1s
+  step= 1200384 | eps/s=  4247 | success=  0.1% | miss= 95.1% | elapsed=282.7s
+  step= 1300416 | eps/s=  4247 | success=  0.1% | miss= 95.0% | elapsed=306.2s
+  step= 1400448 | eps/s=  4244 | success=  0.1% | miss= 94.7% | elapsed=330.0s
+  step= 1500480 | eps/s=  4240 | success=  0.1% | miss= 94.3% | elapsed=353.9s
+  step= 1600512 | eps/s=  4238 | success=  0.1% | miss= 94.2% | elapsed=377.6s
+  step= 1700544 | eps/s=  4238 | success=  0.1% | miss= 94.2% | elapsed=401.3s
+  step= 1800576 | eps/s=  4232 | success=  0.1% | miss= 94.1% | elapsed=425.4s
+  step= 1900608 | eps/s=  4208 | success=  0.2% | miss= 93.8% | elapsed=451.6s
+  step= 2000640 | eps/s=  4205 | success=  0.2% | miss= 93.2% | elapsed=475.8s
+  step= 2100672 | eps/s=  4206 | success=  0.2% | miss= 93.2% | elapsed=499.4s
+  step= 2200704 | eps/s=  4207 | success=  0.2% | miss= 93.1% | elapsed=523.1s
+  step= 2300736 | eps/s=  4205 | success=  0.2% | miss= 92.7% | elapsed=547.2s
+  step= 2400768 | eps/s=  4208 | success=  0.2% | miss= 92.5% | elapsed=570.5s
+  step= 2500800 | eps/s=  4211 | success=  0.2% | miss= 92.2% | elapsed=593.8s
+  step= 2600832 | eps/s=  4212 | success=  0.2% | miss= 92.1% | elapsed=617.4s
+  step= 2700864 | eps/s=  4214 | success=  0.2% | miss= 91.8% | elapsed=640.9s
+  step= 2800896 | eps/s=  4214 | success=  0.2% | miss= 91.6% | elapsed=664.7s
+  step= 2900928 | eps/s=  4198 | success=  0.3% | miss= 91.8% | elapsed=691.0s
+  step= 3000960 | eps/s=  4199 | success=  0.2% | miss= 91.5% | elapsed=714.6s
+  step= 3100992 | eps/s=  4198 | success=  0.2% | miss= 91.2% | elapsed=738.7s
+  step= 3201024 | eps/s=  4200 | success=  0.2% | miss= 90.9% | elapsed=762.2s
+  step= 3301056 | eps/s=  4201 | success=  0.2% | miss= 90.6% | elapsed=785.8s

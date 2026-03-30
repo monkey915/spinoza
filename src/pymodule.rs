@@ -238,6 +238,10 @@ impl SimEnv {
             let _ = result.set_item("contact_pos", vec![cp.x, cp.y, cp.z]);
         }
 
+        if let Some(om) = replay.hit_omega {
+            let _ = result.set_item("hit_omega", vec![om.x, om.y, om.z]);
+        }
+
         let outcome_str = match &replay.outcome {
             RallyOutcome::Success { landing_x, landing_y } => {
                 let _ = result.set_item("landing", vec![*landing_x, *landing_y]);
