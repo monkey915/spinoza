@@ -26,6 +26,8 @@ pub struct SimEnv {
     pending_obs: Vec<f64>,
     /// Cached initial serve state for replay
     pending_serve: BallState,
+    /// Serve state from the LAST completed step (survives auto-reset)
+    last_serve: BallState,
 }
 
 #[pymethods]
@@ -40,6 +42,7 @@ impl SimEnv {
             pending_trajectory: Vec::new(),
             pending_obs: vec![0.0; OBS_FRAMES * 3],
             pending_serve: BallState::new(Vec3::ZERO, Vec3::ZERO, Vec3::ZERO),
+            last_serve: BallState::new(Vec3::ZERO, Vec3::ZERO, Vec3::ZERO),
         }
     }
 
@@ -147,6 +150,9 @@ impl SimEnv {
         };
         let _ = info.set_item("outcome", outcome_str);
 
+        // Save serve before auto-reset overwrites pending_serve
+        self.last_serve = self.pending_serve;
+
         // Auto-reset: return observation for next episode
         let next_obs = self.reset(py);
 
@@ -178,8 +184,8 @@ impl SimEnv {
             swing_elevation: action[6],
         };
 
-        // Use the cached serve from the last reset()
-        let replay = run_rally_replay(self.pending_serve, &paddle_action, &self.table);
+        // Use the serve from the last completed step() (not pending_serve which was overwritten by auto-reset)
+        let replay = run_rally_replay(self.last_serve, &paddle_action, &self.table);
 
         let result = pyo3::types::PyDict::new(py);
 

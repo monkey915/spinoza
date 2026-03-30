@@ -73,7 +73,6 @@ src/
 training/
   env.py                # Gymnasium wrapper (TableTennisEnv)
   train.py              # PPO training script with SubprocVecEnv, progress logging
-  train_lstm.py         # LSTM variant training script
   evaluate.py           # Detailed evaluation with per-stage breakdown
   export_replays.py     # Generate replay JSON from trained model for web viewer
   run_all_stages.sh     # Full curriculum pipeline: Stage 1→2→3
@@ -203,10 +202,43 @@ bash run_all_stages.sh
 ```
 
 ### Export Replays for Web Viewer
-```bash
-python3 export_replays.py models/ppo_stage1 -o ../web/replays.json -n 50 -d 1
+
+**Replay mechanism (pymodule.rs)**:
+- `reset()` stores the serve in `self.pending_serve`
+- `step()` copies `pending_serve → last_serve` BEFORE auto-reset (which overwrites `pending_serve`)
+- `replay(action)` uses `self.last_serve` to reconstruct the SAME episode that was just played
+
+**Export pattern** (must call in this exact order):
+```python
+obs = env.reset()
+action, _ = model.predict(obs)
+env.step(action)          # step() saves serve to last_serve, then auto-resets
+rep = env.replay(action)  # replay() uses last_serve → same serve as step()
 ```
-**Note**: `SimEnv.replay(action)` generates a NEW random serve — it does NOT replay the last `step()`. Use the replay's own `reward` and `outcome` fields, not the values from `env.step()`.
+
+**Replay JSON format** for the web viewer:
+```python
+# Pass through the Rust replay dict directly — do NOT restructure!
+replays.append(rep)  # rep has: serve_trajectory, return_trajectory, serve_bounces, etc.
+
+# Wrap in {replays: [...]} for the web UI:
+json.dump({'replays': replays}, f)
+```
+
+The web UI (`loadReplay()` in main.js) expects these fields from each replay:
+- `serve_trajectory`: list of `[t, x, y, z, vx, vy, vz, ox, oy, oz]`
+- `return_trajectory`: list of `[t, x, y, z, vx, vy, vz, ox, oy, oz]`
+- `serve_bounces`: list of `[t, x, y, z]`
+- `return_bounces`: list of `[t, x, y, z]`
+- `paddle`: dict with paddle_x, paddle_y, paddle_z, tilt_x, tilt_z, swing_speed, swing_elevation
+- `contact_pos`: `[x, y, z]` or null
+- `hit_omega`: `[ox, oy, oz]` or null
+- `outcome`: string (success, paddle_miss, return_missed_table, return_hit_net)
+- `reward`: float
+
+**Top-level JSON must be `{"replays": [...]}`** — the web UI accesses `replayData.replays`.
+
+**NEVER restructure the replay dict** (e.g., merging serve+return into `ball_trajectory`). The web UI parses each field separately.
 
 ### Web Viewer
 ```bash
@@ -238,8 +270,10 @@ cd web && python3 -m http.server 8080
 6. **Backspin penalty balance**: Too harsh (-3.0) → agent prefers missing the table entirely over risking backspin. Moderate penalty (-1.0) + high topspin bonus (+3.0) works better.
 7. **Action fixation diagnostic**: After training, check action statistics. If std < 0.01 on 3+ parameters, agent is stuck in a degenerate strategy. The key params to watch: tilt_x, swing_speed, swing_elevation.
 8. **Pseudo-vector transform bug**: When swapping coordinate axes (Z-up → Y-up), angular velocity must be negated (det(M) = -1). Positions transform normally.
-9. **Replay export mismatch**: `SimEnv.replay(action)` uses a different random serve than `env.step()`. Never mix rewards/outcomes between them.
+9. **Replay/step serve mismatch (FIXED)**: `step()` auto-resets at the end, overwriting `pending_serve`. Original bug: `replay()` used `pending_serve` which was already a NEW serve. Fix: `step()` now copies `pending_serve → last_serve` before auto-reset, and `replay()` uses `last_serve`. Always verify with: `abs(step_reward - replay_reward) < 0.01`.
 10. **Serve realism**: Serves must bounce on server's half first, clear the net, then bounce on receiver's half.
+11. **LSTM is useless here**: Single-step episodes have no sequential decisions. LSTM adds 50% more parameters (977k vs 622k), runs 4× slower (~1.1k vs ~4.5k eps/sec), and learns far worse (2% vs 95% success at same steps). Stick with MLP.
+12. **Replay JSON format**: Web UI expects `{"replays": [...]}` with each replay containing `serve_trajectory`, `return_trajectory`, `serve_bounces`, etc. Pass through Rust replay dict directly — never restructure fields.
 
 ## CLI Usage
 
