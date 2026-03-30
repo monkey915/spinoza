@@ -1,8 +1,0 @@
-=== spinoza RL Training ===
-  n_envs=64, difficulty=1
-  total_timesteps=20000000
-  policy=MLP [512, 512]
-
-  lr=0.0003 → 1e-05 (linear decay)
-  model params: 622,607
-

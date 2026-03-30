@@ -1,4 +1,33 @@
 /target
 .agent-shell
+
+# Training artifacts
 training/models/
-web/replays.json
+training/logs/
+training/__pycache__/
+
+# Replay data (generated, not source)
+web/replays*.json
+web/replays_progress/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+*.whl
+
+# Build
+*.so
+*.dylib
+
+# OS
+.DS_Store
+nohup.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
