@@ -2,7 +2,7 @@
 .agent-shell
 
 # Training artifacts
-training/models/
+training/models/*_checkpoints/
 training/logs/
 training/__pycache__/
 
