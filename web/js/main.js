@@ -226,6 +226,7 @@ let trajectoryLine = null;
 let bounceMarkers = [];
 let trajectoryData = null;
 let netMarker = null;
+let predLines = [];  // prediction overlay lines
 
 function clearVisualization() {
   if (trajectoryLine) {
@@ -243,6 +244,11 @@ function clearVisualization() {
     netMarker.geometry.dispose();
     netMarker = null;
   }
+  for (const l of predLines) {
+    scene.remove(l);
+    l.geometry.dispose();
+  }
+  predLines = [];
 }
 
 function buildTrajectory(result) {
@@ -1124,6 +1130,198 @@ document.getElementById("live-replay-btn").addEventListener("click", async () =>
     btn.textContent = "Live Replays";
     document.getElementById("live-status").textContent = `⚠ Replay-Fehler: ${e.message}`;
   }
+});
+
+// ===== Trajectory Predictor Visualization =====
+
+let predData = null;
+let predCategory = null;
+let predIndex = 0;
+let predNInputIdx = 2; // index into n_input_options
+
+function showPrediction() {
+  if (!predData || !predCategory) return;
+  const cat = predData.categories[predCategory];
+  if (!cat || cat.trajectories.length === 0) return;
+
+  const traj = cat.trajectories[predIndex];
+  const nInput = predData.n_input_options[predNInputIdx];
+  const pred = traj.predictions[String(nInput)];
+  if (!pred) return;
+
+  clearVisualization();
+  ballMesh.visible = false;
+  paddleMesh.visible = false;
+  swingArrow.visible = false;
+  arrowHelper.visible = false;
+
+  const gt = traj.ground_truth; // [[x,y,z], ...]
+  const pr = pred.predicted;    // [[x,y,z], ...]
+
+  // Ground truth line (solid white → cyan)
+  const gtPoints = gt.map(p => s2t(p[0], p[1], p[2]));
+  const gtColors = [];
+  for (let i = 0; i < gt.length; i++) {
+    const f = i / (gt.length - 1);
+    if (i < nInput) {
+      // Observed: bright white
+      gtColors.push(1.0, 1.0, 1.0);
+    } else {
+      // Future ground truth: cyan → blue
+      const ff = (i - nInput) / (gt.length - nInput);
+      gtColors.push(0.2, 0.8 - ff * 0.3, 1.0);
+    }
+  }
+  const gtGeo = new THREE.BufferGeometry().setFromPoints(gtPoints);
+  gtGeo.setAttribute('color', new THREE.Float32BufferAttribute(gtColors, 3));
+  const gtLine = new THREE.Line(gtGeo, new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 2 }));
+  scene.add(gtLine);
+  predLines.push(gtLine);
+
+  // Prediction line (from frame 0 to 30, colored by error)
+  const prPoints = pr.map(p => s2t(p[0], p[1], p[2]));
+  const prColors = [];
+  for (let i = 0; i < pr.length; i++) {
+    if (i < nInput) {
+      // Input frames: dim (predicted = input here)
+      prColors.push(0.4, 0.4, 0.2);
+    } else {
+      // Predicted: green → yellow → red by error
+      const errIdx = i - nInput;
+      const err = pred.errors_mm[errIdx] || 0;
+      const t = Math.min(err / 30.0, 1.0); // 0mm=green, 30mm=red
+      prColors.push(t, 1.0 - t * 0.7, 0.1);
+    }
+  }
+  const prGeo = new THREE.BufferGeometry().setFromPoints(prPoints);
+  prGeo.setAttribute('color', new THREE.Float32BufferAttribute(prColors, 3));
+  const prMat = new THREE.LineDashedMaterial({ vertexColors: true, linewidth: 2, dashSize: 0.02, gapSize: 0.01 });
+  const prLine = new THREE.Line(prGeo, prMat);
+  prLine.computeLineDistances();
+  scene.add(prLine);
+  predLines.push(prLine);
+
+  // Divider marker: small sphere at the split point (last observed frame)
+  const splitPt = gt[nInput - 1];
+  const splitGeo = new THREE.SphereGeometry(0.008, 8, 8);
+  const splitMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+  const splitMesh = new THREE.Mesh(splitGeo, splitMat);
+  splitMesh.position.copy(s2t(splitPt[0], splitPt[1], splitPt[2]));
+  scene.add(splitMesh);
+  predLines.push(splitMesh);
+
+  // Error bars: thin lines connecting GT and prediction at each predicted frame
+  for (let i = nInput; i < gt.length; i += 2) {
+    const gtPt = s2t(gt[i][0], gt[i][1], gt[i][2]);
+    const prPt = s2t(pr[i][0], pr[i][1], pr[i][2]);
+    const errGeo = new THREE.BufferGeometry().setFromPoints([gtPt, prPt]);
+    const errIdx = i - nInput;
+    const err = pred.errors_mm[errIdx] || 0;
+    const t = Math.min(err / 30.0, 1.0);
+    const errColor = new THREE.Color(t, 1.0 - t * 0.7, 0.1);
+    const errLine = new THREE.Line(errGeo, new THREE.LineBasicMaterial({ color: errColor, linewidth: 1, transparent: true, opacity: 0.5 }));
+    scene.add(errLine);
+    predLines.push(errLine);
+  }
+
+  // End point markers
+  const gtEnd = gt[gt.length - 1];
+  const prEnd = pr[pr.length - 1];
+  const endGeoGT = new THREE.SphereGeometry(0.006, 8, 8);
+  const endMeshGT = new THREE.Mesh(endGeoGT, new THREE.MeshBasicMaterial({ color: 0x44aaff }));
+  endMeshGT.position.copy(s2t(gtEnd[0], gtEnd[1], gtEnd[2]));
+  scene.add(endMeshGT);
+  predLines.push(endMeshGT);
+
+  const endGeoPR = new THREE.SphereGeometry(0.006, 8, 8);
+  const endMeshPR = new THREE.Mesh(endGeoPR, new THREE.MeshBasicMaterial({ color: 0xff8844 }));
+  endMeshPR.position.copy(s2t(prEnd[0], prEnd[1], prEnd[2]));
+  scene.add(endMeshPR);
+  predLines.push(endMeshPR);
+
+  // Update info panel
+  const info = document.getElementById('pred-info');
+  info.innerHTML = `
+    <b>Serve:</b> ${traj.serve_speed} m/s<br>
+    <b>Topspin:</b> ${traj.topspin} rad/s<br>
+    <b>Backspin:</b> ${traj.backspin} rad/s<br>
+    <b>Sidespin:</b> ${traj.sidespin} rad/s<br>
+    <hr style="border-color:var(--panel-border); margin:4px 0;">
+    <span style="color:#fff">●</span> Ground truth &nbsp;
+    <span style="color:#ff8844">●</span> Prediction<br>
+    <span style="color:#ffff00">●</span> Split point (frame ${nInput})<br>
+    <b>Avg error:</b> ${pred.avg_error_mm} mm<br>
+    <b>Max error:</b> ${pred.max_error_mm} mm<br>
+    <b>Final frame:</b> ${pred.errors_mm[pred.errors_mm.length - 1]} mm
+  `;
+
+  document.getElementById('pred-index').textContent = `${predIndex + 1} / ${cat.trajectories.length}`;
+}
+
+document.getElementById('pred-load').addEventListener('click', async () => {
+  const btn = document.getElementById('pred-load');
+  btn.textContent = 'Loading...';
+  try {
+    const resp = await fetch(`predictions.json?t=${Date.now()}`);
+    predData = await resp.json();
+
+    const catContainer = document.getElementById('pred-categories');
+    catContainer.innerHTML = '';
+    const cats = Object.keys(predData.categories);
+    for (const catName of cats) {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.textContent = predData.categories[catName].label;
+      b.dataset.cat = catName;
+      b.addEventListener('click', () => {
+        predCategory = catName;
+        predIndex = 0;
+        // Highlight active category
+        catContainer.querySelectorAll('.btn').forEach(x => x.classList.remove('btn-accent'));
+        b.classList.add('btn-accent');
+        showPrediction();
+      });
+      catContainer.appendChild(b);
+    }
+
+    // Setup N-input slider
+    const slider = document.getElementById('pred-n-slider');
+    slider.max = predData.n_input_options.length - 1;
+    slider.value = predNInputIdx;
+    document.getElementById('pred-n-label').textContent = predData.n_input_options[predNInputIdx];
+    slider.addEventListener('input', () => {
+      predNInputIdx = parseInt(slider.value);
+      document.getElementById('pred-n-label').textContent = predData.n_input_options[predNInputIdx];
+      showPrediction();
+    });
+
+    document.getElementById('pred-controls').style.display = 'block';
+    btn.textContent = '✓ Loaded';
+
+    // Auto-select first category
+    if (cats.length > 0) {
+      predCategory = cats[0];
+      catContainer.querySelector('.btn').classList.add('btn-accent');
+      showPrediction();
+    }
+  } catch (e) {
+    btn.textContent = 'Load Predictions';
+    console.error('Failed to load predictions:', e);
+  }
+});
+
+document.getElementById('pred-prev').addEventListener('click', () => {
+  if (!predData || !predCategory) return;
+  const cat = predData.categories[predCategory];
+  predIndex = (predIndex - 1 + cat.trajectories.length) % cat.trajectories.length;
+  showPrediction();
+});
+
+document.getElementById('pred-next').addEventListener('click', () => {
+  if (!predData || !predCategory) return;
+  const cat = predData.categories[predCategory];
+  predIndex = (predIndex + 1) % cat.trajectories.length;
+  showPrediction();
 });
 
 // ===== Init =====

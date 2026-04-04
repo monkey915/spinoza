@@ -370,6 +370,29 @@
       <div id="replay-info" style="margin-top:8px;"></div>
     </div>
   </div>
+
+  <div class="section" id="predictor-section">
+    <div class="section-title">🔮 Trajectory Predictor</div>
+    <div class="btn-row">
+      <button class="btn btn-accent" id="pred-load">Load Predictions</button>
+    </div>
+    <div id="pred-controls" style="display:none;">
+      <div style="margin-top:8px;">
+        <label style="font-size:12px; color:var(--text-dim);">Category</label>
+        <div class="btn-row" id="pred-categories" style="flex-wrap:wrap; gap:4px; margin-top:4px;"></div>
+      </div>
+      <div style="margin-top:8px;">
+        <label style="font-size:12px; color:var(--text-dim);">Input Frames: <span id="pred-n-label">10</span></label>
+        <input type="range" id="pred-n-slider" min="0" max="6" value="2" style="width:100%;">
+      </div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn" id="pred-prev">◀ Prev</button>
+        <span id="pred-index" style="padding:4px 12px; color:var(--text-dim);">0 / 0</span>
+        <button class="btn" id="pred-next">Next ▶</button>
+      </div>
+      <div id="pred-info" style="margin-top:8px; font-size:12px; line-height:1.6; color:var(--text-dim);"></div>
+    </div>
+  </div>
 </div>
 
 <div id="viewport-container">

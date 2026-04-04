@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use pyo3::types::PyList;
+use pyo3::types::{PyDict, PyList};
 
 use crate::physics::paddle::PaddleAction;
 use crate::physics::state::{BallState, Vec3};
@@ -338,6 +338,76 @@ impl SimEnv {
                 traj.append(point)?;
             }
             result.append(traj)?;
+            generated += 1;
+        }
+
+        Ok(result)
+    }
+
+    /// Generate trajectories with full metadata for predictor visualization.
+    /// Returns list of dicts with positions, velocity, spin, and serve speed.
+    fn generate_rich_trajectories<'py>(
+        &mut self,
+        py: Python<'py>,
+        count: usize,
+        difficulty: u8,
+    ) -> PyResult<Bound<'py, PyList>> {
+        let diff = match difficulty {
+            1 => Difficulty::Stage1,
+            2 => Difficulty::Stage2,
+            _ => Difficulty::Stage3,
+        };
+
+        let result = PyList::empty(py);
+        let mut generated = 0;
+
+        while generated < count {
+            let serve = random_serve(&mut self.rng, diff);
+            let obs_result = prepare_serve(serve, &self.table);
+
+            if obs_result.bad_serve {
+                continue;
+            }
+
+            if obs_result.observations.len() < OBS_FRAMES {
+                continue;
+            }
+
+            let n = obs_result.observations.len();
+            let start = n - OBS_FRAMES;
+            let traj = PyList::empty(py);
+            for frame in &obs_result.observations[start..] {
+                let point = PyList::new(py, &[frame[0], frame[1], frame[2]])?;
+                traj.append(point)?;
+            }
+
+            // Also include full flight trajectory with velocity for visualization
+            let full_traj = PyList::empty(py);
+            let ft_start = if obs_result.flight_trajectory.len() > OBS_FRAMES {
+                obs_result.flight_trajectory.len() - OBS_FRAMES
+            } else {
+                0
+            };
+            for state in &obs_result.flight_trajectory[ft_start..] {
+                let frame = PyList::new(py, &[
+                    state.pos.x, state.pos.y, state.pos.z,
+                    state.vel.x, state.vel.y, state.vel.z,
+                    state.omega.x, state.omega.y, state.omega.z,
+                ])?;
+                full_traj.append(frame)?;
+            }
+
+            let entry = PyDict::new(py);
+            entry.set_item("positions", traj)?;
+            entry.set_item("full_states", full_traj)?;
+            entry.set_item("serve_speed", serve.vel.norm())?;
+            entry.set_item("serve_vx", serve.vel.x)?;
+            entry.set_item("serve_vy", serve.vel.y)?;
+            entry.set_item("serve_vz", serve.vel.z)?;
+            entry.set_item("topspin", -serve.omega.x)?; // positive = topspin
+            entry.set_item("backspin", serve.omega.x.max(0.0))?;
+            entry.set_item("sidespin", -serve.omega.z)?;
+            result.append(entry)?;
             generated += 1;
         }
 
