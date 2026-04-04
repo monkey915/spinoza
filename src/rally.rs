@@ -528,10 +528,10 @@ fn evaluate_return_result(
     // Return speed bonus: faster return gives opponent less reaction time.
     let speed_bonus = {
         let v = hit_state.vel.norm();
-        if v < 3.0 {
-            -0.20 * (1.0 - v / 3.0)  // penalty for very slow returns
+        if v < 5.0 {
+            -0.30 * (1.0 - v / 5.0)  // penalty for very slow returns
         } else {
-            (v / 12.0).min(1.0) * 0.30
+            (v / 20.0).min(1.0) * 0.50
         }
     };
 

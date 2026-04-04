@@ -37,7 +37,7 @@ class TableTennisEnv(gym.Env):
         # swing_elevation > 0 = Aufwärts-Swing
         self.action_space = spaces.Box(
             low=np.array( [0.0,  1.8,  0.85, -0.8, -0.8,  1.0, -0.3], dtype=np.float32),
-            high=np.array([1.525, 3.5,  1.40,  0.8,  0.8, 12.0,  0.7], dtype=np.float32),
+            high=np.array([1.525, 3.5,  1.40,  0.8,  0.8, 25.0,  0.7], dtype=np.float32),
             dtype=np.float32,
         )
 

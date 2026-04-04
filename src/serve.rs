@@ -41,7 +41,7 @@ impl Difficulty {
                 sidespin: (-30.0, 30.0),
             },
             Difficulty::Stage3 => ServeRange {
-                speed: (4.0, 14.0),
+                speed: (6.0, 20.0),
                 elevation: (-35.0, -5.0),
                 azimuth: (-15.0, 15.0),
                 topspin: (0.0, 200.0),

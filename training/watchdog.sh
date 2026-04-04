@@ -1,123 +1,100 @@
 #!/usr/bin/env bash
-# Autonomer Training-Watchdog: überwacht Fortschritt, greift bei Stagnation/Kollaps ein.
-# KEIN set -e: Script darf nie lautlos sterben, alle Fehler werden geloggt.
+# Training Watchdog: monitors progress every 30 min, kills on degeneration.
+# Usage: bash watchdog.sh <logfile> <training_pid>
+# Stops training if:
+#   - success drops >10% from peak
+#   - miss rate rises >10% from minimum
+#   - stagnant for 3 hours (6 consecutive checks with <1% change)
 TRAINING_DIR="$(cd "$(dirname "$0")" && pwd)"
-LOG_DIR="$TRAINING_DIR/logs"
-WATCHDOG_LOG="$LOG_DIR/watchdog.log"
-RESTART_SCRIPT="$TRAINING_DIR/run_all_stages.sh"
+WATCHDOG_LOG="$TRAINING_DIR/logs/watchdog.log"
 
-CHECK_INTERVAL=120
-STAGNATION_STEPS_COLD=15000000
-STAGNATION_WINDOW=5000000
-COLLAPSE_THRESHOLD_HIGH=30.0
-COLLAPSE_THRESHOLD_LOW=2.0
-COLLAPSE_WINDOW=2000000
+LOG="${1:?Usage: watchdog.sh <logfile> <pid>}"
+TRAIN_PID="${2:?Usage: watchdog.sh <logfile> <pid>}"
+CHECK_INTERVAL=1800  # 30 minutes
 
-wlog() { echo "[$(date '+%H:%M:%S')] $*" | tee -a "$WATCHDOG_LOG"; }
+PEAK_SUCCESS=0
+MIN_MISS=100
+STAGNANT_COUNT=0
+LAST_SUCCESS=0
+CHECK_NUM=0
 
-get_latest_log() {
-    ls -t "$LOG_DIR"/training_[0-9]*.log 2>/dev/null | head -1
-}
+wlog() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$WATCHDOG_LOG"; }
 
-get_training_pids() {
-    # Gibt alle PIDs von laufenden Training-Prozessen zurück
-    ps aux | grep -E "run_all_stages|train\.py" | grep -v grep | awk '{print $2}' | tr '\n' ' '
-}
-
-parse_progress() {
-    local log="$1"
-    tail -50 "$log" 2>/dev/null | grep "^  step=" | tail -1 | \
-        sed 's/.*step=\s*\([0-9]*\).*success=\s*\([0-9.]*\)%.*/\1 \2/'
-}
-
-kill_training() {
-    local reason="$1"
-    wlog "EINGRIFF: $reason"
-    local pids
-    pids=$(get_training_pids)
-    if [ -n "$pids" ]; then
-        for pid in $pids; do
-            kill "$pid" 2>/dev/null || true
-        done
-        sleep 3
-        pids=$(get_training_pids)
-        for pid in $pids; do
-            kill -9 "$pid" 2>/dev/null || true
-        done
-    fi
-    wlog "Training gestoppt."
-}
-
-restart_training() {
-    wlog "Starte Training neu..."
-    nohup bash "$RESTART_SCRIPT" >> "$WATCHDOG_LOG" 2>&1 &
-    local new_pid=$!
-    wlog "Training gestartet (PID $new_pid)"
-}
-
-wlog "=== Watchdog gestartet (PID $$) ==="
-
-history_step=0
-history_success=0
-restarts=0
-MAX_RESTARTS=3
+wlog "=== Watchdog started (PID $$) ==="
+wlog "  Training PID: $TRAIN_PID"
+wlog "  Log: $LOG"
+wlog "  Check interval: ${CHECK_INTERVAL}s (30 min)"
 
 while true; do
-    sleep "$CHECK_INTERVAL"
+    sleep $CHECK_INTERVAL
 
-    log=$(get_latest_log)
-    [ -z "$log" ] && { wlog "Kein Log gefunden."; continue; }
-
-    progress=$(parse_progress "$log")
-    [ -z "$progress" ] && { wlog "Kein Fortschritt im Log."; continue; }
-
-    cur_step=$(echo "$progress" | awk '{print $1}')
-    cur_success=$(echo "$progress" | awk '{print $2}')
-    pids=$(get_training_pids)
-
-    wlog "step=$cur_step success=${cur_success}% pids=[${pids:-keine}]"
-
-    # Training nicht mehr aktiv
-    if [ -z "$pids" ]; then
-        wlog "Training nicht aktiv. Warte..."
-        sleep 300
-        continue
+    # Check if training still running
+    if ! kill -0 "$TRAIN_PID" 2>/dev/null; then
+        if grep -q "Training complete" "$LOG" 2>/dev/null; then
+            wlog "TRAINING COMPLETED NORMALLY"
+            tail -10 "$LOG" | while read -r line; do wlog "  $line"; done
+        else
+            wlog "TRAINING CRASHED or killed externally"
+            tail -5 "$LOG" | while read -r line; do wlog "  $line"; done
+        fi
+        break
     fi
 
-    [ "$restarts" -ge "$MAX_RESTARTS" ] && { wlog "Max Restarts erreicht, Watchdog stoppt."; exit 1; }
+    CHECK_NUM=$((CHECK_NUM + 1))
 
-    # Kaltstart-Stagnation: nach 3M Steps < 1% success
-    if [ "$cur_step" -ge "$STAGNATION_STEPS_COLD" ] && \
-       [ "$(echo "$cur_success < 1.0" | bc -l)" = "1" ]; then
-        kill_training "Kaltstart-Stagnation: ${cur_success}% nach ${cur_step} Steps"
-        restarts=$((restarts + 1))
-        sleep 5; restart_training
-        history_step=0; history_success=0; continue
+    # Parse latest stats
+    LATEST_LINE=$(grep "step=" "$LOG" | tail -1)
+    [ -z "$LATEST_LINE" ] && continue
+
+    STEP=$(echo "$LATEST_LINE" | grep -oP 'step=\s*\K[0-9]+')
+    SUCCESS=$(echo "$LATEST_LINE" | grep -oP 'success=\s*\K[0-9.]+')
+    MISS=$(echo "$LATEST_LINE" | grep -oP 'miss=\s*\K[0-9.]+')
+    STEP_M=$(echo "scale=0; $STEP / 1000000" | bc)
+
+    # Update peaks
+    if (( $(echo "$SUCCESS > $PEAK_SUCCESS" | bc -l) )); then
+        PEAK_SUCCESS="$SUCCESS"
+    fi
+    if (( $(echo "$MISS < $MIN_MISS" | bc -l) )); then
+        MIN_MISS="$MISS"
     fi
 
-    # Kollaps: von >20% auf <5% in 1M Steps
-    if [ "$(echo "$history_success > $COLLAPSE_THRESHOLD_HIGH" | bc -l)" = "1" ] && \
-       [ "$(echo "$cur_success < $COLLAPSE_THRESHOLD_LOW" | bc -l)" = "1" ] && \
-       [ "$((cur_step - history_step))" -le "$COLLAPSE_WINDOW" ]; then
-        kill_training "KOLLAPS: ${history_success}% -> ${cur_success}%"
-        restarts=$((restarts + 1))
-        sleep 5; restart_training
-        history_step=0; history_success=0; continue
+    # Check stagnation (±1% from last check)
+    ABS_DIFF=$(echo "scale=1; a=$SUCCESS - $LAST_SUCCESS; if (a < 0) -a else a" | bc -l)
+    if (( $(echo "$ABS_DIFF < 1.0" | bc -l) )); then
+        STAGNANT_COUNT=$((STAGNANT_COUNT + 1))
+    else
+        STAGNANT_COUNT=0
+    fi
+    LAST_SUCCESS="$SUCCESS"
+
+    # Check failure conditions
+    DROP_FROM_PEAK=$(echo "scale=1; $PEAK_SUCCESS - $SUCCESS" | bc -l)
+    MISS_RISE=$(echo "scale=1; $MISS - $MIN_MISS" | bc -l)
+    STATUS="OK"
+    KILL_REASON=""
+
+    if (( $(echo "$DROP_FROM_PEAK > 10.0" | bc -l) )); then
+        KILL_REASON="SUCCESS DROPPED >10% from peak (${PEAK_SUCCESS}% -> ${SUCCESS}%)"
+    elif (( $(echo "$MISS_RISE > 10.0" | bc -l) )); then
+        KILL_REASON="MISS RATE ROSE >10% from min (${MIN_MISS}% -> ${MISS}%)"
+    elif [ "$STAGNANT_COUNT" -ge 6 ]; then
+        KILL_REASON="STAGNANT for 3h (6 checks, success ~${SUCCESS}%)"
     fi
 
-    # Stagnation: ab >10% kein Wachstum >1% in 5M Steps
-    if [ "$(echo "$history_success > 10.0" | bc -l)" = "1" ] && \
-       [ "$((cur_step - history_step))" -ge "$STAGNATION_WINDOW" ] && \
-       [ "$(echo "$cur_success - $history_success < 1.0" | bc -l)" = "1" ]; then
-        kill_training "Stagnation: ${history_success}% -> ${cur_success}% in $((cur_step-history_step)) Steps"
-        restarts=$((restarts + 1))
-        sleep 5; restart_training
-        history_step=0; history_success=0; continue
+    if [ -n "$KILL_REASON" ]; then
+        STATUS="KILLED"
     fi
 
-    # History alle 1M Steps aktualisieren
-    if [ "$((cur_step - history_step))" -ge 1000000 ]; then
-        history_step=$cur_step
-        history_success=$cur_success
+    wlog "Check #$CHECK_NUM | ${STEP_M}M steps | success=${SUCCESS}% (peak=${PEAK_SUCCESS}%) | miss=${MISS}% (min=${MIN_MISS}%) | stagnant=${STAGNANT_COUNT}/6 | $STATUS"
+
+    if [ -n "$KILL_REASON" ]; then
+        wlog ">>> STOPPING: $KILL_REASON"
+        kill "$TRAIN_PID" 2>/dev/null || true
+        sleep 5
+        wlog "Training killed at ${STEP_M}M steps"
+        break
     fi
 done
+
+wlog "=== Watchdog ended ==="

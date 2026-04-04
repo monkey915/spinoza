@@ -298,6 +298,51 @@ impl SimEnv {
 
         Ok((all_obs, all_rewards, all_outcomes))
     }
+    /// Generate a batch of serve trajectories for trajectory prediction training.
+    /// Returns list of trajectories, each being 30 frames of [x, y, z] at 60Hz.
+    /// Only returns valid serves with exactly 30 frames.
+    fn generate_trajectories<'py>(
+        &mut self,
+        py: Python<'py>,
+        count: usize,
+        difficulty: u8,
+    ) -> PyResult<Bound<'py, PyList>> {
+        let diff = match difficulty {
+            1 => Difficulty::Stage1,
+            2 => Difficulty::Stage2,
+            _ => Difficulty::Stage3,
+        };
+
+        let result = PyList::empty(py);
+        let mut generated = 0;
+
+        while generated < count {
+            let serve = random_serve(&mut self.rng, diff);
+            let obs_result = prepare_serve(serve, &self.table);
+
+            if obs_result.bad_serve {
+                continue;
+            }
+
+            // Only use trajectories with exactly OBS_FRAMES observations
+            if obs_result.observations.len() < OBS_FRAMES {
+                continue;
+            }
+
+            // Take last 30 frames
+            let n = obs_result.observations.len();
+            let start = n - OBS_FRAMES;
+            let traj = PyList::empty(py);
+            for frame in &obs_result.observations[start..] {
+                let point = PyList::new(py, &[frame[0], frame[1], frame[2]])?;
+                traj.append(point)?;
+            }
+            result.append(traj)?;
+            generated += 1;
+        }
+
+        Ok(result)
+    }
 }
 
 /// Python module definition

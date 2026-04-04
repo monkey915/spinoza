@@ -77,7 +77,10 @@ def train(args):
 
     if args.load:
         print(f"  Loading pretrained model: {args.load}")
-        model = PPO.load(args.load, env=env, device="cpu")
+        model = PPO.load(
+            args.load, env=env, device="cpu",
+            custom_objects={"action_space": env.action_space},
+        )
         # Allow overriding hyperparams for fine-tuning
         model.learning_rate = learning_rate
         model.ent_coef = args.ent_coef
