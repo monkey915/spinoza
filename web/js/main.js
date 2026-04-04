@@ -1158,101 +1158,86 @@ function showPrediction() {
   const gt = traj.ground_truth; // [[x,y,z], ...]
   const pr = pred.predicted;    // [[x,y,z], ...]
 
-  // Ground truth line (solid white → cyan)
-  const gtPoints = gt.map(p => s2t(p[0], p[1], p[2]));
-  const gtColors = [];
-  for (let i = 0; i < gt.length; i++) {
-    const f = i / (gt.length - 1);
-    if (i < nInput) {
-      // Observed: bright white
-      gtColors.push(1.0, 1.0, 1.0);
-    } else {
-      // Future ground truth: cyan → blue
-      const ff = (i - nInput) / (gt.length - nInput);
-      gtColors.push(0.2, 0.8 - ff * 0.3, 1.0);
-    }
+  // 1) Observed portion: white line (same for both GT and prediction)
+  const obsPoints = [];
+  for (let i = 0; i < nInput; i++) {
+    obsPoints.push(s2t(gt[i][0], gt[i][1], gt[i][2]));
   }
-  const gtGeo = new THREE.BufferGeometry().setFromPoints(gtPoints);
-  gtGeo.setAttribute('color', new THREE.Float32BufferAttribute(gtColors, 3));
-  const gtLine = new THREE.Line(gtGeo, new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 2 }));
-  scene.add(gtLine);
-  predLines.push(gtLine);
-
-  // Prediction line (from frame 0 to 30, colored by error)
-  const prPoints = pr.map(p => s2t(p[0], p[1], p[2]));
-  const prColors = [];
-  for (let i = 0; i < pr.length; i++) {
-    if (i < nInput) {
-      // Input frames: dim (predicted = input here)
-      prColors.push(0.4, 0.4, 0.2);
-    } else {
-      // Predicted: green → yellow → red by error
-      const errIdx = i - nInput;
-      const err = pred.errors_mm[errIdx] || 0;
-      const t = Math.min(err / 30.0, 1.0); // 0mm=green, 30mm=red
-      prColors.push(t, 1.0 - t * 0.7, 0.1);
-    }
+  if (obsPoints.length >= 2) {
+    const obsGeo = new THREE.BufferGeometry().setFromPoints(obsPoints);
+    const obsLine = new THREE.Line(obsGeo, new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }));
+    scene.add(obsLine);
+    predLines.push(obsLine);
   }
-  const prGeo = new THREE.BufferGeometry().setFromPoints(prPoints);
-  prGeo.setAttribute('color', new THREE.Float32BufferAttribute(prColors, 3));
-  const prMat = new THREE.LineDashedMaterial({ vertexColors: true, linewidth: 2, dashSize: 0.02, gapSize: 0.01 });
-  const prLine = new THREE.Line(prGeo, prMat);
-  prLine.computeLineDistances();
-  scene.add(prLine);
-  predLines.push(prLine);
 
-  // Divider marker: small sphere at the split point (last observed frame)
+  // 2) Ground truth future: cyan line (where ball ACTUALLY went)
+  const gtFuturePoints = [];
+  for (let i = Math.max(0, nInput - 1); i < gt.length; i++) {
+    gtFuturePoints.push(s2t(gt[i][0], gt[i][1], gt[i][2]));
+  }
+  if (gtFuturePoints.length >= 2) {
+    const gtGeo = new THREE.BufferGeometry().setFromPoints(gtFuturePoints);
+    const gtLine = new THREE.Line(gtGeo, new THREE.LineBasicMaterial({ color: 0x44ddff, linewidth: 2 }));
+    scene.add(gtLine);
+    predLines.push(gtLine);
+  }
+
+  // 3) Prediction future: orange line (what predictor thinks)
+  const prFuturePoints = [];
+  for (let i = Math.max(0, nInput - 1); i < pr.length; i++) {
+    prFuturePoints.push(s2t(pr[i][0], pr[i][1], pr[i][2]));
+  }
+  if (prFuturePoints.length >= 2) {
+    const prGeo = new THREE.BufferGeometry().setFromPoints(prFuturePoints);
+    const prLine = new THREE.Line(prGeo, new THREE.LineBasicMaterial({ color: 0xff8844, linewidth: 2 }));
+    scene.add(prLine);
+    predLines.push(prLine);
+  }
+
+  // 4) Yellow split point: where observation ends and prediction begins
   const splitPt = gt[nInput - 1];
-  const splitGeo = new THREE.SphereGeometry(0.008, 8, 8);
-  const splitMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-  const splitMesh = new THREE.Mesh(splitGeo, splitMat);
+  const splitGeo = new THREE.SphereGeometry(0.01, 12, 12);
+  const splitMesh = new THREE.Mesh(splitGeo, new THREE.MeshBasicMaterial({ color: 0xffff00 }));
   splitMesh.position.copy(s2t(splitPt[0], splitPt[1], splitPt[2]));
   scene.add(splitMesh);
   predLines.push(splitMesh);
 
-  // Error bars: thin lines connecting GT and prediction at each predicted frame
-  for (let i = nInput; i < gt.length; i += 2) {
-    const gtPt = s2t(gt[i][0], gt[i][1], gt[i][2]);
-    const prPt = s2t(pr[i][0], pr[i][1], pr[i][2]);
-    const errGeo = new THREE.BufferGeometry().setFromPoints([gtPt, prPt]);
-    const errIdx = i - nInput;
-    const err = pred.errors_mm[errIdx] || 0;
-    const t = Math.min(err / 30.0, 1.0);
-    const errColor = new THREE.Color(t, 1.0 - t * 0.7, 0.1);
-    const errLine = new THREE.Line(errGeo, new THREE.LineBasicMaterial({ color: errColor, linewidth: 1, transparent: true, opacity: 0.5 }));
-    scene.add(errLine);
-    predLines.push(errLine);
-  }
-
-  // End point markers
+  // 5) End point markers
   const gtEnd = gt[gt.length - 1];
   const prEnd = pr[pr.length - 1];
-  const endGeoGT = new THREE.SphereGeometry(0.006, 8, 8);
-  const endMeshGT = new THREE.Mesh(endGeoGT, new THREE.MeshBasicMaterial({ color: 0x44aaff }));
-  endMeshGT.position.copy(s2t(gtEnd[0], gtEnd[1], gtEnd[2]));
-  scene.add(endMeshGT);
-  predLines.push(endMeshGT);
+  const endGT = new THREE.Mesh(
+    new THREE.SphereGeometry(0.008, 8, 8),
+    new THREE.MeshBasicMaterial({ color: 0x44ddff })
+  );
+  endGT.position.copy(s2t(gtEnd[0], gtEnd[1], gtEnd[2]));
+  scene.add(endGT);
+  predLines.push(endGT);
 
-  const endGeoPR = new THREE.SphereGeometry(0.006, 8, 8);
-  const endMeshPR = new THREE.Mesh(endGeoPR, new THREE.MeshBasicMaterial({ color: 0xff8844 }));
-  endMeshPR.position.copy(s2t(prEnd[0], prEnd[1], prEnd[2]));
-  scene.add(endMeshPR);
-  predLines.push(endMeshPR);
+  const endPR = new THREE.Mesh(
+    new THREE.SphereGeometry(0.008, 8, 8),
+    new THREE.MeshBasicMaterial({ color: 0xff8844 })
+  );
+  endPR.position.copy(s2t(prEnd[0], prEnd[1], prEnd[2]));
+  scene.add(endPR);
+  predLines.push(endPR);
 
   // Update info panel
   const info = document.getElementById('pred-info');
+  const finalErr = pred.errors_mm[pred.errors_mm.length - 1];
   info.innerHTML = `
     <b>Serve:</b> ${traj.serve_speed} m/s<br>
-    <b>Topspin:</b> ${traj.topspin} rad/s<br>
+    <b>Topspin:</b> ${traj.topspin} rad/s &nbsp;
     <b>Backspin:</b> ${traj.backspin} rad/s<br>
     <b>Sidespin:</b> ${traj.sidespin} rad/s<br>
-    <hr style="border-color:var(--panel-border); margin:4px 0;">
-    <span style="color:#fff">●</span> Ground truth &nbsp;
-    <span style="color:#ff8844">●</span> Prediction<br>
-    <span style="color:#ffff00">●</span> Split point (frame ${nInput})<br>
-    <b>Avg error:</b> ${pred.avg_error_mm} mm<br>
-    <b>Max error:</b> ${pred.max_error_mm} mm<br>
-    <b>Final frame:</b> ${pred.errors_mm[pred.errors_mm.length - 1]} mm
+    <hr style="border-color:var(--panel-border); margin:6px 0;">
+    <span style="color:#fff">━━</span> Beobachtet (${nInput} frames)<br>
+    <span style="color:#44ddff">━━</span> Echte Flugbahn<br>
+    <span style="color:#ff8844">━━</span> Vorhersage<br>
+    <span style="color:#ffff00">●</span> Trennpunkt<br>
+    <hr style="border-color:var(--panel-border); margin:6px 0;">
+    <b>Ø Fehler:</b> ${pred.avg_error_mm} mm &nbsp;
+    <b>Max:</b> ${pred.max_error_mm} mm<br>
+    <b>Endpunkt-Fehler:</b> ${finalErr} mm
   `;
 
   document.getElementById('pred-index').textContent = `${predIndex + 1} / ${cat.trajectories.length}`;
