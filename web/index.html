@@ -221,6 +221,16 @@
       }
       #viewport-container { height: 55vh; }
     }
+    .pred-ball-label {
+      position: absolute;
+      font: bold 12px monospace;
+      background: rgba(0,0,0,0.6);
+      padding: 2px 6px;
+      border-radius: 3px;
+      pointer-events: none;
+      white-space: nowrap;
+      transform: translate(-50%, -100%);
+    }
   </style>
 </head>
 <body>
@@ -387,6 +397,7 @@
       </div>
       <div class="btn-row" style="margin-top:8px;">
         <button class="btn" id="pred-prev">◀ Prev</button>
+        <button class="btn btn-accent" id="pred-play">▶ Play</button>
         <span id="pred-index" style="padding:4px 12px; color:var(--text-dim);">0 / 0</span>
         <button class="btn" id="pred-next">Next ▶</button>
       </div>
@@ -398,6 +409,8 @@
 <div id="viewport-container">
   <canvas id="viewport"></canvas>
   <div id="spin-overlay" style="position:absolute;top:12px;left:12px;color:#fff;font:bold 14px monospace;background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:4px;pointer-events:none;display:none;"></div>
+  <div id="pred-gt-label" class="pred-ball-label" style="display:none;color:#44ddff;">GT</div>
+  <div id="pred-pr-label" class="pred-ball-label" style="display:none;color:#ff8844;">Pred</div>
 </div>
 
 <script type="module" src="js/main.js"></script>

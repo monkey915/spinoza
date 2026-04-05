@@ -18,7 +18,7 @@ class TrajectoryDataset(Dataset):
     Uses generate_rich_trajectories to get spin ground truth.
     """
 
-    def __init__(self, n_trajectories: int, difficulty: int, seed: int = 42):
+    def __init__(self, n_trajectories: int, difficulty: int, seed: int = 42, noise_mm: float = 0.0):
         env = SimEnv(seed=seed, difficulty=difficulty)
         raw = env.generate_rich_trajectories(n_trajectories, difficulty)
 
@@ -34,6 +34,7 @@ class TrajectoryDataset(Dataset):
         self.targets = torch.from_numpy(positions).repeat_interleave(n_variants, dim=0)
         self.pred_masks = torch.zeros(total, TOTAL_FRAMES)
         self.spin_targets = torch.from_numpy(spins).repeat_interleave(n_variants, dim=0)  # (total, 3)
+        self.noise_std = noise_mm / 1000.0  # mm → meters
 
         for v, n_input in enumerate(range(MIN_INPUT, MAX_INPUT + 1)):
             start = v
@@ -47,9 +48,16 @@ class TrajectoryDataset(Dataset):
         return len(self.targets)
 
     def __getitem__(self, idx):
+        inp = self.inputs[idx].clone()
+        mask = self.masks[idx]
+        # Add measurement noise to observed frames (different each access)
+        if self.noise_std > 0:
+            n_observed = int(mask.sum().item())
+            noise = torch.randn(n_observed, 3) * self.noise_std
+            inp[:n_observed] += noise
         return {
-            'input': self.inputs[idx],
-            'mask': self.masks[idx],
+            'input': inp,
+            'mask': mask,
             'target': self.targets[idx],
             'pred_mask': self.pred_masks[idx],
             'spin': self.spin_targets[idx],
@@ -173,14 +181,15 @@ def train(
     output='models/predictor.pt',
     load_backbone=None,
     predict_spin=False,
+    noise_mm=0.0,
 ):
     import os
     torch.set_num_threads(int(os.environ.get('OMP_NUM_THREADS', 32)))
 
     print(f"=== Trajectory Prediction Training ===")
-    print(f"  predict_spin={predict_spin}")
+    print(f"  predict_spin={predict_spin}, noise={noise_mm}mm")
     print(f"  Generating {n_trajectories} trajectories (difficulty={difficulty})...")
-    dataset = TrajectoryDataset(n_trajectories, difficulty)
+    dataset = TrajectoryDataset(n_trajectories, difficulty, noise_mm=noise_mm)
     print(f"  Dataset size: {len(dataset)} samples ({n_trajectories} trajectories × {MAX_INPUT - MIN_INPUT + 1} N-values)")
 
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
@@ -344,6 +353,7 @@ if __name__ == '__main__':
     parser.add_argument('--output', default='models/predictor.pt')
     parser.add_argument('--predict-spin', action='store_true', help='Add auxiliary spin prediction head')
     parser.add_argument('--load-backbone', type=str, default=None, help='Load pretrained backbone weights')
+    parser.add_argument('--noise-mm', type=float, default=0.0, help='Gaussian measurement noise in mm')
     args = parser.parse_args()
 
     if args.mode == 'train':
@@ -358,6 +368,7 @@ if __name__ == '__main__':
             output=args.output,
             predict_spin=args.predict_spin,
             load_backbone=args.load_backbone,
+            noise_mm=args.noise_mm,
         )
         evaluate(model_path=args.output, difficulty=args.difficulty)
     else:

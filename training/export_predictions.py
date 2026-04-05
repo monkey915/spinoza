@@ -50,8 +50,8 @@ def matches_category(traj_info, cat_spec):
     return True
 
 
-def predict_trajectory(model, positions, n_input):
-    """Run predictor on partial input, return predicted positions."""
+def predict_trajectory(model, positions, n_input, predict_spin=False):
+    """Run predictor on partial input, return predicted positions (and spin)."""
     input_padded = np.zeros((1, TOTAL_FRAMES, 3), dtype=np.float32)
     mask = np.zeros((1, TOTAL_FRAMES), dtype=np.float32)
     input_padded[0, :n_input] = positions[:n_input]
@@ -60,9 +60,13 @@ def predict_trajectory(model, positions, n_input):
     with torch.no_grad():
         inp = torch.from_numpy(input_padded)
         m = torch.from_numpy(mask)
-        pred = model(inp, m).numpy()[0]  # (30, 3)
-
-    return pred
+        out = model(inp, m)
+        if predict_spin:
+            pos_pred = out[0].numpy()[0]  # (30, 3)
+            spin_pred = out[1].numpy()[0] * 150.0  # denormalize: (3,)
+            return pos_pred, spin_pred
+        else:
+            return out.numpy()[0], None
 
 
 def to_json_list(arr):
@@ -73,14 +77,23 @@ def to_json_list(arr):
 
 
 def main():
-    print("Loading predictor model...")
-    model = TrajectoryPredictor(hidden=128, n_layers=4, kernel_size=7)
-    ckpt = torch.load('models/predictor.pt', map_location='cpu', weights_only=False)
-    if 'model_state_dict' in ckpt:
-        model.load_state_dict(ckpt['model_state_dict'])
-    else:
-        model.load_state_dict(ckpt)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', default='models/predictor_spin.pt', help='Model checkpoint')
+    args = parser.parse_args()
+
+    print(f"Loading predictor model from {args.model}...")
+    ckpt = torch.load(args.model, map_location='cpu', weights_only=False)
+    predict_spin = ckpt.get('predict_spin', False)
+    model = TrajectoryPredictor(
+        hidden=ckpt.get('hidden', 128),
+        n_layers=ckpt.get('n_layers', 4),
+        kernel_size=ckpt.get('kernel_size', 7),
+        predict_spin=predict_spin,
+    )
+    model.load_state_dict(ckpt['model_state_dict'])
     model.eval()
+    print(f"  predict_spin={predict_spin}")
 
     print("Generating trajectories...")
     env = SimEnv(seed=123, difficulty=3)
@@ -105,7 +118,7 @@ def main():
                 categorized[cat_name].append(traj_info)
                 break
 
-    output = {"categories": {}, "n_input_options": N_INPUT_FRAMES}
+    output = {"categories": {}, "n_input_options": N_INPUT_FRAMES, "frame_dt": 1.0 / 60.0}
 
     for cat_name, trajs in categorized.items():
         print(f"  {cat_name}: {len(trajs)} trajectories")
@@ -117,20 +130,23 @@ def main():
 
             predictions = {}
             for n_input in N_INPUT_FRAMES:
-                pred = predict_trajectory(model, positions, n_input)
+                pred_pos, pred_spin = predict_trajectory(model, positions, n_input, predict_spin)
                 errors = []
                 for i in range(n_input, TOTAL_FRAMES):
-                    dx = float(pred[i][0] - positions[i][0])
-                    dy = float(pred[i][1] - positions[i][1])
-                    dz = float(pred[i][2] - positions[i][2])
+                    dx = float(pred_pos[i][0] - positions[i][0])
+                    dy = float(pred_pos[i][1] - positions[i][1])
+                    dz = float(pred_pos[i][2] - positions[i][2])
                     err_mm = (dx**2 + dy**2 + dz**2)**0.5 * 1000
                     errors.append(round(err_mm, 1))
-                predictions[str(n_input)] = {
-                    "predicted": to_json_list(pred),
+                pred_entry = {
+                    "predicted": to_json_list(pred_pos),
                     "errors_mm": errors,
                     "avg_error_mm": round(sum(errors) / len(errors), 1) if errors else 0,
                     "max_error_mm": round(max(errors), 1) if errors else 0,
                 }
+                if pred_spin is not None:
+                    pred_entry["predicted_spin"] = [round(float(v), 1) for v in pred_spin]
+                predictions[str(n_input)] = pred_entry
 
             entry = {
                 "ground_truth": to_json_list(positions),

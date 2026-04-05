@@ -229,6 +229,7 @@ let netMarker = null;
 let predLines = [];  // prediction overlay lines
 
 function clearVisualization() {
+  stopPredAnim();
   if (trajectoryLine) {
     scene.remove(trajectoryLine);
     trajectoryLine.geometry.dispose();
@@ -652,6 +653,9 @@ function animate(time) {
       document.getElementById("btn-play").textContent = "⏸";
     }
   }
+
+  // Prediction animation
+  updatePredAnimation(time);
 
   controls.update();
   renderer.render(scene, camera);
@@ -1139,6 +1143,88 @@ let predCategory = null;
 let predIndex = 0;
 let predNInputIdx = 2; // index into n_input_options
 
+// Prediction animation state
+let predAnimActive = false;
+let predAnimPlaying = false;
+let predAnimFrame = 0;
+let predAnimLastTime = 0;
+let predAnimGT = null;     // ground truth positions [[x,y,z],...]
+let predAnimPR = null;     // predicted positions [[x,y,z],...]
+let predAnimStates = null; // full_states for GT spin per frame
+let predAnimSpin = null;   // predicted spin [wx,wy,wz] (constant)
+let predAnimNInput = 0;
+let predFrameDt = 1.0 / 60.0;
+
+// Two extra ball meshes for prediction mode
+const predGTBall = new THREE.Mesh(
+  new THREE.SphereGeometry(BALL_RADIUS, 24, 24),
+  new THREE.MeshStandardMaterial({ color: 0x44ddff, emissive: 0x44ddff, emissiveIntensity: 0.3 })
+);
+predGTBall.visible = false;
+scene.add(predGTBall);
+
+const predPRBall = new THREE.Mesh(
+  new THREE.SphereGeometry(BALL_RADIUS, 24, 24),
+  new THREE.MeshStandardMaterial({ color: 0xff8844, emissive: 0xff8844, emissiveIntensity: 0.3 })
+);
+predPRBall.visible = false;
+scene.add(predPRBall);
+
+// Spin arrows for prediction balls
+const predGTArrow = new THREE.ArrowHelper(
+  new THREE.Vector3(0,1,0), new THREE.Vector3(), BALL_RADIUS*3, 0x44ddff, BALL_RADIUS*1.0, BALL_RADIUS*0.6
+);
+predGTArrow.visible = false;
+scene.add(predGTArrow);
+
+const predPRArrow = new THREE.ArrowHelper(
+  new THREE.Vector3(0,1,0), new THREE.Vector3(), BALL_RADIUS*3, 0xff8844, BALL_RADIUS*1.0, BALL_RADIUS*0.6
+);
+predPRArrow.visible = false;
+scene.add(predPRArrow);
+
+function projectToScreen(pos3d) {
+  const v = pos3d.clone().project(camera);
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (v.x * 0.5 + 0.5) * rect.width + rect.left,
+    y: (-v.y * 0.5 + 0.5) * rect.height + rect.top,
+  };
+}
+
+function updateSpinArrow(arrow, pos3d, omega) {
+  const norm = Math.sqrt(omega[0]**2 + omega[1]**2 + omega[2]**2);
+  if (norm > 5) {
+    arrow.visible = true;
+    arrow.position.copy(pos3d);
+    const dir = s2t(-omega[0]/norm, -omega[1]/norm, -omega[2]/norm).normalize();
+    arrow.setDirection(dir);
+    arrow.setLength(BALL_RADIUS*2 + (norm/300)*BALL_RADIUS*3, BALL_RADIUS*1.0, BALL_RADIUS*0.6);
+  } else {
+    arrow.visible = false;
+  }
+}
+
+function spinLabel(omega) {
+  const norm = Math.sqrt(omega[0]**2 + omega[1]**2 + omega[2]**2);
+  if (norm < 5) return '';
+  const label = omega[0] > 10 ? 'TS' : omega[0] < -10 ? 'BS' : 'SS';
+  return `${Math.round(norm)} rad/s ${label}`;
+}
+
+function stopPredAnim() {
+  predAnimActive = false;
+  predAnimPlaying = false;
+  predGTBall.visible = false;
+  predPRBall.visible = false;
+  predGTArrow.visible = false;
+  predPRArrow.visible = false;
+  document.getElementById('pred-gt-label').style.display = 'none';
+  document.getElementById('pred-pr-label').style.display = 'none';
+  const btn = document.getElementById('pred-play');
+  if (btn) btn.textContent = '▶ Play';
+}
+
 function showPrediction() {
   if (!predData || !predCategory) return;
   const cat = predData.categories[predCategory];
@@ -1149,90 +1235,102 @@ function showPrediction() {
   const pred = traj.predictions[String(nInput)];
   if (!pred) return;
 
+  // Stop any running replay/anim
+  animPlaying = false;
+  stopPredAnim();
   clearVisualization();
   ballMesh.visible = false;
   paddleMesh.visible = false;
   swingArrow.visible = false;
   arrowHelper.visible = false;
 
-  const gt = traj.ground_truth; // [[x,y,z], ...]
-  const pr = pred.predicted;    // [[x,y,z], ...]
+  predFrameDt = predData.frame_dt || (1.0 / 60.0);
 
-  // 1) Observed portion: white line (same for both GT and prediction)
+  const gt = traj.ground_truth;
+  const pr = pred.predicted;
+
+  // Draw trail lines (dimmed, visible from start)
+  // Observed: white dashed
   const obsPoints = [];
-  for (let i = 0; i < nInput; i++) {
-    obsPoints.push(s2t(gt[i][0], gt[i][1], gt[i][2]));
-  }
+  for (let i = 0; i < nInput; i++) obsPoints.push(s2t(gt[i][0], gt[i][1], gt[i][2]));
   if (obsPoints.length >= 2) {
-    const obsGeo = new THREE.BufferGeometry().setFromPoints(obsPoints);
-    const obsLine = new THREE.Line(obsGeo, new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }));
-    scene.add(obsLine);
-    predLines.push(obsLine);
+    const geo = new THREE.BufferGeometry().setFromPoints(obsPoints);
+    const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1 }));
+    scene.add(line);
+    predLines.push(line);
   }
 
-  // 2) Ground truth future: cyan line (where ball ACTUALLY went)
-  const gtFuturePoints = [];
-  for (let i = Math.max(0, nInput - 1); i < gt.length; i++) {
-    gtFuturePoints.push(s2t(gt[i][0], gt[i][1], gt[i][2]));
-  }
-  if (gtFuturePoints.length >= 2) {
-    const gtGeo = new THREE.BufferGeometry().setFromPoints(gtFuturePoints);
-    const gtLine = new THREE.Line(gtGeo, new THREE.LineBasicMaterial({ color: 0x44ddff, linewidth: 2 }));
-    scene.add(gtLine);
-    predLines.push(gtLine);
+  // GT future: cyan dim trail
+  const gtPts = [];
+  for (let i = Math.max(0, nInput-1); i < gt.length; i++) gtPts.push(s2t(gt[i][0], gt[i][1], gt[i][2]));
+  if (gtPts.length >= 2) {
+    const geo = new THREE.BufferGeometry().setFromPoints(gtPts);
+    const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0x225577, linewidth: 1 }));
+    scene.add(line);
+    predLines.push(line);
   }
 
-  // 3) Prediction future: orange line (what predictor thinks)
-  const prFuturePoints = [];
-  for (let i = Math.max(0, nInput - 1); i < pr.length; i++) {
-    prFuturePoints.push(s2t(pr[i][0], pr[i][1], pr[i][2]));
-  }
-  if (prFuturePoints.length >= 2) {
-    const prGeo = new THREE.BufferGeometry().setFromPoints(prFuturePoints);
-    const prLine = new THREE.Line(prGeo, new THREE.LineBasicMaterial({ color: 0xff8844, linewidth: 2 }));
-    scene.add(prLine);
-    predLines.push(prLine);
+  // Predicted future: orange dim trail
+  const prPts = [];
+  for (let i = Math.max(0, nInput-1); i < pr.length; i++) prPts.push(s2t(pr[i][0], pr[i][1], pr[i][2]));
+  if (prPts.length >= 2) {
+    const geo = new THREE.BufferGeometry().setFromPoints(prPts);
+    const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0x553311, linewidth: 1 }));
+    scene.add(line);
+    predLines.push(line);
   }
 
-  // 4) Yellow split point: where observation ends and prediction begins
-  const splitPt = gt[nInput - 1];
-  const splitGeo = new THREE.SphereGeometry(0.01, 12, 12);
-  const splitMesh = new THREE.Mesh(splitGeo, new THREE.MeshBasicMaterial({ color: 0xffff00 }));
-  splitMesh.position.copy(s2t(splitPt[0], splitPt[1], splitPt[2]));
+  // Yellow split marker
+  const sp = gt[nInput - 1];
+  const splitMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.008, 12, 12),
+    new THREE.MeshBasicMaterial({ color: 0xffff00 })
+  );
+  splitMesh.position.copy(s2t(sp[0], sp[1], sp[2]));
   scene.add(splitMesh);
   predLines.push(splitMesh);
 
-  // 5) End point markers
-  const gtEnd = gt[gt.length - 1];
-  const prEnd = pr[pr.length - 1];
-  const endGT = new THREE.Mesh(
-    new THREE.SphereGeometry(0.008, 8, 8),
-    new THREE.MeshBasicMaterial({ color: 0x44ddff })
-  );
-  endGT.position.copy(s2t(gtEnd[0], gtEnd[1], gtEnd[2]));
-  scene.add(endGT);
-  predLines.push(endGT);
+  // Store animation data
+  predAnimGT = gt;
+  predAnimPR = pr;
+  predAnimStates = traj.full_states;
+  predAnimSpin = pred.predicted_spin || null;
+  predAnimNInput = nInput;
+  predAnimFrame = 0;
+  predAnimActive = true;
 
-  const endPR = new THREE.Mesh(
-    new THREE.SphereGeometry(0.008, 8, 8),
-    new THREE.MeshBasicMaterial({ color: 0xff8844 })
-  );
-  endPR.position.copy(s2t(prEnd[0], prEnd[1], prEnd[2]));
-  scene.add(endPR);
-  predLines.push(endPR);
+  // Position balls at frame 0
+  predGTBall.visible = true;
+  predPRBall.visible = true;
+  predGTBall.position.copy(s2t(gt[0][0], gt[0][1], gt[0][2]));
+  predPRBall.position.copy(s2t(pr[0][0], pr[0][1], pr[0][2]));
 
   // Update info panel
   const info = document.getElementById('pred-info');
   const finalErr = pred.errors_mm[pred.errors_mm.length - 1];
+
+  // Spin info
+  let gtSpinText = '';
+  if (predAnimStates && predAnimStates[0]) {
+    const s = predAnimStates[0];
+    const gts = [s[6], s[7], s[8]];
+    gtSpinText = `<b>GT Spin:</b> ${spinLabel(gts)}`;
+  }
+  let prSpinText = '';
+  if (predAnimSpin) {
+    prSpinText = `<b>Pred Spin:</b> ${spinLabel(predAnimSpin)}`;
+  }
+
   info.innerHTML = `
     <b>Serve:</b> ${traj.serve_speed} m/s<br>
     <b>Topspin:</b> ${traj.topspin} rad/s &nbsp;
     <b>Backspin:</b> ${traj.backspin} rad/s<br>
     <b>Sidespin:</b> ${traj.sidespin} rad/s<br>
+    ${gtSpinText ? gtSpinText + '<br>' : ''}
+    ${prSpinText ? prSpinText + '<br>' : ''}
     <hr style="border-color:var(--panel-border); margin:6px 0;">
-    <span style="color:#fff">━━</span> Beobachtet (${nInput} frames)<br>
-    <span style="color:#44ddff">━━</span> Echte Flugbahn<br>
-    <span style="color:#ff8844">━━</span> Vorhersage<br>
+    <span style="color:#44ddff">●</span> Ground Truth &nbsp;
+    <span style="color:#ff8844">●</span> Vorhersage &nbsp;
     <span style="color:#ffff00">●</span> Trennpunkt<br>
     <hr style="border-color:var(--panel-border); margin:6px 0;">
     <b>Ø Fehler:</b> ${pred.avg_error_mm} mm &nbsp;
@@ -1241,6 +1339,92 @@ function showPrediction() {
   `;
 
   document.getElementById('pred-index').textContent = `${predIndex + 1} / ${cat.trajectories.length}`;
+}
+
+function updatePredAnimation(time) {
+  if (!predAnimActive) return;
+
+  if (predAnimPlaying) {
+    const dt = (time - predAnimLastTime) / 1000;
+    predAnimLastTime = time;
+    // Advance frame (slow-mo: 0.3× speed for visibility)
+    predAnimFrame += dt / predFrameDt * 0.3;
+  }
+
+  const f = Math.min(predAnimFrame, predAnimGT.length - 1);
+  const fi = Math.floor(f);
+  const frac = f - fi;
+  const fi2 = Math.min(fi + 1, predAnimGT.length - 1);
+
+  // Interpolate GT ball position
+  const gtPos = s2t(
+    predAnimGT[fi][0] + (predAnimGT[fi2][0] - predAnimGT[fi][0]) * frac,
+    predAnimGT[fi][1] + (predAnimGT[fi2][1] - predAnimGT[fi][1]) * frac,
+    predAnimGT[fi][2] + (predAnimGT[fi2][2] - predAnimGT[fi][2]) * frac,
+  );
+  predGTBall.position.copy(gtPos);
+
+  // Interpolate predicted ball position
+  const prPos = s2t(
+    predAnimPR[fi][0] + (predAnimPR[fi2][0] - predAnimPR[fi][0]) * frac,
+    predAnimPR[fi][1] + (predAnimPR[fi2][1] - predAnimPR[fi][1]) * frac,
+    predAnimPR[fi][2] + (predAnimPR[fi2][2] - predAnimPR[fi][2]) * frac,
+  );
+  predPRBall.position.copy(prPos);
+
+  // GT spin arrow (from full_states)
+  if (predAnimStates && predAnimStates[fi]) {
+    const s = predAnimStates[fi];
+    updateSpinArrow(predGTArrow, gtPos, [s[6], s[7], s[8]]);
+  }
+
+  // Predicted spin arrow (constant across frames)
+  if (predAnimSpin) {
+    updateSpinArrow(predPRArrow, prPos, predAnimSpin);
+  }
+
+  // Project to screen and update HTML labels
+  const gtLabel = document.getElementById('pred-gt-label');
+  const prLabel = document.getElementById('pred-pr-label');
+
+  const gtScreen = projectToScreen(gtPos);
+  gtLabel.style.left = gtScreen.x + 'px';
+  gtLabel.style.top = (gtScreen.y - 20) + 'px';
+  gtLabel.style.display = 'block';
+
+  const prScreen = projectToScreen(prPos);
+  prLabel.style.left = prScreen.x + 'px';
+  prLabel.style.top = (prScreen.y - 20) + 'px';
+  prLabel.style.display = 'block';
+
+  // Show spin text on labels
+  if (predAnimStates && predAnimStates[fi]) {
+    const s = predAnimStates[fi];
+    const gtSpin = spinLabel([s[6], s[7], s[8]]);
+    gtLabel.textContent = gtSpin ? `GT: ${gtSpin}` : 'GT';
+  }
+  if (predAnimSpin) {
+    const prSpin = spinLabel(predAnimSpin);
+    prLabel.textContent = prSpin ? `Pred: ${prSpin}` : 'Pred';
+  } else {
+    prLabel.textContent = 'Pred';
+  }
+
+  // Highlight when past the split point
+  if (fi >= predAnimNInput) {
+    predGTBall.material.emissiveIntensity = 0.5;
+    predPRBall.material.emissiveIntensity = 0.5;
+  } else {
+    predGTBall.material.emissiveIntensity = 0.15;
+    predPRBall.material.emissiveIntensity = 0.15;
+  }
+
+  // Loop when done
+  if (predAnimFrame >= predAnimGT.length - 1 && predAnimPlaying) {
+    predAnimPlaying = false;
+    predAnimFrame = predAnimGT.length - 1;
+    document.getElementById('pred-play').textContent = '▶ Play';
+  }
 }
 
 document.getElementById('pred-load').addEventListener('click', async () => {
@@ -1307,6 +1491,20 @@ document.getElementById('pred-next').addEventListener('click', () => {
   const cat = predData.categories[predCategory];
   predIndex = (predIndex + 1) % cat.trajectories.length;
   showPrediction();
+});
+
+document.getElementById('pred-play').addEventListener('click', () => {
+  if (!predAnimActive) return;
+  if (predAnimPlaying) {
+    predAnimPlaying = false;
+    document.getElementById('pred-play').textContent = '▶ Play';
+  } else {
+    // Restart if at end
+    if (predAnimFrame >= predAnimGT.length - 1) predAnimFrame = 0;
+    predAnimPlaying = true;
+    predAnimLastTime = performance.now();
+    document.getElementById('pred-play').textContent = '⏸ Pause';
+  }
 });
 
 // ===== Init =====
