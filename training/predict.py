@@ -25,6 +25,8 @@ class TrajectoryDataset(Dataset):
         positions = np.array([t['positions'] for t in raw], dtype=np.float32)  # (N, 30, 3)
         # Extract spin from first full_state frame: [x,y,z, vx,vy,vz, ωx,ωy,ωz]
         spins = np.array([[s[6], s[7], s[8]] for t in raw for s in [t['full_states'][0]]], dtype=np.float32)  # (N, 3)
+        # Extract velocity per frame from full_states
+        velocities = np.array([[[s[3], s[4], s[5]] for s in t['full_states']] for t in raw], dtype=np.float32)  # (N, 30, 3)
 
         n_variants = MAX_INPUT - MIN_INPUT + 1
         total = n_trajectories * n_variants
@@ -34,6 +36,7 @@ class TrajectoryDataset(Dataset):
         self.targets = torch.from_numpy(positions).repeat_interleave(n_variants, dim=0)
         self.pred_masks = torch.zeros(total, TOTAL_FRAMES)
         self.spin_targets = torch.from_numpy(spins).repeat_interleave(n_variants, dim=0)  # (total, 3)
+        self.vel_targets = torch.from_numpy(velocities).repeat_interleave(n_variants, dim=0)  # (total, 30, 3)
         self.noise_std = noise_mm / 1000.0  # mm → meters
 
         for v, n_input in enumerate(range(MIN_INPUT, MAX_INPUT + 1)):
@@ -61,6 +64,7 @@ class TrajectoryDataset(Dataset):
             'target': self.targets[idx],
             'pred_mask': self.pred_masks[idx],
             'spin': self.spin_targets[idx],
+            'vel': self.vel_targets[idx],
         }
 
 
@@ -72,12 +76,13 @@ class TrajectoryPredictor(nn.Module):
     receptive field = 1 + 8*(7-1) = 49 — covers entire 30-frame sequence.
 
     Input: (batch, 30, 3) padded positions + (batch, 30) mask
-    Output: positions (batch, 30, 3) + spin (batch, 3)
+    Output: positions (batch, 30, 3) [+ velocity (batch, 30, 3)] [+ spin (batch, 3)]
     """
 
-    def __init__(self, hidden=128, n_layers=4, kernel_size=7, predict_spin=False):
+    def __init__(self, hidden=128, n_layers=4, kernel_size=7, predict_spin=False, predict_vel=False):
         super().__init__()
         self.predict_spin = predict_spin
+        self.predict_vel = predict_vel
         pad = kernel_size // 2
 
         # Input: position (3) + mask (1) = 4 channels → hidden channels
@@ -101,6 +106,13 @@ class TrajectoryPredictor(nn.Module):
             nn.Conv1d(hidden, 3, kernel_size=1),
         )
 
+        # Auxiliary velocity head: Conv1d → 3 values (vx, vy, vz) per frame
+        if predict_vel:
+            self.vel_conv = nn.Sequential(
+                nn.BatchNorm1d(hidden),
+                nn.Conv1d(hidden, 3, kernel_size=1),
+            )
+
         # Auxiliary spin prediction head: global avg pool → MLP → 3 values (ωx, ωy, ωz)
         if predict_spin:
             self.spin_head = nn.Sequential(
@@ -113,7 +125,7 @@ class TrajectoryPredictor(nn.Module):
         """
         x: (batch, 30, 3) - input positions (zero-padded)
         mask: (batch, 30) - 1 for observed, 0 for padding
-        Returns: (batch, 30, 3) positions [, (batch, 3) spin if predict_spin]
+        Returns: pos (batch, 30, 3), spin (batch, 3) or None, vel (batch, 30, 3) or None
         """
         # Concatenate mask as extra channel: (batch, 30, 4)
         x = torch.cat([x, mask.unsqueeze(-1)], dim=-1)
@@ -129,17 +141,21 @@ class TrajectoryPredictor(nn.Module):
         pos_out = self.output_conv(x)  # (batch, 3, 30)
         pos_out = pos_out.transpose(1, 2)  # (batch, 30, 3)
 
+        spin_out = None
         if self.predict_spin:
-            # Global average pooling over time → (batch, hidden)
             pooled = x.mean(dim=2)
             spin_out = self.spin_head(pooled)  # (batch, 3)
-            return pos_out, spin_out
 
-        return pos_out
+        vel_out = None
+        if self.predict_vel:
+            vel_out = self.vel_conv(x)  # (batch, 3, 30)
+            vel_out = vel_out.transpose(1, 2)  # (batch, 30, 3)
+
+        return pos_out, spin_out, vel_out
 
 
-def compute_loss(pos_pred, target, pred_mask, spin_pred=None, spin_target=None):
-    """Position MSE + velocity consistency + optional spin loss."""
+def compute_loss(pos_pred, target, pred_mask, spin_pred=None, spin_target=None, vel_pred=None, vel_target=None):
+    """Position MSE + velocity consistency + optional spin/velocity head loss."""
     # Position loss: only on predicted (unobserved) frames
     pos_diff = (pos_pred - target) ** 2  # (batch, 30, 3)
     pos_diff = pos_diff.sum(dim=-1)  # (batch, 30) — squared distance per frame
@@ -166,7 +182,16 @@ def compute_loss(pos_pred, target, pred_mask, spin_pred=None, spin_target=None):
         spin_loss = ((spin_pred - spin_target / 150.0) ** 2).mean()
         total = total + 0.1 * spin_loss
 
-    return total, pos_loss, vel_loss, spin_loss
+    # Velocity head loss: MSE on predicted velocity vs true velocity (from physics)
+    vel_head_loss = torch.tensor(0.0)
+    if vel_pred is not None and vel_target is not None:
+        # Normalize velocity by 10 m/s to match position loss scale
+        vel_head_diff = ((vel_pred - vel_target / 10.0) ** 2).sum(dim=-1)  # (batch, 30)
+        vel_head_loss = (vel_head_diff * pred_mask).sum(dim=-1) / mask_sum
+        vel_head_loss = vel_head_loss.mean()
+        total = total + 0.2 * vel_head_loss
+
+    return total, pos_loss, vel_loss, spin_loss, vel_head_loss
 
 
 def train(
@@ -181,22 +206,23 @@ def train(
     output='models/predictor.pt',
     load_backbone=None,
     predict_spin=False,
+    predict_vel=False,
     noise_mm=0.0,
 ):
     import os
     torch.set_num_threads(int(os.environ.get('OMP_NUM_THREADS', 32)))
 
     print(f"=== Trajectory Prediction Training ===")
-    print(f"  predict_spin={predict_spin}, noise={noise_mm}mm")
+    print(f"  predict_spin={predict_spin}, predict_vel={predict_vel}, noise={noise_mm}mm")
     print(f"  Generating {n_trajectories} trajectories (difficulty={difficulty})...")
     dataset = TrajectoryDataset(n_trajectories, difficulty, noise_mm=noise_mm)
     print(f"  Dataset size: {len(dataset)} samples ({n_trajectories} trajectories × {MAX_INPUT - MIN_INPUT + 1} N-values)")
 
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 
-    model = TrajectoryPredictor(hidden=hidden, n_layers=n_layers, predict_spin=predict_spin).to(device)
+    model = TrajectoryPredictor(hidden=hidden, n_layers=n_layers, predict_spin=predict_spin, predict_vel=predict_vel).to(device)
 
-    # Load pretrained backbone weights (ignoring missing spin head keys)
+    # Load pretrained backbone weights (ignoring missing head keys)
     if load_backbone:
         print(f"  Loading backbone from: {load_backbone}")
         ckpt = torch.load(load_backbone, map_location=device, weights_only=False)
@@ -221,6 +247,7 @@ def train(
         total_pos = 0
         total_vel = 0
         total_spin = 0
+        total_vel_head = 0
         n_batches = 0
 
         for batch in loader:
@@ -229,15 +256,16 @@ def train(
             target = batch['target'].to(device)
             pred_mask = batch['pred_mask'].to(device)
 
-            if predict_spin:
-                spin_target = batch['spin'].to(device)
-                pos_pred, spin_pred = model(inp, mask)
-                loss, pos_loss, vel_loss, spin_loss = compute_loss(
-                    pos_pred, target, pred_mask, spin_pred, spin_target)
-            else:
-                pos_pred = model(inp, mask)
-                loss, pos_loss, vel_loss, spin_loss = compute_loss(
-                    pos_pred, target, pred_mask)
+            pos_pred, spin_pred, vel_pred = model(inp, mask)
+
+            spin_target = batch['spin'].to(device) if predict_spin else None
+            vel_target = batch['vel'].to(device) if predict_vel else None
+
+            loss, pos_loss, vel_loss, spin_loss, vel_head_loss = compute_loss(
+                pos_pred, target, pred_mask,
+                spin_pred, spin_target,
+                vel_pred, vel_target,
+            )
 
             optimizer.zero_grad()
             loss.backward()
@@ -248,6 +276,7 @@ def train(
             total_pos += pos_loss.item()
             total_vel += vel_loss.item()
             total_spin += spin_loss.item()
+            total_vel_head += vel_head_loss.item()
             n_batches += 1
 
         scheduler.step()
@@ -255,6 +284,7 @@ def train(
         avg_pos = total_pos / n_batches
         avg_vel = total_vel / n_batches
         avg_spin = total_spin / n_batches
+        avg_vel_head = total_vel_head / n_batches
 
         elapsed = _time.time() - t0
         eta = elapsed / (epoch + 1) * (epochs - epoch - 1)
@@ -269,13 +299,16 @@ def train(
                 'n_layers': n_layers,
                 'kernel_size': 7,
                 'predict_spin': predict_spin,
+                'predict_vel': predict_vel,
                 'best_loss': best_loss,
                 'epoch': epoch + 1,
             }, output)
             saved = " ★"
 
-        spin_str = f" | spin={avg_spin:.6f}" if predict_spin else ""
-        print(f"  epoch {epoch+1:3d}/{epochs} | loss={avg_loss:.6f} | pos={avg_pos:.6f} | vel={avg_vel:.6f}{spin_str} | lr={scheduler.get_last_lr()[0]:.2e} | ETA {eta_h}h{eta_m:02d}m{saved}")
+        extras = ""
+        if predict_spin: extras += f" | spin={avg_spin:.6f}"
+        if predict_vel: extras += f" | vhead={avg_vel_head:.6f}"
+        print(f"  epoch {epoch+1:3d}/{epochs} | loss={avg_loss:.6f} | pos={avg_pos:.6f} | vel={avg_vel:.6f}{extras} | lr={scheduler.get_last_lr()[0]:.2e} | ETA {eta_h}h{eta_m:02d}m{saved}")
 
     print(f"\n  Best loss: {best_loss:.6f}")
     print(f"  Model saved to {output}")
@@ -286,11 +319,13 @@ def evaluate(model_path='models/predictor.pt', difficulty=3, n_test=1000, device
     """Evaluate prediction error vs number of input frames."""
     checkpoint = torch.load(model_path, map_location=device, weights_only=False)
     predict_spin = checkpoint.get('predict_spin', False)
+    predict_vel = checkpoint.get('predict_vel', False)
     model = TrajectoryPredictor(
         hidden=checkpoint['hidden'],
         n_layers=checkpoint['n_layers'],
         kernel_size=checkpoint.get('kernel_size', 7),
         predict_spin=predict_spin,
+        predict_vel=predict_vel,
     ).to(device)
     model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()
@@ -299,11 +334,14 @@ def evaluate(model_path='models/predictor.pt', difficulty=3, n_test=1000, device
     raw = env.generate_rich_trajectories(n_test, difficulty)
     trajectories = np.array([t['positions'] for t in raw], dtype=np.float32)
     spins = np.array([[s[6], s[7], s[8]] for t in raw for s in [t['full_states'][0]]], dtype=np.float32)
+    velocities = np.array([[[s[3], s[4], s[5]] for s in t['full_states']] for t in raw], dtype=np.float32)
 
     print(f"\n=== Evaluation: prediction error vs input frames ===")
     header = f"{'N input':>8} | {'Avg pos err (mm)':>16} | {'Max pos err (mm)':>16} | {'Final frame err (mm)':>20}"
     if predict_spin:
         header += f" | {'Spin err (rad/s)':>16}"
+    if predict_vel:
+        header += f" | {'Vel err (m/s)':>14}"
     print(header)
     print("-" * len(header))
 
@@ -314,16 +352,15 @@ def evaluate(model_path='models/predictor.pt', difficulty=3, n_test=1000, device
         mask[:, :n_input] = 1.0
 
         with torch.no_grad():
-            result = model(
+            pos_pred, spin_pred, vel_pred = model(
                 torch.from_numpy(input_padded).to(device),
                 torch.from_numpy(mask).to(device),
             )
-            if predict_spin:
-                pos_pred, spin_pred = result
-                pos_pred = pos_pred.cpu().numpy()
+            pos_pred = pos_pred.cpu().numpy()
+            if spin_pred is not None:
                 spin_pred = spin_pred.cpu().numpy()
-            else:
-                pos_pred = result.cpu().numpy()
+            if vel_pred is not None:
+                vel_pred = vel_pred.cpu().numpy()
 
         # Position error on predicted (future) frames
         errors = np.sqrt(((pos_pred[:, n_input:] - trajectories[:, n_input:]) ** 2).sum(axis=-1))
@@ -332,10 +369,14 @@ def evaluate(model_path='models/predictor.pt', difficulty=3, n_test=1000, device
         final_err = np.sqrt(((pos_pred[:, -1] - trajectories[:, -1]) ** 2).sum(axis=-1)).mean() * 1000
 
         line = f"{n_input:>8} | {avg_err:>16.1f} | {max_err:>16.1f} | {final_err:>20.1f}"
-        if predict_spin:
-            # Spin error in rad/s (spin_pred is normalized by 150)
+        if predict_spin and spin_pred is not None:
             spin_err = np.sqrt(((spin_pred * 150.0 - spins) ** 2).sum(axis=-1)).mean()
             line += f" | {spin_err:>16.1f}"
+        if predict_vel and vel_pred is not None:
+            # Velocity error on predicted frames (vel_pred is normalized by 10)
+            vel_errs = np.sqrt(((vel_pred[:, n_input:] * 10.0 - velocities[:, n_input:]) ** 2).sum(axis=-1))
+            vel_err = vel_errs.mean()
+            line += f" | {vel_err:>14.2f}"
         print(line)
 
 
@@ -352,6 +393,7 @@ if __name__ == '__main__':
     parser.add_argument('--n-layers', type=int, default=4)
     parser.add_argument('--output', default='models/predictor.pt')
     parser.add_argument('--predict-spin', action='store_true', help='Add auxiliary spin prediction head')
+    parser.add_argument('--predict-vel', action='store_true', help='Add auxiliary velocity prediction head')
     parser.add_argument('--load-backbone', type=str, default=None, help='Load pretrained backbone weights')
     parser.add_argument('--noise-mm', type=float, default=0.0, help='Gaussian measurement noise in mm')
     args = parser.parse_args()
@@ -367,6 +409,7 @@ if __name__ == '__main__':
             n_layers=args.n_layers,
             output=args.output,
             predict_spin=args.predict_spin,
+            predict_vel=args.predict_vel,
             load_backbone=args.load_backbone,
             noise_mm=args.noise_mm,
         )

@@ -50,8 +50,8 @@ def matches_category(traj_info, cat_spec):
     return True
 
 
-def predict_trajectory(model, positions, n_input, predict_spin=False):
-    """Run predictor on partial input, return predicted positions (and spin)."""
+def predict_trajectory(model, positions, n_input):
+    """Run predictor on partial input, return predicted positions, spin, velocity."""
     input_padded = np.zeros((1, TOTAL_FRAMES, 3), dtype=np.float32)
     mask = np.zeros((1, TOTAL_FRAMES), dtype=np.float32)
     input_padded[0, :n_input] = positions[:n_input]
@@ -60,13 +60,11 @@ def predict_trajectory(model, positions, n_input, predict_spin=False):
     with torch.no_grad():
         inp = torch.from_numpy(input_padded)
         m = torch.from_numpy(mask)
-        out = model(inp, m)
-        if predict_spin:
-            pos_pred = out[0].numpy()[0]  # (30, 3)
-            spin_pred = out[1].numpy()[0] * 150.0  # denormalize: (3,)
-            return pos_pred, spin_pred
-        else:
-            return out.numpy()[0], None
+        pos_pred, spin_pred, vel_pred = model(inp, m)
+        pos_np = pos_pred.numpy()[0]
+        spin_np = spin_pred.numpy()[0] * 150.0 if spin_pred is not None else None
+        vel_np = vel_pred.numpy()[0] * 10.0 if vel_pred is not None else None
+        return pos_np, spin_np, vel_np
 
 
 def to_json_list(arr):
@@ -85,15 +83,17 @@ def main():
     print(f"Loading predictor model from {args.model}...")
     ckpt = torch.load(args.model, map_location='cpu', weights_only=False)
     predict_spin = ckpt.get('predict_spin', False)
+    predict_vel = ckpt.get('predict_vel', False)
     model = TrajectoryPredictor(
         hidden=ckpt.get('hidden', 128),
         n_layers=ckpt.get('n_layers', 4),
         kernel_size=ckpt.get('kernel_size', 7),
         predict_spin=predict_spin,
+        predict_vel=predict_vel,
     )
     model.load_state_dict(ckpt['model_state_dict'])
     model.eval()
-    print(f"  predict_spin={predict_spin}")
+    print(f"  predict_spin={predict_spin}, predict_vel={predict_vel}")
 
     print("Generating trajectories...")
     env = SimEnv(seed=123, difficulty=3)
@@ -130,7 +130,7 @@ def main():
 
             predictions = {}
             for n_input in N_INPUT_FRAMES:
-                pred_pos, pred_spin = predict_trajectory(model, positions, n_input, predict_spin)
+                pred_pos, pred_spin, pred_vel = predict_trajectory(model, positions, n_input)
                 errors = []
                 for i in range(n_input, TOTAL_FRAMES):
                     dx = float(pred_pos[i][0] - positions[i][0])
@@ -146,6 +146,8 @@ def main():
                 }
                 if pred_spin is not None:
                     pred_entry["predicted_spin"] = [round(float(v), 1) for v in pred_spin]
+                if pred_vel is not None:
+                    pred_entry["predicted_vel"] = to_json_list(pred_vel)
                 predictions[str(n_input)] = pred_entry
 
             entry = {
