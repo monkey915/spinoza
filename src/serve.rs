@@ -74,12 +74,12 @@ impl Rng {
     }
 
     /// Uniform f64 in [0, 1)
-    fn uniform(&mut self) -> f64 {
+    pub fn uniform(&mut self) -> f64 {
         (self.next_u64() >> 11) as f64 / (1u64 << 53) as f64
     }
 
     /// Uniform f64 in [lo, hi]
-    fn uniform_range(&mut self, lo: f64, hi: f64) -> f64 {
+    pub fn uniform_range(&mut self, lo: f64, hi: f64) -> f64 {
         lo + (hi - lo) * self.uniform()
     }
 }

@@ -166,7 +166,7 @@ pub fn prepare_serve(serve_state: BallState, table: &Table) -> ServeObservation 
 
 /// Find the ball state at a given Y position by interpolating the trajectory.
 /// Returns None if the ball never reaches that Y.
-fn interpolate_at_y(traj: &[BallState], target_y: f64) -> Option<BallState> {
+pub fn interpolate_at_y(traj: &[BallState], target_y: f64) -> Option<BallState> {
     for w in traj.windows(2) {
         let a = &w[0];
         let b = &w[1];

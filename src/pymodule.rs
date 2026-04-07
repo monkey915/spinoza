@@ -5,6 +5,7 @@ use crate::physics::paddle::PaddleAction;
 use crate::physics::state::{BallState, Vec3};
 use crate::rally::{
     prepare_serve, evaluate_return, run_rally_replay,
+    interpolate_at_y as interpolate_at_y_pub,
     RallyOutcome, OBS_FRAMES,
 };
 use crate::serve::{random_serve, Difficulty, Rng};
@@ -407,6 +408,147 @@ impl SimEnv {
             entry.set_item("topspin", -serve.omega.x)?; // positive = topspin
             entry.set_item("backspin", serve.omega.x.max(0.0))?;
             entry.set_item("sidespin", -serve.omega.z)?;
+            entry.set_item("trajectory_type", "serve")?;
+            result.append(entry)?;
+            generated += 1;
+        }
+
+        Ok(result)
+    }
+
+    /// Generate return-shot (rally) trajectories with random paddle actions.
+    /// These are faster balls traveling back toward the server's side.
+    fn generate_rally_trajectories<'py>(
+        &mut self,
+        py: Python<'py>,
+        count: usize,
+        difficulty: u8,
+    ) -> PyResult<Bound<'py, PyList>> {
+        use crate::simulation::simulate_full;
+        use crate::physics::paddle::apply_paddle_hit;
+
+        let diff = match difficulty {
+            1 => Difficulty::Stage1,
+            2 => Difficulty::Stage2,
+            _ => Difficulty::Stage3,
+        };
+
+        let result = PyList::empty(py);
+        let mut generated = 0;
+        let table = &self.table;
+
+        while generated < count {
+            // 1. Generate a valid serve
+            let serve = random_serve(&mut self.rng, diff);
+            let obs_result = prepare_serve(serve, table);
+            if obs_result.bad_serve || obs_result.flight_trajectory.len() < 5 {
+                continue;
+            }
+
+            // 2. Smart paddle: position WHERE the ball is, random swing
+            let paddle_y = self.rng.uniform_range(2.2, 3.0);
+            let ball_at_y = match interpolate_at_y_pub(&obs_result.flight_trajectory, paddle_y) {
+                Some(s) => s,
+                None => continue,
+            };
+
+            let paddle_x = ball_at_y.pos.x + self.rng.uniform_range(-0.04, 0.04);
+            let paddle_z = (ball_at_y.pos.z + self.rng.uniform_range(-0.02, 0.02))
+                .max(table.surface_z() + 0.09);
+
+            let tilt_x = self.rng.uniform_range(-0.3, 0.4);
+            let tilt_z = self.rng.uniform_range(-0.15, 0.15);
+            let swing_speed = self.rng.uniform_range(5.0, 25.0);
+            let swing_elevation = self.rng.uniform_range(0.05, 0.45);
+
+            let action = PaddleAction {
+                paddle_x,
+                paddle_y,
+                paddle_z,
+                tilt_x,
+                tilt_z,
+                swing_speed,
+                swing_elevation,
+            };
+
+            // 3. Apply paddle hit directly (no landing validation — we want diverse trajectories)
+            let paddle_result = apply_paddle_hit(&ball_at_y, &action, table.surface_z(), 0.15);
+            let hit_state = match paddle_result {
+                crate::physics::paddle::PaddleResult::Hit(s) => s,
+                _ => continue,
+            };
+
+            // Skip degenerate returns (too slow or going wrong direction)
+            if hit_state.vel.norm() < 3.0 {
+                continue;
+            }
+
+            // 4. Simulate the return flight and sample at 60Hz
+            let mut obs_frames: Vec<[f64; 3]> = Vec::new();
+            let mut full_states: Vec<BallState> = Vec::new();
+            let dt = 0.0005;
+            let obs_dt = 1.0 / 60.0;
+            let mut state = hit_state;
+            let mut t = 0.0;
+            let mut next_obs = 0.0;
+            let min_frames = 15; // rallies are shorter, need at least 15 frames
+
+            loop {
+                if t >= next_obs && obs_frames.len() < OBS_FRAMES {
+                    obs_frames.push([state.pos.x, state.pos.y, state.pos.z]);
+                    full_states.push(state);
+                    next_obs += obs_dt;
+                }
+                if state.pos.z < 0.0 || state.pos.y < -1.0 || state.pos.y > table.length + 2.0 {
+                    break;
+                }
+                if obs_frames.len() >= OBS_FRAMES {
+                    break;
+                }
+                state = crate::physics::integrator::rk4_step(&state, dt);
+                t += dt;
+            }
+
+            let n_actual = obs_frames.len();
+            if n_actual < min_frames {
+                continue;
+            }
+
+            // Pad to OBS_FRAMES if needed (repeat last position)
+            while obs_frames.len() < OBS_FRAMES {
+                obs_frames.push(*obs_frames.last().unwrap());
+                full_states.push(*full_states.last().unwrap());
+            }
+
+            // 6. Build output
+            let traj = PyList::empty(py);
+            for frame in &obs_frames {
+                let point = PyList::new(py, &[frame[0], frame[1], frame[2]])?;
+                traj.append(point)?;
+            }
+
+            let full_traj = PyList::empty(py);
+            for state in &full_states {
+                let frame = PyList::new(py, &[
+                    state.pos.x, state.pos.y, state.pos.z,
+                    state.vel.x, state.vel.y, state.vel.z,
+                    state.omega.x, state.omega.y, state.omega.z,
+                ])?;
+                full_traj.append(frame)?;
+            }
+
+            let entry = PyDict::new(py);
+            entry.set_item("positions", traj)?;
+            entry.set_item("full_states", full_traj)?;
+            entry.set_item("serve_speed", hit_state.vel.norm())?;
+            entry.set_item("serve_vx", hit_state.vel.x)?;
+            entry.set_item("serve_vy", hit_state.vel.y)?;
+            entry.set_item("serve_vz", hit_state.vel.z)?;
+            entry.set_item("topspin", -hit_state.omega.x)?;
+            entry.set_item("backspin", hit_state.omega.x.max(0.0))?;
+            entry.set_item("sidespin", -hit_state.omega.z)?;
+            entry.set_item("trajectory_type", "rally")?;
+            entry.set_item("n_actual_frames", n_actual)?;
             result.append(entry)?;
             generated += 1;
         }
