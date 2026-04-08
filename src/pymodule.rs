@@ -458,7 +458,7 @@ impl SimEnv {
 
             let tilt_x = self.rng.uniform_range(-0.3, 0.4);
             let tilt_z = self.rng.uniform_range(-0.15, 0.15);
-            let swing_speed = self.rng.uniform_range(5.0, 25.0);
+            let swing_speed = self.rng.uniform_range(5.0, 35.0);
             let swing_elevation = self.rng.uniform_range(0.05, 0.45);
 
             let action = PaddleAction {

@@ -15,37 +15,67 @@ class TrajectoryDataset(Dataset):
     """Generate variable-length input / ground-truth output pairs from physics sim.
     
     Pre-computes all tensors for fast DataLoader access.
-    Uses generate_rich_trajectories to get spin ground truth.
+    Supports mixed serve + rally trajectories for diverse speed coverage.
     """
 
-    def __init__(self, n_trajectories: int, difficulty: int, seed: int = 42, noise_mm: float = 0.0):
+    def __init__(self, n_trajectories: int, difficulty: int, seed: int = 42,
+                 noise_mm: float = 0.0, rally_ratio: float = 0.0):
         env = SimEnv(seed=seed, difficulty=difficulty)
-        raw = env.generate_rich_trajectories(n_trajectories, difficulty)
 
-        positions = np.array([t['positions'] for t in raw], dtype=np.float32)  # (N, 30, 3)
-        # Extract spin from first full_state frame: [x,y,z, vx,vy,vz, ωx,ωy,ωz]
-        spins = np.array([[s[6], s[7], s[8]] for t in raw for s in [t['full_states'][0]]], dtype=np.float32)  # (N, 3)
-        # Extract velocity per frame from full_states
-        velocities = np.array([[[s[3], s[4], s[5]] for s in t['full_states']] for t in raw], dtype=np.float32)  # (N, 30, 3)
+        # Generate serve and rally trajectories
+        n_rally = int(n_trajectories * rally_ratio)
+        n_serve = n_trajectories - n_rally
 
-        n_variants = MAX_INPUT - MIN_INPUT + 1
-        total = n_trajectories * n_variants
+        raw = []
+        if n_serve > 0:
+            serve_raw = env.generate_rich_trajectories(n_serve, difficulty)
+            for t in serve_raw:
+                t['n_actual_frames'] = TOTAL_FRAMES  # serves always have 30 frames
+            raw.extend(serve_raw)
 
-        self.inputs = torch.zeros(total, TOTAL_FRAMES, 3)
-        self.masks = torch.zeros(total, TOTAL_FRAMES)
-        self.targets = torch.from_numpy(positions).repeat_interleave(n_variants, dim=0)
-        self.pred_masks = torch.zeros(total, TOTAL_FRAMES)
-        self.spin_targets = torch.from_numpy(spins).repeat_interleave(n_variants, dim=0)  # (total, 3)
-        self.vel_targets = torch.from_numpy(velocities).repeat_interleave(n_variants, dim=0)  # (total, 30, 3)
+        if n_rally > 0:
+            print(f"  Generating {n_rally} rally trajectories...")
+            rally_raw = env.generate_rally_trajectories(n_rally, difficulty)
+            raw.extend(rally_raw)
+
+        # Build samples: for each trajectory, generate variants for valid n_input values
+        input_list = []
+        mask_list = []
+        target_list = []
+        pred_mask_list = []
+        spin_list = []
+        vel_list = []
+
+        for t in raw:
+            positions = np.array(t['positions'], dtype=np.float32)  # (30, 3)
+            n_actual = int(t.get('n_actual_frames', TOTAL_FRAMES))
+            spin = np.array([t['full_states'][0][6], t['full_states'][0][7], t['full_states'][0][8]], dtype=np.float32)
+            velocity = np.array([[s[3], s[4], s[5]] for s in t['full_states']], dtype=np.float32)  # (30, 3)
+
+            # Generate variants: n_input from MIN_INPUT to min(MAX_INPUT, n_actual - 1)
+            max_input = min(MAX_INPUT, n_actual - 1)
+            for n_input in range(MIN_INPUT, max_input + 1):
+                inp = np.zeros((TOTAL_FRAMES, 3), dtype=np.float32)
+                inp[:n_input] = positions[:n_input]
+                mask = np.zeros(TOTAL_FRAMES, dtype=np.float32)
+                mask[:n_input] = 1.0
+                pred_mask = np.zeros(TOTAL_FRAMES, dtype=np.float32)
+                pred_mask[n_input:n_actual] = 1.0  # only actual frames, not padding
+
+                input_list.append(inp)
+                mask_list.append(mask)
+                target_list.append(positions)
+                pred_mask_list.append(pred_mask)
+                spin_list.append(spin)
+                vel_list.append(velocity)
+
+        self.inputs = torch.from_numpy(np.stack(input_list))
+        self.masks = torch.from_numpy(np.stack(mask_list))
+        self.targets = torch.from_numpy(np.stack(target_list))
+        self.pred_masks = torch.from_numpy(np.stack(pred_mask_list))
+        self.spin_targets = torch.from_numpy(np.stack(spin_list))
+        self.vel_targets = torch.from_numpy(np.stack(vel_list))
         self.noise_std = noise_mm / 1000.0  # mm → meters
-
-        for v, n_input in enumerate(range(MIN_INPUT, MAX_INPUT + 1)):
-            start = v
-            indices = range(start, total, n_variants)
-            for i, idx in enumerate(indices):
-                self.inputs[idx, :n_input] = self.targets[idx, :n_input]
-                self.masks[idx, :n_input] = 1.0
-                self.pred_masks[idx, n_input:] = 1.0
 
     def __len__(self):
         return len(self.targets)
@@ -208,15 +238,16 @@ def train(
     predict_spin=False,
     predict_vel=False,
     noise_mm=0.0,
+    rally_ratio=0.0,
 ):
     import os
     torch.set_num_threads(int(os.environ.get('OMP_NUM_THREADS', 32)))
 
     print(f"=== Trajectory Prediction Training ===")
-    print(f"  predict_spin={predict_spin}, predict_vel={predict_vel}, noise={noise_mm}mm")
+    print(f"  predict_spin={predict_spin}, predict_vel={predict_vel}, noise={noise_mm}mm, rally_ratio={rally_ratio:.0%}")
     print(f"  Generating {n_trajectories} trajectories (difficulty={difficulty})...")
-    dataset = TrajectoryDataset(n_trajectories, difficulty, noise_mm=noise_mm)
-    print(f"  Dataset size: {len(dataset)} samples ({n_trajectories} trajectories × {MAX_INPUT - MIN_INPUT + 1} N-values)")
+    dataset = TrajectoryDataset(n_trajectories, difficulty, noise_mm=noise_mm, rally_ratio=rally_ratio)
+    print(f"  Dataset size: {len(dataset)} samples")
 
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
 
@@ -396,6 +427,7 @@ if __name__ == '__main__':
     parser.add_argument('--predict-vel', action='store_true', help='Add auxiliary velocity prediction head')
     parser.add_argument('--load-backbone', type=str, default=None, help='Load pretrained backbone weights')
     parser.add_argument('--noise-mm', type=float, default=0.0, help='Gaussian measurement noise in mm')
+    parser.add_argument('--rally-ratio', type=float, default=0.0, help='Fraction of rally trajectories (0.0-1.0)')
     args = parser.parse_args()
 
     if args.mode == 'train':
@@ -412,6 +444,7 @@ if __name__ == '__main__':
             predict_vel=args.predict_vel,
             load_backbone=args.load_backbone,
             noise_mm=args.noise_mm,
+            rally_ratio=args.rally_ratio,
         )
         evaluate(model_path=args.output, difficulty=args.difficulty)
     else:
