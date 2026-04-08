@@ -401,6 +401,17 @@ impl SimEnv {
             let entry = PyDict::new(py);
             entry.set_item("positions", traj)?;
             entry.set_item("full_states", full_traj)?;
+
+            // Full high-res serve trajectory for WebUI visualization
+            let hires_serve: Vec<Vec<f64>> = obs_result.flight_trajectory.iter()
+                .map(|s| vec![
+                    s.pos.x, s.pos.y, s.pos.z,
+                    s.vel.x, s.vel.y, s.vel.z,
+                    s.omega.x, s.omega.y, s.omega.z,
+                ])
+                .collect();
+            entry.set_item("serve_trajectory_hires", hires_serve)?;
+
             entry.set_item("serve_speed", serve.vel.norm())?;
             entry.set_item("serve_vx", serve.vel.x)?;
             entry.set_item("serve_vy", serve.vel.y)?;
@@ -621,7 +632,11 @@ impl SimEnv {
         result.set_item("post_hit_vy", hit_state.vel.y)?;
         result.set_item("post_hit_vz", hit_state.vel.z)?;
 
-        // Simulate the return flight
+        // Record contact position and post-hit spin
+        result.set_item("contact_pos", vec![hit_state.pos.x, hit_state.pos.y, hit_state.pos.z])?;
+        result.set_item("hit_omega", vec![hit_state.omega.x, hit_state.omega.y, hit_state.omega.z])?;
+
+        // Simulate the return flight, collecting trajectory points
         let dt = 0.0005;
         let net_y = table.net_y();
         let net_top_z = table.surface_z() + 0.1525;
@@ -629,40 +644,70 @@ impl SimEnv {
         let mut t = 0.0;
         let mut crossed_net = false;
         let mut net_clearance = f64::MAX;
+        let mut return_traj: Vec<Vec<f64>> = Vec::new();
+        let mut return_bounces: Vec<Vec<f64>> = Vec::new();
+        let mut step_count: u64 = 0;
+
+        // Record initial point
+        return_traj.push(vec![
+            t, state.pos.x, state.pos.y, state.pos.z,
+            state.vel.x, state.vel.y, state.vel.z,
+            state.omega.x, state.omega.y, state.omega.z,
+        ]);
 
         loop {
             let prev_y = state.pos.y;
+            let prev_z = state.pos.z;
             state = rk4_step(&state, dt);
             t += dt;
+            step_count += 1;
 
-            // Check net crossing (ball moves from Y > net to Y < net)
+            // Record every 4th step (~2000 Hz → ~500 points/sec)
+            if step_count % 4 == 0 {
+                return_traj.push(vec![
+                    t, state.pos.x, state.pos.y, state.pos.z,
+                    state.vel.x, state.vel.y, state.vel.z,
+                    state.omega.x, state.omega.y, state.omega.z,
+                ]);
+            }
+
+            // Check net crossing
             if !crossed_net && prev_y > net_y && state.pos.y <= net_y {
                 crossed_net = true;
                 net_clearance = state.pos.z - net_top_z;
                 if net_clearance < 0.0 {
                     result.set_item("outcome", "hit_net")?;
                     result.set_item("net_clearance_z", net_clearance)?;
+                    result.set_item("return_trajectory", return_traj)?;
+                    result.set_item("return_bounces", &return_bounces)?;
                     return Ok(result);
                 }
             }
 
-            // Check table landing (ball descends to table height on server's half)
-            if state.pos.z <= table.surface_z() && state.vel.z < 0.0 {
+            // Check table landing
+            if state.pos.z <= table.surface_z() && state.vel.z < 0.0 && prev_z > table.surface_z() {
                 let lx = state.pos.x;
                 let ly = state.pos.y;
-                // Must land on server's half (y < net_y) and within table width
+
+                // Record bounce
+                return_bounces.push(vec![t, lx, ly, table.surface_z()]);
+
                 if ly >= 0.0 && ly <= net_y && lx >= 0.0 && lx <= table.width {
                     result.set_item("outcome", "success")?;
                     result.set_item("landing_x", lx)?;
                     result.set_item("landing_y", ly)?;
                     result.set_item("net_clearance_z", net_clearance)?;
                     result.set_item("flight_time", t)?;
+                    result.set_item("return_trajectory", return_traj)?;
+                    result.set_item("return_bounces", &return_bounces)?;
                     return Ok(result);
                 } else {
                     result.set_item("outcome", "missed_table")?;
                     result.set_item("landing_x", lx)?;
                     result.set_item("landing_y", ly)?;
                     result.set_item("net_clearance_z", if crossed_net { net_clearance } else { f64::MAX })?;
+                    result.set_item("return_trajectory", return_traj)?;
+                    result.set_item("return_bounces", &return_bounces)?;
                     return Ok(result);
                 }
             }
@@ -671,6 +716,8 @@ impl SimEnv {
             if state.pos.z < -1.0 || t > 3.0 || state.pos.y < -2.0 {
                 result.set_item("outcome", "missed_table")?;
                 result.set_item("net_clearance_z", if crossed_net { net_clearance } else { f64::MAX })?;
+                result.set_item("return_trajectory", return_traj)?;
+                result.set_item("return_bounces", &return_bounces)?;
                 return Ok(result);
             }
         }

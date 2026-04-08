@@ -764,7 +764,13 @@ function loadReplay(replay) {
     }
     trimmedServeTraj = serveTraj.slice(0, cutIdx + 1);
   }
-  const mergedTraj = [...trimmedServeTraj, ...returnTraj];
+  // Offset return trajectory timestamps so they continue after serve
+  const serveEndTime = trimmedServeTraj.length > 0 ? trimmedServeTraj[trimmedServeTraj.length - 1].t : 0;
+  const offsetReturnTraj = returnTraj.map((p) => ({
+    ...p,
+    t: p.t + serveEndTime,
+  }));
+  const mergedTraj = [...trimmedServeTraj, ...offsetReturnTraj];
   const serveBounces = (replay.serve_bounces || []).map((b) => ({
     landing: { x: b[1], y: b[2], z: b[3] },
     time: b[0],
@@ -878,7 +884,7 @@ function loadReplay(replay) {
   trajectoryData = {
     trajectory: mergedTraj,
     bounces: [...serveBounces, ...returnBounces],
-    hitNet: replay.outcome === "return_hit_net",
+    hitNet: replay.outcome === "return_hit_net" || replay.outcome === "hit_net",
   };
 
   // Set ball at start
@@ -899,7 +905,9 @@ function updateReplayInfo(replay) {
     success: "#44ff66",
     paddle_miss: "#ff6644",
     return_hit_net: "#ffaa44",
+    hit_net: "#ffaa44",
     return_missed_table: "#ff8844",
+    missed_table: "#ff8844",
     bad_serve: "#888888",
   };
   const color = outcomeColors[replay.outcome] || "#ffffff";
@@ -954,8 +962,9 @@ function updateReplayInfo(replay) {
 
 document.getElementById("replay-load").addEventListener("click", async () => {
   try {
-    const resp = await fetch(`replays.json?t=${Date.now()}`);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}: replays.json not found`);
+    const source = document.getElementById("replay-source").value;
+    const resp = await fetch(`${source}?t=${Date.now()}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${source} not found`);
     replayData = await resp.json();
     document.getElementById("replay-controls").style.display = "block";
     document.getElementById("replay-load").textContent = "✓ Loaded";
@@ -1003,11 +1012,11 @@ document.getElementById("replay-autoplay").addEventListener("click", () => {
 
 document.getElementById("replay-filter").addEventListener("click", () => {
   const btn = document.getElementById("replay-filter");
-  const filters = ["all", "success", "paddle_miss", "return_missed_table"];
+  const filters = ["all", "success", "paddle_miss", "hit_net", "missed_table", "return_missed_table", "return_hit_net"];
   const current = btn.dataset.filter;
   const next = filters[(filters.indexOf(current) + 1) % filters.length];
   btn.dataset.filter = next;
-  const labels = { all: "All", success: "✓ Success", paddle_miss: "✗ Miss", return_missed_table: "↗ Off Table" };
+  const labels = { all: "All", success: "✓ Success", paddle_miss: "✗ Miss", hit_net: "🥅 Net", missed_table: "↗ Off Table", return_missed_table: "↗ Off Table", return_hit_net: "🥅 Net" };
   btn.textContent = labels[next] || next;
   // Re-show current filtered replay
   if (replayData) showReplay(0);

@@ -365,6 +365,10 @@
   <div class="section" id="replay-section">
     <div class="section-title">🤖 AI Replay</div>
     <div class="btn-row">
+      <select id="replay-source" class="slider" style="width:auto; padding:4px 8px; background:var(--bg-card); color:var(--text-light); border:1px solid var(--border); border-radius:4px;">
+        <option value="replays.json">RL Agent</option>
+        <option value="replays_paddle.json" selected>Paddle Optimizer</option>
+      </select>
       <button class="btn btn-accent" id="replay-load">Load Replays</button>
     </div>
     <div id="replay-controls" style="display:none;">
