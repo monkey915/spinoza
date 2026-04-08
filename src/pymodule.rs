@@ -555,6 +555,126 @@ impl SimEnv {
 
         Ok(result)
     }
+
+    /// Simulate a paddle hit given a ball state and paddle action.
+    ///
+    /// ball_state: [x, y, z, vx, vy, vz, ωx, ωy, ωz]
+    /// action: [paddle_x, paddle_y, paddle_z, tilt_x, tilt_z, swing_speed, swing_elevation]
+    ///
+    /// Returns dict with:
+    ///   - outcome: "success", "missed_table", "hit_net", "paddle_miss"
+    ///   - landing_x, landing_y (if success)
+    ///   - net_clearance_z (height above net at net crossing, negative = hit net)
+    ///   - post_hit_speed (ball speed after paddle contact)
+    fn simulate_hit<'py>(
+        &self,
+        py: Python<'py>,
+        ball_state: Vec<f64>,
+        action: Vec<f64>,
+    ) -> PyResult<Bound<'py, PyDict>> {
+        use crate::physics::paddle::apply_paddle_hit;
+        use crate::physics::integrator::rk4_step;
+
+        if ball_state.len() != 9 {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "ball_state must have 9 elements: [x,y,z, vx,vy,vz, ωx,ωy,ωz]"
+            ));
+        }
+        if action.len() != 7 {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "action must have 7 elements: [paddle_x,paddle_y,paddle_z, tilt_x,tilt_z, swing_speed,swing_elevation]"
+            ));
+        }
+
+        let ball = BallState {
+            pos: Vec3::new(ball_state[0], ball_state[1], ball_state[2]),
+            vel: Vec3::new(ball_state[3], ball_state[4], ball_state[5]),
+            omega: Vec3::new(ball_state[6], ball_state[7], ball_state[8]),
+        };
+
+        let paddle_action = PaddleAction {
+            paddle_x: action[0],
+            paddle_y: action[1],
+            paddle_z: action[2],
+            tilt_x: action[3],
+            tilt_z: action[4],
+            swing_speed: action[5],
+            swing_elevation: action[6],
+        };
+
+        let result = PyDict::new(py);
+        let table = &self.table;
+
+        // Apply paddle hit
+        let paddle_result = apply_paddle_hit(&ball, &paddle_action, table.surface_z(), 0.15);
+        let hit_state = match paddle_result {
+            crate::physics::paddle::PaddleResult::Hit(s) => s,
+            crate::physics::paddle::PaddleResult::Miss { miss_distance } => {
+                result.set_item("outcome", "paddle_miss")?;
+                result.set_item("miss_distance", miss_distance)?;
+                return Ok(result);
+            }
+        };
+
+        result.set_item("post_hit_speed", hit_state.vel.norm())?;
+        result.set_item("post_hit_vx", hit_state.vel.x)?;
+        result.set_item("post_hit_vy", hit_state.vel.y)?;
+        result.set_item("post_hit_vz", hit_state.vel.z)?;
+
+        // Simulate the return flight
+        let dt = 0.0005;
+        let net_y = table.net_y();
+        let net_top_z = table.surface_z() + 0.1525;
+        let mut state = hit_state;
+        let mut t = 0.0;
+        let mut crossed_net = false;
+        let mut net_clearance = f64::MAX;
+
+        loop {
+            let prev_y = state.pos.y;
+            state = rk4_step(&state, dt);
+            t += dt;
+
+            // Check net crossing (ball moves from Y > net to Y < net)
+            if !crossed_net && prev_y > net_y && state.pos.y <= net_y {
+                crossed_net = true;
+                net_clearance = state.pos.z - net_top_z;
+                if net_clearance < 0.0 {
+                    result.set_item("outcome", "hit_net")?;
+                    result.set_item("net_clearance_z", net_clearance)?;
+                    return Ok(result);
+                }
+            }
+
+            // Check table landing (ball descends to table height on server's half)
+            if state.pos.z <= table.surface_z() && state.vel.z < 0.0 {
+                let lx = state.pos.x;
+                let ly = state.pos.y;
+                // Must land on server's half (y < net_y) and within table width
+                if ly >= 0.0 && ly <= net_y && lx >= 0.0 && lx <= table.width {
+                    result.set_item("outcome", "success")?;
+                    result.set_item("landing_x", lx)?;
+                    result.set_item("landing_y", ly)?;
+                    result.set_item("net_clearance_z", net_clearance)?;
+                    result.set_item("flight_time", t)?;
+                    return Ok(result);
+                } else {
+                    result.set_item("outcome", "missed_table")?;
+                    result.set_item("landing_x", lx)?;
+                    result.set_item("landing_y", ly)?;
+                    result.set_item("net_clearance_z", if crossed_net { net_clearance } else { f64::MAX })?;
+                    return Ok(result);
+                }
+            }
+
+            // Ball went too far or took too long
+            if state.pos.z < -1.0 || t > 3.0 || state.pos.y < -2.0 {
+                result.set_item("outcome", "missed_table")?;
+                result.set_item("net_clearance_z", if crossed_net { net_clearance } else { f64::MAX })?;
+                return Ok(result);
+            }
+        }
+    }
 }
 
 /// Python module definition
