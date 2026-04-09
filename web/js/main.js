@@ -942,29 +942,24 @@ function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
   // Convert sim → Three.js direction: (sim_x, sim_z, sim_y)
   const desiredNormal = new THREE.Vector3(nx_sim, nz_sim, ny_sim);
 
-  // Forearm direction in Three.js world (from FK derivation)
-  const s = phi2 + phi3;
-  const forearmDir = new THREE.Vector3(
-    Math.cos(s) * Math.sin(phi1),
-    Math.sin(s),
-    -Math.cos(s) * Math.cos(phi1)
+  // Exact parent world rotation: R_y(-phi1) * R_x(phi2 + phi3 - π/2)
+  // This matches the actual Three.js hierarchy: shoulderYaw * shoulderPitch * elbow
+  const qYaw = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(0, 1, 0), -phi1
   );
+  const qPitchElbow = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(1, 0, 0), phi2 + phi3 - Math.PI / 2
+  );
+  const parentQuat = qYaw.multiply(qPitchElbow);
 
-  // Quaternion that rotates forearm direction → desired normal (in world)
-  const worldRot = new THREE.Quaternion().setFromUnitVectors(
-    forearmDir.normalize(), desiredNormal.normalize()
-  );
-
-  // Parent accumulated rotation: takes local (0,1,0) → forearmDir
-  const parentQuat = new THREE.Quaternion().setFromUnitVectors(
-    new THREE.Vector3(0, 1, 0), forearmDir
-  );
+  // Transform desired normal to wrist-local frame
   const parentInv = parentQuat.clone().invert();
+  const localTarget = desiredNormal.clone().applyQuaternion(parentInv).normalize();
 
-  // Local wrist quat = parentInv * worldRot * parentQuat
-  // This expresses the world rotation in the local frame
-  const localQuat = parentInv.clone().multiply(worldRot).multiply(parentQuat);
-  return localQuat;
+  // Wrist rotation: map local Y (0,1,0) to localTarget
+  return new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0), localTarget
+  );
 }
 
 /**
