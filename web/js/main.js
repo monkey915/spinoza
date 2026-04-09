@@ -906,7 +906,8 @@ function solveIK(targetX, targetY, targetZ) {
   const beta = Math.acos(Math.max(-1, Math.min(1,
     (L1 * L1 + clampedD * clampedD - L2 * L2) / (2 * L1 * clampedD)
   )));
-  // Elbow-down configuration: upper arm below the shoulder-target line
+  // Elbow-up configuration (α - β): arm reaches forward, elbow above arm plane
+  // This is the standard 2-link IK q1 for elbow-up (q2 positive)
   const phi2 = alpha - beta;
 
   return { phi1, phi2, phi3, reachable };
@@ -932,15 +933,16 @@ function positionRobotArm(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
 
   // φ2: Shoulder pitch — tilt arm in the yaw-rotated plane
   // Arm mesh starts pointing +Y (up). Rotate around X to lean forward.
-  // pitch=0 → horizontal forward → rotX = -π/2
-  // pitch=π/2 → straight up → rotX = 0
-  // pitch=-π/4 → 45° below horizontal → rotX = -3π/4
+  // phi2=0 → horizontal → rotX = -π/2
+  // phi2=π/2 → straight up → rotX = 0
   robotShoulderPitch.rotation.set(0, 0, 0);
   robotShoulderPitch.rotation.x = -(Math.PI / 2 - ik.phi2);
 
-  // φ3: Elbow bend (positive rotation = bend outward for elbow-down)
+  // φ3: Elbow bend — q2 in standard 2-link IK
+  // phi3 is the interior triangle angle; applying it directly as rotation
+  // around local X bends the forearm correctly in elbow-up configuration
   robotElbow.rotation.set(0, 0, 0);
-  robotElbow.rotation.x = (Math.PI - ik.phi3);
+  robotElbow.rotation.x = ik.phi3;
 
   // φ4: Wrist tilt — paddle face orientation
   robotWrist.rotation.set(0, 0, 0);
