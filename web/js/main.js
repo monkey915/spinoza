@@ -732,22 +732,24 @@ const ROBOT = {
 };
 
 let robotGroup = null;
-let robotShoulder = null;  // pivot group for shoulder rotation
-let robotUpperArm = null;  // mesh
-let robotElbow = null;      // pivot group
-let robotForearm = null;    // mesh
-let robotWrist = null;      // pivot group for wrist/hand
+let robotShoulderYaw = null;   // φ1: rotation around vertical (0-360°)
+let robotShoulderPitch = null; // φ2: elevation from vertical (0-180°)
+let robotUpperArm = null;      // mesh
+let robotElbow = null;         // φ3: elbow bend (0-180°)
+let robotForearm = null;       // mesh
+let robotWrist = null;         // φ4: wrist tilt (paddle orientation)
 let robotVisible = true;
 
 function createRobotArm() {
   const group = new THREE.Group();
+  const jointMat = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.6, roughness: 0.4 });
+  const jointGeo = new THREE.SphereGeometry(0.035, 16, 16);
 
   // Support pillar from floor to shoulder height
-  const pillarHeight = ROBOT.baseZ; // floor to table height
+  const pillarHeight = ROBOT.baseZ;
   const pillarGeo = new THREE.CylinderGeometry(0.04, 0.05, pillarHeight, 12);
   const pillarMat = new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.7, roughness: 0.3 });
   const pillar = new THREE.Mesh(pillarGeo, pillarMat);
-  // In Three.js Y-up: pillar extends downward from shoulder
   pillar.position.y = -pillarHeight / 2;
   pillar.castShadow = true;
   group.add(pillar);
@@ -760,37 +762,38 @@ function createRobotArm() {
   plate.receiveShadow = true;
   group.add(plate);
 
-  // Shoulder mount — a small cylinder at the top
+  // Shoulder mount
   const baseGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.04, 16);
   const baseMat = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.8, roughness: 0.3 });
   const baseMesh = new THREE.Mesh(baseGeo, baseMat);
   baseMesh.castShadow = true;
   group.add(baseMesh);
 
-  // Shoulder joint indicator — a sphere
-  const jointMat = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.6, roughness: 0.4 });
-  const jointGeo = new THREE.SphereGeometry(0.035, 16, 16);
-
-  const shoulderJoint = new THREE.Mesh(jointGeo, jointMat);
+  // Shoulder joint sphere
+  const shoulderJoint = new THREE.Mesh(jointGeo.clone(), jointMat.clone());
   shoulderJoint.castShadow = true;
   group.add(shoulderJoint);
 
-  // Shoulder pivot — rotates left/right (yaw) and up/down (pitch)
-  robotShoulder = new THREE.Group();
-  group.add(robotShoulder);
+  // φ1: Shoulder yaw pivot (rotation around vertical axis, 0-360°)
+  robotShoulderYaw = new THREE.Group();
+  group.add(robotShoulderYaw);
+
+  // φ2: Shoulder pitch pivot (elevation from vertical, 0-180°)
+  robotShoulderPitch = new THREE.Group();
+  robotShoulderYaw.add(robotShoulderPitch);
 
   // Upper arm segment
   const armMat = new THREE.MeshStandardMaterial({ color: 0x2266aa, metalness: 0.5, roughness: 0.4 });
   const upperArmGeo = new THREE.CylinderGeometry(0.025, 0.022, ROBOT.upperArmLen, 12);
   robotUpperArm = new THREE.Mesh(upperArmGeo, armMat);
-  robotUpperArm.position.y = ROBOT.upperArmLen / 2; // extend upward from shoulder
+  robotUpperArm.position.y = ROBOT.upperArmLen / 2;
   robotUpperArm.castShadow = true;
-  robotShoulder.add(robotUpperArm);
+  robotShoulderPitch.add(robotUpperArm);
 
-  // Elbow joint sphere
+  // φ3: Elbow pivot (bend 0-180°)
   robotElbow = new THREE.Group();
   robotElbow.position.y = ROBOT.upperArmLen;
-  robotShoulder.add(robotElbow);
+  robotShoulderPitch.add(robotElbow);
 
   const elbowJoint = new THREE.Mesh(jointGeo.clone(), jointMat.clone());
   elbowJoint.castShadow = true;
@@ -804,7 +807,7 @@ function createRobotArm() {
   robotForearm.castShadow = true;
   robotElbow.add(robotForearm);
 
-  // Wrist pivot
+  // φ4: Wrist pivot (paddle tilt)
   robotWrist = new THREE.Group();
   robotWrist.position.y = ROBOT.forearmLen;
   robotElbow.add(robotWrist);
@@ -816,6 +819,40 @@ function createRobotArm() {
   wristJoint.castShadow = true;
   robotWrist.add(wristJoint);
 
+  // Hand segment (short cylinder from wrist to paddle)
+  const handMat = new THREE.MeshStandardMaterial({ color: 0x66aadd, metalness: 0.4, roughness: 0.5 });
+  const handGeo = new THREE.CylinderGeometry(0.015, 0.013, ROBOT.handLen, 8);
+  const handMesh = new THREE.Mesh(handGeo, handMat);
+  handMesh.position.y = ROBOT.handLen / 2;
+  handMesh.castShadow = true;
+  robotWrist.add(handMesh);
+
+  // Paddle (disc + rubber) attached to end of hand
+  const paddleGroup = new THREE.Group();
+  paddleGroup.position.y = ROBOT.handLen;
+
+  // Paddle disc — red rubber side
+  const discGeo = new THREE.CylinderGeometry(0.085, 0.085, 0.008, 32);
+  const discMatRed = new THREE.MeshStandardMaterial({ color: 0xcc2222, roughness: 0.6, metalness: 0.1 });
+  const disc = new THREE.Mesh(discGeo, discMatRed);
+  disc.castShadow = true;
+  paddleGroup.add(disc);
+
+  // Black rubber on other side
+  const discMatBlack = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.7, metalness: 0.05 });
+  const discBack = new THREE.Mesh(discGeo.clone(), discMatBlack);
+  discBack.position.y = -0.003;
+  paddleGroup.add(discBack);
+
+  // Paddle edge (thin ring)
+  const edgeGeo = new THREE.TorusGeometry(0.085, 0.004, 8, 32);
+  const edgeMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.5 });
+  const edge = new THREE.Mesh(edgeGeo, edgeMat);
+  edge.rotation.x = Math.PI / 2;
+  paddleGroup.add(edge);
+
+  robotWrist.add(paddleGroup);
+
   // Position the whole group at the robot base in Three.js coords
   group.position.copy(s2t(ROBOT.baseX, ROBOT.baseY, ROBOT.baseZ));
 
@@ -824,10 +861,15 @@ function createRobotArm() {
 }
 
 /**
- * Solve 2-segment IK: find shoulder and elbow angles to reach target wrist position.
- * All coordinates relative to shoulder (sim coords: X=left/right, Y=forward/back, Z=up/down).
+ * Solve 4-DOF IK for the robot arm.
  *
- * Returns { shoulderYaw, shoulderPitch, elbowAngle, reachable }
+ * φ1 (shoulderYaw): rotation around vertical axis to face the target
+ * φ2 (shoulderPitch): elevation in the arm plane (from vertical down)
+ * φ3 (elbowAngle): bend at the elbow (0=folded, π=straight)
+ * φ4 (wristTilt): paddle orientation (applied separately from paddle action)
+ *
+ * The IK reduces to a 2D problem in the arm plane after yaw rotation.
+ * Returns { phi1, phi2, phi3, reachable }
  */
 function solveIK(targetX, targetY, targetZ) {
   const L1 = ROBOT.upperArmLen;
@@ -838,10 +880,10 @@ function solveIK(targetX, targetY, targetZ) {
   const dy = targetY - ROBOT.baseY;
   const dz = targetZ - ROBOT.baseZ;
 
-  // Shoulder yaw: rotation around Z axis (left/right in sim = around Y in Three.js)
-  const shoulderYaw = Math.atan2(dx, -dy); // -dy because robot faces -Y (toward net)
+  // φ1: Yaw — rotation around vertical to face target
+  const phi1 = Math.atan2(dx, -dy); // -dy because robot faces -Y (toward net)
 
-  // Distance in the arm plane (horizontal distance + vertical)
+  // Project into arm plane: horizontal distance + vertical offset
   const horizontalDist = Math.sqrt(dx * dx + dy * dy);
   const d = Math.sqrt(horizontalDist * horizontalDist + dz * dz);
 
@@ -853,51 +895,54 @@ function solveIK(targetX, targetY, targetZ) {
   if (d > maxReach) { clampedD = maxReach; reachable = false; }
   if (d < minReach) { clampedD = minReach; reachable = false; }
 
-  // Elbow angle (from cosine rule)
+  // φ3: Elbow angle (cosine rule on the triangle shoulder-elbow-wrist)
   const cosElbow = (clampedD * clampedD - L1 * L1 - L2 * L2) / (2 * L1 * L2);
-  const elbowAngle = Math.acos(Math.max(-1, Math.min(1, cosElbow)));
+  const phi3 = Math.acos(Math.max(-1, Math.min(1, cosElbow)));
 
-  // Shoulder pitch: angle from horizontal to aim the arm plane
-  // Elbow-down solution (α - β): arm reaches forward naturally
+  // φ2: Shoulder pitch — angle in arm plane
+  // alpha: angle from horizontal to the target direction
   const alpha = Math.atan2(dz, horizontalDist);
+  // beta: angle offset due to elbow bend (from the shoulder-target line to the upper arm)
   const beta = Math.acos(Math.max(-1, Math.min(1,
     (L1 * L1 + clampedD * clampedD - L2 * L2) / (2 * L1 * clampedD)
   )));
-  const shoulderPitch = alpha - beta;
+  // Elbow-down configuration: upper arm below the shoulder-target line
+  const phi2 = alpha - beta;
 
-  return { shoulderYaw, shoulderPitch, elbowAngle, reachable };
+  return { phi1, phi2, phi3, reachable };
 }
 
 /**
- * Position the robot arm to reach a paddle position with given tilt.
- * paddlePos: {x, y, z} in sim coordinates
- * tiltX, tiltZ: paddle tilt angles
+ * Position the robot arm to reach a paddle position.
+ * Applies all 4 joint angles: φ1 (yaw), φ2 (pitch), φ3 (elbow), φ4 (wrist tilt).
  */
 function positionRobotArm(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
   if (!robotGroup || !robotVisible) return;
 
-  // Wrist target: slightly behind paddle (hand offset)
+  // Wrist target: paddle position offset by hand length (wrist is behind paddle)
   const wristX = paddleX;
   const wristY = paddleY + ROBOT.handLen;
   const wristZ = paddleZ;
 
   const ik = solveIK(wristX, wristY, wristZ);
 
-  // Shoulder: yaw (left/right) then pitch (up/down)
-  // Use YXZ Euler order so yaw applies first, then pitch in the yawed frame
-  robotShoulder.rotation.set(0, 0, 0);
-  robotShoulder.rotation.order = 'YXZ';
-  robotShoulder.rotation.y = -ik.shoulderYaw;
-  // Arm mesh starts pointing +Y (up in Three.js). Rotate around X to lean forward.
-  // pitch=0 → horizontal forward (-Z) → rotate by -π/2
-  // pitch=π/2 → straight up → rotate by 0
-  robotShoulder.rotation.x = -(Math.PI / 2 - ik.shoulderPitch);
+  // φ1: Shoulder yaw — rotation around Three.js Y axis (sim Z / vertical)
+  robotShoulderYaw.rotation.set(0, 0, 0);
+  robotShoulderYaw.rotation.y = -ik.phi1;
 
-  // Elbow: bend forearm (positive rotation = bend "outward" for elbow-down config)
+  // φ2: Shoulder pitch — tilt arm in the yaw-rotated plane
+  // Arm mesh starts pointing +Y (up). Rotate around X to lean forward.
+  // pitch=0 → horizontal forward → rotX = -π/2
+  // pitch=π/2 → straight up → rotX = 0
+  // pitch=-π/4 → 45° below horizontal → rotX = -3π/4
+  robotShoulderPitch.rotation.set(0, 0, 0);
+  robotShoulderPitch.rotation.x = -(Math.PI / 2 - ik.phi2);
+
+  // φ3: Elbow bend (positive rotation = bend outward for elbow-down)
   robotElbow.rotation.set(0, 0, 0);
-  robotElbow.rotation.x = (Math.PI - ik.elbowAngle);
+  robotElbow.rotation.x = (Math.PI - ik.phi3);
 
-  // Wrist: apply paddle tilt
+  // φ4: Wrist tilt — paddle face orientation
   robotWrist.rotation.set(0, 0, 0);
   robotWrist.rotation.x = tiltX || 0;
   robotWrist.rotation.z = tiltZ || 0;
@@ -905,12 +950,12 @@ function positionRobotArm(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
   robotGroup.visible = true;
 }
 
-/** Set robot to rest pose (arm hanging down or neutral position) */
+/** Set robot to rest pose (arm relaxed, slightly forward) */
 function robotRestPose() {
   if (!robotGroup) return;
-  // Arm pointing slightly forward and down — relaxed pose
-  robotShoulder.rotation.set(-0.3, 0, 0); // slight forward lean
-  robotElbow.rotation.set(-0.8, 0, 0);     // bent elbow
+  robotShoulderYaw.rotation.set(0, 0, 0);
+  robotShoulderPitch.rotation.set(-0.3, 0, 0); // slight forward lean
+  robotElbow.rotation.set(-0.8, 0, 0);          // bent elbow
   robotWrist.rotation.set(0, 0, 0);
   robotGroup.visible = robotVisible;
 }
@@ -1065,7 +1110,7 @@ function loadReplay(replay) {
       handle.position.set(handleDir * 0.075, 0, -0.02); // offset to the side + slightly down
     }
 
-    paddleMesh.visible = true;
+    paddleMesh.visible = !robotVisible; // hide floating paddle when robot arm has its own
 
     // Position robot arm to reach paddle
     positionRobotArm(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z);
