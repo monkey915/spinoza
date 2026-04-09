@@ -831,41 +831,31 @@ function createRobotArm() {
   wristJoint.castShadow = true;
   robotWrist.add(wristJoint);
 
-  // === Paddle assembly: bracket → handle → disc (radial, like a real paddle) ===
-  const paddleR = 0.085;       // disc radius
-  const handleExt = 0.045;     // handle visible past disc edge
-  const bracketMat = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.7, roughness: 0.3 });
+  // === Paddle assembly: hand/grip + offset disc ===
+  // The hand extends from wrist along local +Y for handLen.
+  // The disc is offset by paddleR in local +X so the arm connects
+  // at the disc EDGE (the handle), not through the disc center.
+  const paddleR = 0.085;
   const handleMat = new THREE.MeshStandardMaterial({ color: 0x664422, roughness: 0.8 });
 
-  // Bracket: angled strut from wrist (0,0,0) to disc edge (paddleR, handLen, 0)
-  const bracketLen = Math.sqrt(paddleR * paddleR + ROBOT.handLen * ROBOT.handLen);
-  const bracketAngle = Math.atan2(paddleR, ROBOT.handLen);
-  const bracketGeo = new THREE.CylinderGeometry(0.013, 0.016, bracketLen, 8);
-  const bracketMesh = new THREE.Mesh(bracketGeo, bracketMat);
-  bracketMesh.position.set(paddleR / 2, ROBOT.handLen / 2, 0);
-  bracketMesh.rotation.z = bracketAngle;
-  bracketMesh.castShadow = true;
-  robotWrist.add(bracketMesh);
+  // Hand/grip: cylinder from wrist (0,0,0) to (0, handLen, 0)
+  const handGeo = new THREE.CylinderGeometry(0.018, 0.014, ROBOT.handLen, 8);
+  const handMesh = new THREE.Mesh(handGeo, handleMat);
+  handMesh.position.y = ROBOT.handLen / 2;
+  handMesh.castShadow = true;
+  robotWrist.add(handMesh);
 
-  // Handle: radial in disc plane (+X direction), from disc edge outward
-  const handleGeo = new THREE.CylinderGeometry(0.012, 0.010, handleExt, 8);
-  const handleMesh = new THREE.Mesh(handleGeo, handleMat);
-  handleMesh.rotation.z = -Math.PI / 2; // lie along +X
-  handleMesh.position.set(paddleR + handleExt / 2, ROBOT.handLen, 0);
-  handleMesh.castShadow = true;
-  robotWrist.add(handleMesh);
-
-  // Handle end cap (small sphere at grip end)
-  const capMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(0.012, 8, 8),
-    bracketMat
+  // Grip cap at hand tip (where disc edge meets hand)
+  const gripCap = new THREE.Mesh(
+    new THREE.SphereGeometry(0.016, 8, 8),
+    new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.6, roughness: 0.3 })
   );
-  capMesh.position.set(paddleR + handleExt, ROBOT.handLen, 0);
-  robotWrist.add(capMesh);
+  gripCap.position.set(0, ROBOT.handLen, 0);
+  robotWrist.add(gripCap);
 
-  // Paddle disc group — center at (0, handLen, 0) = IK target
+  // Paddle disc — center OFFSET by paddleR in +X (edge at hand tip)
   const paddleGroup = new THREE.Group();
-  paddleGroup.position.y = ROBOT.handLen;
+  paddleGroup.position.set(paddleR, ROBOT.handLen, 0);
 
   // Red rubber side (hitting side, faces +Y)
   const discGeo = new THREE.CylinderGeometry(paddleR, paddleR, 0.008, 32);
@@ -950,78 +940,96 @@ function solveIK(targetX, targetY, targetZ) {
 }
 
 /**
+ * Compute paddle normal N and radial direction R in sim coords.
+ * R = normalize(N × sim_up), pointing sideways in the disc plane.
+ */
+function paddleFrameSim(tiltX, tiltZ) {
+  const nx = Math.sin(tiltZ || 0);
+  const nz = Math.sin(tiltX || 0);
+  const ny = -Math.sqrt(Math.max(0, 1 - nx * nx - nz * nz));
+  // R = N × (0,0,1) in sim coords
+  let rx = ny, ry = -nx, rz = 0;
+  const rLen = Math.sqrt(rx * rx + ry * ry);
+  if (rLen < 1e-6) {
+    // N nearly vertical — use N × (1,0,0) instead
+    rx = 0; ry = nz; rz = -ny;
+    const rl = Math.sqrt(rx * rx + ry * ry + rz * rz);
+    rx /= rl; ry /= rl; rz /= rl;
+  } else {
+    rx /= rLen; ry /= rLen; rz /= rLen;
+  }
+  return { nx, ny, nz, rx, ry, rz };
+}
+
+/**
  * Compute wrist quaternion so paddle face matches the physics normal.
- * Physics normal: default (0,-1,0) in sim = facing -Y (toward net).
- * tilt_x rotates around X (forward/back lean), tilt_z around Z (side lean).
+ * Uses a full rotation frame: local +Y → N (paddle normal),
+ * local +X → R (radial direction in disc plane).
  *
- * Includes collision avoidance: clamps the angle between paddle normal
- * and forearm so the paddle disc doesn't intersect the arm.
+ * Includes collision avoidance clamp (min 50° between N and forearm).
  */
 function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
-  tiltX = tiltX || 0;
-  tiltZ = tiltZ || 0;
+  const { nx, ny, nz, rx, ry, rz } = paddleFrameSim(tiltX, tiltZ);
 
-  // Desired paddle normal in sim coords (same as Rust paddle_normal())
-  const nx_sim = Math.sin(tiltZ);
-  const nz_sim = Math.sin(tiltX);
-  const ny_sim = -Math.sqrt(Math.max(0, 1 - nx_sim * nx_sim - nz_sim * nz_sim));
+  // N and R in Three.js coords: sim(x,y,z) → three(x,z,y)
+  let N = new THREE.Vector3(nx, nz, ny);
+  let R = new THREE.Vector3(rx, rz, ry);
 
-  // Convert sim → Three.js direction: (sim_x, sim_z, sim_y)
-  const desiredNormal = new THREE.Vector3(nx_sim, nz_sim, ny_sim);
-
-  // Exact parent world rotation: R_y(-phi1) * R_x(phi2 + phi3 - π/2)
-  // This matches the actual Three.js hierarchy: shoulderYaw * shoulderPitch * elbow
+  // Exact parent rotation: R_y(-phi1) * R_x(phi2 + phi3 - π/2)
   const qYaw = new THREE.Quaternion().setFromAxisAngle(
     new THREE.Vector3(0, 1, 0), -phi1
   );
-  const qPitchElbow = new THREE.Quaternion().setFromAxisAngle(
+  const qPE = new THREE.Quaternion().setFromAxisAngle(
     new THREE.Vector3(1, 0, 0), phi2 + phi3 - Math.PI / 2
   );
-  const parentQuat = qYaw.multiply(qPitchElbow);
+  const parentQuat = qYaw.clone().multiply(qPE);
 
-  // Transform desired normal to wrist-local frame
-  const parentInv = parentQuat.clone().invert();
-  let localTarget = desiredNormal.clone().applyQuaternion(parentInv).normalize();
-
-  // Collision avoidance: the angle between paddle normal (localTarget) and
-  // forearm direction (local Y = 0,1,0) must be at least MIN_WRIST_ANGLE.
-  // If the paddle tilts too close to the forearm, the disc (R=8.5cm) clips the arm.
-  // min angle ≈ atan(paddleR / handLen) + margin ≈ 40° + 10° = 50°
+  // Collision avoidance: angle between N and forearm must be ≥ MIN_WRIST_ANGLE
+  const forearmDir = new THREE.Vector3(0, 1, 0).applyQuaternion(parentQuat);
   const MIN_WRIST_ANGLE = 50 * Math.PI / 180;
-  const forearmLocal = new THREE.Vector3(0, 1, 0);
-  const cosAngle = localTarget.dot(forearmLocal);
+  const cosAngle = N.dot(forearmDir);
   const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle)));
 
   if (angle < MIN_WRIST_ANGLE) {
-    // Clamp: rotate localTarget away from forearm to MIN_WRIST_ANGLE
-    // Rotation axis = cross(forearm, localTarget), normalized
-    const axis = new THREE.Vector3().crossVectors(forearmLocal, localTarget);
+    const axis = new THREE.Vector3().crossVectors(forearmDir, N);
     if (axis.lengthSq() > 1e-8) {
       axis.normalize();
       const clampQuat = new THREE.Quaternion().setFromAxisAngle(axis, MIN_WRIST_ANGLE);
-      localTarget = forearmLocal.clone().applyQuaternion(clampQuat).normalize();
+      N = forearmDir.clone().applyQuaternion(clampQuat).normalize();
+      // Recompute R perpendicular to clamped N
+      R.crossVectors(N, new THREE.Vector3(0, 1, 0)).normalize();
+      if (R.lengthSq() < 1e-6) {
+        R.crossVectors(N, new THREE.Vector3(0, 0, 1)).normalize();
+      }
     }
   }
 
-  // Wrist rotation: map local Y (0,1,0) to localTarget
-  return new THREE.Quaternion().setFromUnitVectors(
-    new THREE.Vector3(0, 1, 0), localTarget
-  );
+  // Build full world frame: X=R, Y=N, Z=R×N (right-handed)
+  const F = new THREE.Vector3().crossVectors(R, N).normalize();
+  // Re-orthogonalize R from N and F
+  R.crossVectors(N, F).normalize();
+
+  const mat = new THREE.Matrix4().makeBasis(R, N, F);
+  const worldQuat = new THREE.Quaternion().setFromRotationMatrix(mat);
+
+  const parentInv = parentQuat.clone().invert();
+  return parentInv.multiply(worldQuat);
 }
 
 /**
  * Compute wrist position from paddle position and orientation.
- * The hand extends from wrist to paddle along the paddle normal direction.
- * So: wrist = paddle_pos - handLen * paddle_normal (in sim coords)
+ * The disc center is offset from the wrist by:
+ *   handLen along the paddle normal N, plus
+ *   paddleR along the radial direction R (disc is to the side).
+ * So: wrist = paddle_pos - handLen * N - paddleR * R (in sim coords)
  */
 function paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
-  const nx = Math.sin(tiltZ || 0);
-  const nz = Math.sin(tiltX || 0);
-  const ny = -Math.sqrt(Math.max(0, 1 - nx * nx - nz * nz));
+  const { nx, ny, nz, rx, ry, rz } = paddleFrameSim(tiltX, tiltZ);
+  const paddleR = 0.085;
   return {
-    x: paddleX - ROBOT.handLen * nx,
-    y: paddleY - ROBOT.handLen * ny,
-    z: paddleZ - ROBOT.handLen * nz,
+    x: paddleX - ROBOT.handLen * nx - paddleR * rx,
+    y: paddleY - ROBOT.handLen * ny - paddleR * ry,
+    z: paddleZ - ROBOT.handLen * nz - paddleR * rz,
   };
 }
 
