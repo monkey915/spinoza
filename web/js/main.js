@@ -875,7 +875,7 @@ function createRobotArm() {
  */
 function solveIK(targetX, targetY, targetZ) {
   const L1 = ROBOT.upperArmLen;
-  const L2 = ROBOT.forearmLen + ROBOT.handLen; // forearm + hand as one segment
+  const L2 = ROBOT.forearmLen; // IK targets the wrist, not the paddle tip
 
   // Target relative to shoulder base (sim coords)
   const dx = targetX - ROBOT.baseX;
@@ -957,6 +957,22 @@ function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
   return localQuat;
 }
 
+/**
+ * Compute wrist position from paddle position and orientation.
+ * The hand extends from wrist to paddle along the paddle normal direction.
+ * So: wrist = paddle_pos - handLen * paddle_normal (in sim coords)
+ */
+function paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
+  const nx = Math.sin(tiltZ || 0);
+  const nz = Math.sin(tiltX || 0);
+  const ny = -Math.sqrt(Math.max(0, 1 - nx * nx - nz * nz));
+  return {
+    x: paddleX - ROBOT.handLen * nx,
+    y: paddleY - ROBOT.handLen * ny,
+    z: paddleZ - ROBOT.handLen * nz,
+  };
+}
+
 // Robot arm animation state
 let robotTargetAngles = null;   // { yaw, pitch, elbow, wristQuat }
 let robotCurrentAngles = null;  // same shape, for interpolation
@@ -980,7 +996,8 @@ function applyRobotAngles(angles) {
 function setRobotTarget(paddleX, paddleY, paddleZ, tiltX, tiltZ, contactTime) {
   if (!robotGroup || !robotVisible) return;
 
-  const ik = solveIK(paddleX, paddleY, paddleZ);
+  const wrist = paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ);
+  const ik = solveIK(wrist.x, wrist.y, wrist.z);
   const yaw = -ik.phi1;
   const pitch = -(Math.PI / 2 - ik.phi2);
   const elbow = ik.phi3;
@@ -1028,7 +1045,8 @@ function updateRobotAnimation(currentTime) {
 function positionRobotArm(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
   if (!robotGroup || !robotVisible) return;
 
-  const ik = solveIK(paddleX, paddleY, paddleZ);
+  const wrist = paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ);
+  const ik = solveIK(wrist.x, wrist.y, wrist.z);
   const angles = {
     yaw: -ik.phi1,
     pitch: -(Math.PI / 2 - ik.phi2),
