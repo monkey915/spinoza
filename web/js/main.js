@@ -831,44 +831,57 @@ function createRobotArm() {
   wristJoint.castShadow = true;
   robotWrist.add(wristJoint);
 
-  // Mounting bracket: horizontal bar from wrist center to handle axis
-  const bracketOffset = 0.06; // how far the handle is offset from center
-  const bracketGeo = new THREE.BoxGeometry(bracketOffset, 0.018, 0.025);
+  // === Paddle assembly: bracket → handle → disc (radial, like a real paddle) ===
+  const paddleR = 0.085;       // disc radius
+  const handleExt = 0.045;     // handle visible past disc edge
   const bracketMat = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.7, roughness: 0.3 });
-  const bracket = new THREE.Mesh(bracketGeo, bracketMat);
-  bracket.position.set(bracketOffset / 2, 0.01, 0);
-  bracket.castShadow = true;
-  robotWrist.add(bracket);
-
-  // Handle: extends from bracket along Y toward paddle edge
-  const handleLen = ROBOT.handLen;
-  const handleGeo = new THREE.CylinderGeometry(0.013, 0.011, handleLen, 8);
   const handleMat = new THREE.MeshStandardMaterial({ color: 0x664422, roughness: 0.8 });
+
+  // Bracket: angled strut from wrist (0,0,0) to disc edge (paddleR, handLen, 0)
+  const bracketLen = Math.sqrt(paddleR * paddleR + ROBOT.handLen * ROBOT.handLen);
+  const bracketAngle = Math.atan2(paddleR, ROBOT.handLen);
+  const bracketGeo = new THREE.CylinderGeometry(0.013, 0.016, bracketLen, 8);
+  const bracketMesh = new THREE.Mesh(bracketGeo, bracketMat);
+  bracketMesh.position.set(paddleR / 2, ROBOT.handLen / 2, 0);
+  bracketMesh.rotation.z = bracketAngle;
+  bracketMesh.castShadow = true;
+  robotWrist.add(bracketMesh);
+
+  // Handle: radial in disc plane (+X direction), from disc edge outward
+  const handleGeo = new THREE.CylinderGeometry(0.012, 0.010, handleExt, 8);
   const handleMesh = new THREE.Mesh(handleGeo, handleMat);
-  handleMesh.position.set(bracketOffset, handleLen / 2, 0);
+  handleMesh.rotation.z = -Math.PI / 2; // lie along +X
+  handleMesh.position.set(paddleR + handleExt / 2, ROBOT.handLen, 0);
   handleMesh.castShadow = true;
   robotWrist.add(handleMesh);
 
-  // Paddle (disc + rubber) — center at (0, handLen, 0) = on arm axis = IK target
-  // Handle meets the paddle at its edge (bracketOffset from center)
+  // Handle end cap (small sphere at grip end)
+  const capMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.012, 8, 8),
+    bracketMat
+  );
+  capMesh.position.set(paddleR + handleExt, ROBOT.handLen, 0);
+  robotWrist.add(capMesh);
+
+  // Paddle disc group — center at (0, handLen, 0) = IK target
   const paddleGroup = new THREE.Group();
   paddleGroup.position.y = ROBOT.handLen;
 
-  // Paddle disc — red rubber side (hitting side, faces +Y = toward ball)
-  const discGeo = new THREE.CylinderGeometry(0.085, 0.085, 0.008, 32);
+  // Red rubber side (hitting side, faces +Y)
+  const discGeo = new THREE.CylinderGeometry(paddleR, paddleR, 0.008, 32);
   const discMatRed = new THREE.MeshStandardMaterial({ color: 0xcc2222, roughness: 0.6, metalness: 0.1 });
   const disc = new THREE.Mesh(discGeo, discMatRed);
   disc.castShadow = true;
   paddleGroup.add(disc);
 
-  // Black rubber on other side
+  // Black rubber on back side
   const discMatBlack = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.7, metalness: 0.05 });
   const discBack = new THREE.Mesh(discGeo.clone(), discMatBlack);
   discBack.position.y = -0.003;
   paddleGroup.add(discBack);
 
-  // Paddle edge (thin ring)
-  const edgeGeo = new THREE.TorusGeometry(0.085, 0.004, 8, 32);
+  // Paddle edge ring
+  const edgeGeo = new THREE.TorusGeometry(paddleR, 0.004, 8, 32);
   const edgeMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.5 });
   const edge = new THREE.Mesh(edgeGeo, edgeMat);
   edge.rotation.x = Math.PI / 2;
@@ -940,6 +953,9 @@ function solveIK(targetX, targetY, targetZ) {
  * Compute wrist quaternion so paddle face matches the physics normal.
  * Physics normal: default (0,-1,0) in sim = facing -Y (toward net).
  * tilt_x rotates around X (forward/back lean), tilt_z around Z (side lean).
+ *
+ * Includes collision avoidance: clamps the angle between paddle normal
+ * and forearm so the paddle disc doesn't intersect the arm.
  */
 function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
   tiltX = tiltX || 0;
@@ -965,7 +981,27 @@ function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
 
   // Transform desired normal to wrist-local frame
   const parentInv = parentQuat.clone().invert();
-  const localTarget = desiredNormal.clone().applyQuaternion(parentInv).normalize();
+  let localTarget = desiredNormal.clone().applyQuaternion(parentInv).normalize();
+
+  // Collision avoidance: the angle between paddle normal (localTarget) and
+  // forearm direction (local Y = 0,1,0) must be at least MIN_WRIST_ANGLE.
+  // If the paddle tilts too close to the forearm, the disc (R=8.5cm) clips the arm.
+  // min angle ≈ atan(paddleR / handLen) + margin ≈ 40° + 10° = 50°
+  const MIN_WRIST_ANGLE = 50 * Math.PI / 180;
+  const forearmLocal = new THREE.Vector3(0, 1, 0);
+  const cosAngle = localTarget.dot(forearmLocal);
+  const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle)));
+
+  if (angle < MIN_WRIST_ANGLE) {
+    // Clamp: rotate localTarget away from forearm to MIN_WRIST_ANGLE
+    // Rotation axis = cross(forearm, localTarget), normalized
+    const axis = new THREE.Vector3().crossVectors(forearmLocal, localTarget);
+    if (axis.lengthSq() > 1e-8) {
+      axis.normalize();
+      const clampQuat = new THREE.Quaternion().setFromAxisAngle(axis, MIN_WRIST_ANGLE);
+      localTarget = forearmLocal.clone().applyQuaternion(clampQuat).normalize();
+    }
+  }
 
   // Wrist rotation: map local Y (0,1,0) to localTarget
   return new THREE.Quaternion().setFromUnitVectors(
