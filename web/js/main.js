@@ -873,7 +873,7 @@ function createRobotArm() {
  */
 function solveIK(targetX, targetY, targetZ) {
   const L1 = ROBOT.upperArmLen;
-  const L2 = ROBOT.forearmLen;
+  const L2 = ROBOT.forearmLen + ROBOT.handLen; // forearm + hand as one segment
 
   // Target relative to shoulder base (sim coords)
   const dx = targetX - ROBOT.baseX;
@@ -920,12 +920,8 @@ function solveIK(targetX, targetY, targetZ) {
 function positionRobotArm(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
   if (!robotGroup || !robotVisible) return;
 
-  // Wrist target: paddle position offset by hand length (wrist is behind paddle)
-  const wristX = paddleX;
-  const wristY = paddleY + ROBOT.handLen;
-  const wristZ = paddleZ;
-
-  const ik = solveIK(wristX, wristY, wristZ);
+  // IK targets the paddle position directly — hand is included in L2
+  const ik = solveIK(paddleX, paddleY, paddleZ);
 
   // φ1: Shoulder yaw — rotation around Three.js Y axis (sim Z / vertical)
   robotShoulderYaw.rotation.set(0, 0, 0);
