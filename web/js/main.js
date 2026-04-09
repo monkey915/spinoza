@@ -544,6 +544,7 @@ document.getElementById("timeline").addEventListener("input", (e) => {
   animPlaying = false;
   document.getElementById("btn-play").textContent = "▶";
   updateBallPosition(animTime);
+  updateRobotAnimation(animTime);
   document.getElementById("time-display").textContent =
     `t = ${animTime.toFixed(3)} s`;
 });
@@ -636,6 +637,7 @@ function animate(time) {
 
     updateBallPosition(animTime);
     updateTimeline();
+    updateRobotAnimation(animTime);
   }
 
   // Pulse bounce markers
@@ -914,48 +916,135 @@ function solveIK(targetX, targetY, targetZ) {
 }
 
 /**
- * Position the robot arm to reach a paddle position.
- * Applies all 4 joint angles: φ1 (yaw), φ2 (pitch), φ3 (elbow), φ4 (wrist tilt).
+ * Compute wrist quaternion so paddle face matches the physics normal.
+ * Physics normal: default (0,-1,0) in sim = facing -Y (toward net).
+ * tilt_x rotates around X (forward/back lean), tilt_z around Z (side lean).
+ */
+function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
+  tiltX = tiltX || 0;
+  tiltZ = tiltZ || 0;
+
+  // Desired paddle normal in sim coords (same as Rust paddle_normal())
+  const nx_sim = Math.sin(tiltZ);
+  const nz_sim = Math.sin(tiltX);
+  const ny_sim = -Math.sqrt(Math.max(0, 1 - nx_sim * nx_sim - nz_sim * nz_sim));
+
+  // Convert sim → Three.js direction: (sim_x, sim_z, sim_y)
+  const desiredNormal = new THREE.Vector3(nx_sim, nz_sim, ny_sim);
+
+  // Forearm direction in Three.js world (from FK derivation)
+  const s = phi2 + phi3;
+  const forearmDir = new THREE.Vector3(
+    Math.cos(s) * Math.sin(phi1),
+    Math.sin(s),
+    -Math.cos(s) * Math.cos(phi1)
+  );
+
+  // Quaternion that rotates forearm direction → desired normal (in world)
+  const worldRot = new THREE.Quaternion().setFromUnitVectors(
+    forearmDir.normalize(), desiredNormal.normalize()
+  );
+
+  // Parent accumulated rotation: takes local (0,1,0) → forearmDir
+  const parentQuat = new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0), forearmDir
+  );
+  const parentInv = parentQuat.clone().invert();
+
+  // Local wrist quat = parentInv * worldRot * parentQuat
+  // This expresses the world rotation in the local frame
+  const localQuat = parentInv.clone().multiply(worldRot).multiply(parentQuat);
+  return localQuat;
+}
+
+// Robot arm animation state
+let robotTargetAngles = null;   // { yaw, pitch, elbow, wristQuat }
+let robotCurrentAngles = null;  // same shape, for interpolation
+let robotContactTime = 0;       // time when arm should reach target
+const ROBOT_REST = { yaw: 0, pitch: -0.3, elbow: -0.8, wristQuat: new THREE.Quaternion() };
+
+/** Apply raw joint angles to the robot arm meshes */
+function applyRobotAngles(angles) {
+  if (!robotGroup) return;
+  robotShoulderYaw.rotation.set(0, angles.yaw, 0);
+  robotShoulderPitch.rotation.set(angles.pitch, 0, 0);
+  robotElbow.rotation.set(angles.elbow, 0, 0);
+  robotWrist.quaternion.copy(angles.wristQuat);
+  robotGroup.visible = robotVisible;
+}
+
+/**
+ * Set up robot arm animation target for a paddle action.
+ * The arm will animate from rest to hit position during the serve.
+ */
+function setRobotTarget(paddleX, paddleY, paddleZ, tiltX, tiltZ, contactTime) {
+  if (!robotGroup || !robotVisible) return;
+
+  const ik = solveIK(paddleX, paddleY, paddleZ);
+  const yaw = -ik.phi1;
+  const pitch = -(Math.PI / 2 - ik.phi2);
+  const elbow = ik.phi3;
+  const wristQuat = computeWristQuat(ik.phi1, ik.phi2, ik.phi3, tiltX, tiltZ);
+
+  robotTargetAngles = { yaw, pitch, elbow, wristQuat };
+  robotCurrentAngles = { ...ROBOT_REST, wristQuat: ROBOT_REST.wristQuat.clone() };
+  robotContactTime = contactTime || 0.3;
+
+  // Start from rest pose
+  applyRobotAngles(robotCurrentAngles);
+}
+
+/** Smoothstep easing: 0→0, 0.5→0.5, 1→1, smooth at both ends */
+function smoothstep(t) {
+  t = Math.max(0, Math.min(1, t));
+  return t * t * (3 - 2 * t);
+}
+
+/** Update robot arm animation (called each frame) */
+function updateRobotAnimation(currentTime) {
+  if (!robotTargetAngles || !robotGroup || !robotVisible) return;
+
+  // Arm starts moving from t=0, arrives at contactTime
+  // Use 80% of serve time so arm arrives slightly early (more natural)
+  const moveTime = robotContactTime * 0.8;
+  const startDelay = robotContactTime * 0.1; // small delay before moving
+  const t = (currentTime - startDelay) / moveTime;
+  const progress = smoothstep(Math.max(0, Math.min(1, t)));
+
+  const lerp = (a, b, f) => a + (b - a) * f;
+  const angles = {
+    yaw: lerp(ROBOT_REST.yaw, robotTargetAngles.yaw, progress),
+    pitch: lerp(ROBOT_REST.pitch, robotTargetAngles.pitch, progress),
+    elbow: lerp(ROBOT_REST.elbow, robotTargetAngles.elbow, progress),
+    wristQuat: ROBOT_REST.wristQuat.clone().slerp(robotTargetAngles.wristQuat, progress),
+  };
+
+  applyRobotAngles(angles);
+}
+
+/**
+ * Position the robot arm instantly (for scrubbing / non-animated use).
  */
 function positionRobotArm(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
   if (!robotGroup || !robotVisible) return;
 
-  // IK targets the paddle position directly — hand is included in L2
   const ik = solveIK(paddleX, paddleY, paddleZ);
+  const angles = {
+    yaw: -ik.phi1,
+    pitch: -(Math.PI / 2 - ik.phi2),
+    elbow: ik.phi3,
+    wristQuat: computeWristQuat(ik.phi1, ik.phi2, ik.phi3, tiltX, tiltZ),
+  };
 
-  // φ1: Shoulder yaw — rotation around Three.js Y axis (sim Z / vertical)
-  robotShoulderYaw.rotation.set(0, 0, 0);
-  robotShoulderYaw.rotation.y = -ik.phi1;
-
-  // φ2: Shoulder pitch — tilt arm in the yaw-rotated plane
-  // Arm mesh starts pointing +Y (up). Rotate around X to lean forward.
-  // phi2=0 → horizontal → rotX = -π/2
-  // phi2=π/2 → straight up → rotX = 0
-  robotShoulderPitch.rotation.set(0, 0, 0);
-  robotShoulderPitch.rotation.x = -(Math.PI / 2 - ik.phi2);
-
-  // φ3: Elbow bend — q2 in standard 2-link IK
-  // phi3 is the interior triangle angle; applying it directly as rotation
-  // around local X bends the forearm correctly in elbow-up configuration
-  robotElbow.rotation.set(0, 0, 0);
-  robotElbow.rotation.x = ik.phi3;
-
-  // φ4: Wrist tilt — paddle face orientation
-  robotWrist.rotation.set(0, 0, 0);
-  robotWrist.rotation.x = tiltX || 0;
-  robotWrist.rotation.z = tiltZ || 0;
-
-  robotGroup.visible = true;
+  applyRobotAngles(angles);
+  robotTargetAngles = null; // cancel any animation
 }
 
 /** Set robot to rest pose (arm relaxed, slightly forward) */
 function robotRestPose() {
   if (!robotGroup) return;
-  robotShoulderYaw.rotation.set(0, 0, 0);
-  robotShoulderPitch.rotation.set(-0.3, 0, 0); // slight forward lean
-  robotElbow.rotation.set(-0.8, 0, 0);          // bent elbow
-  robotWrist.rotation.set(0, 0, 0);
-  robotGroup.visible = robotVisible;
+  applyRobotAngles(ROBOT_REST);
+  robotTargetAngles = null;
 }
 
 robotGroup = createRobotArm();
@@ -1110,8 +1199,8 @@ function loadReplay(replay) {
 
     paddleMesh.visible = !robotVisible; // hide floating paddle when robot arm has its own
 
-    // Position robot arm to reach paddle
-    positionRobotArm(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z);
+    // Set up robot arm animation — arm will move from rest to hit position during serve
+    setRobotTarget(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z, serveEndTime);
 
     // Swing direction arrow: shows the swing vector (direction + speed)
     // Sim coords: swing is in -Y direction (toward opponent), elevated by swing_elevation
