@@ -577,6 +577,16 @@ document.getElementById("cam-robot").addEventListener("click", () => {
   controls.update();
 });
 
+// Paddle close-up: positions camera near the current paddle position
+let lastPaddlePos = null; // stored from showReplay
+document.getElementById("cam-paddle").addEventListener("click", () => {
+  const p = lastPaddlePos || { x: 0.76, y: 2.7, z: 0.9 };
+  // Camera 40cm to the side and 20cm above, looking at paddle
+  camera.position.copy(s2t(p.x - 0.4, p.y + 0.15, p.z + 0.2));
+  controls.target.copy(s2t(p.x, p.y, p.z));
+  controls.update();
+});
+
 // Presets
 document.getElementById("preset-topspin").addEventListener("click", () => {
   setParams({ speed: 9, elevation: 15, topspin: 150, backspin: 0, sidespin: 0, azimuth: 0 });
@@ -973,6 +983,22 @@ function paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
   };
 }
 
+// Debug markers for IK verification
+let debugMarkers = [];
+function clearDebugMarkers() {
+  for (const m of debugMarkers) scene.remove(m);
+  debugMarkers = [];
+}
+function addDebugSphere(simX, simY, simZ, color, radius) {
+  const geo = new THREE.SphereGeometry(radius || 0.015, 12, 12);
+  const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(s2t(simX, simY, simZ));
+  scene.add(mesh);
+  debugMarkers.push(mesh);
+  return mesh;
+}
+
 // Robot arm animation state
 let robotTargetAngles = null;   // { yaw, pitch, elbow, wristQuat }
 let robotCurrentAngles = null;  // same shape, for interpolation
@@ -1076,6 +1102,7 @@ function clearReturnVisualization() {
   }
   paddleMesh.visible = false;
   if (swingArrow) swingArrow.visible = false;
+  clearDebugMarkers();
   robotRestPose();
 }
 
@@ -1200,6 +1227,8 @@ function loadReplay(replay) {
   // Paddle position — use actual paddle coordinates, not ball contact point
   const pa = replay.paddle;
   if (pa) {
+    lastPaddlePos = { x: pa.paddle_x, y: pa.paddle_y, z: pa.paddle_z };
+
     paddleMesh.position.copy(s2t(pa.paddle_x, pa.paddle_y, pa.paddle_z));
     paddleMesh.rotation.set(0, 0, 0);
     paddleMesh.rotateX(-Math.PI / 2); // face forward (along Y)
@@ -1219,6 +1248,15 @@ function loadReplay(replay) {
 
     // Set up robot arm animation — arm will move from rest to hit position during serve
     setRobotTarget(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z, serveEndTime);
+
+    // Debug markers: paddle target (cyan), contact pos (magenta), wrist target (yellow)
+    clearDebugMarkers();
+    addDebugSphere(pa.paddle_x, pa.paddle_y, pa.paddle_z, 0x00ffff, 0.012); // cyan = paddle action pos
+    if (replay.contact_pos && replay.contact_pos.length === 3) {
+      addDebugSphere(replay.contact_pos[0], replay.contact_pos[1], replay.contact_pos[2], 0xff00ff, 0.012); // magenta = actual contact
+    }
+    const wrist = paddleToWrist(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z);
+    addDebugSphere(wrist.x, wrist.y, wrist.z, 0xffff00, 0.010); // yellow = IK wrist target
 
     // Swing direction arrow: shows the swing vector (direction + speed)
     // Sim coords: swing is in -Y direction (toward opponent), elevated by swing_elevation
