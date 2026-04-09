@@ -831,19 +831,30 @@ function createRobotArm() {
   wristJoint.castShadow = true;
   robotWrist.add(wristJoint);
 
-  // Hand segment (short cylinder from wrist to paddle)
-  const handMat = new THREE.MeshStandardMaterial({ color: 0x66aadd, metalness: 0.4, roughness: 0.5 });
-  const handGeo = new THREE.CylinderGeometry(0.015, 0.013, ROBOT.handLen, 8);
-  const handMesh = new THREE.Mesh(handGeo, handMat);
-  handMesh.position.y = ROBOT.handLen / 2;
-  handMesh.castShadow = true;
-  robotWrist.add(handMesh);
+  // Mounting bracket: horizontal bar from wrist center to handle axis
+  const bracketOffset = 0.06; // how far the handle is offset from center
+  const bracketGeo = new THREE.BoxGeometry(bracketOffset, 0.018, 0.025);
+  const bracketMat = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.7, roughness: 0.3 });
+  const bracket = new THREE.Mesh(bracketGeo, bracketMat);
+  bracket.position.set(bracketOffset / 2, 0.01, 0);
+  bracket.castShadow = true;
+  robotWrist.add(bracket);
 
-  // Paddle (disc + rubber) attached to end of hand
+  // Handle: extends from bracket along Y toward paddle edge
+  const handleLen = ROBOT.handLen;
+  const handleGeo = new THREE.CylinderGeometry(0.013, 0.011, handleLen, 8);
+  const handleMat = new THREE.MeshStandardMaterial({ color: 0x664422, roughness: 0.8 });
+  const handleMesh = new THREE.Mesh(handleGeo, handleMat);
+  handleMesh.position.set(bracketOffset, handleLen / 2, 0);
+  handleMesh.castShadow = true;
+  robotWrist.add(handleMesh);
+
+  // Paddle (disc + rubber) — center at (0, handLen, 0) = on arm axis = IK target
+  // Handle meets the paddle at its edge (bracketOffset from center)
   const paddleGroup = new THREE.Group();
   paddleGroup.position.y = ROBOT.handLen;
 
-  // Paddle disc — red rubber side
+  // Paddle disc — red rubber side (hitting side, faces +Y = toward ball)
   const discGeo = new THREE.CylinderGeometry(0.085, 0.085, 0.008, 32);
   const discMatRed = new THREE.MeshStandardMaterial({ color: 0xcc2222, roughness: 0.6, metalness: 0.1 });
   const disc = new THREE.Mesh(discGeo, discMatRed);
