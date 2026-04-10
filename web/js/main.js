@@ -1048,7 +1048,7 @@ function checkArmTableCollision() {
   robotGroup.updateMatrixWorld(true);
 
   const nodes = [robotShoulderYaw, robotElbow, robotWrist, robotPaddleGroup];
-  const segNames = ['Oberarm', 'Unterarm', 'Schläger'];
+  const segNames = ['upper arm', 'forearm', 'paddle'];
   const positions = nodes.map(n => {
     const v = new THREE.Vector3();
     n.getWorldPosition(v);
@@ -1226,12 +1226,12 @@ function setRobotTarget(paddleX, paddleY, paddleZ, tiltX, tiltZ, contactTime) {
 
   robotArmWarning = '';
   if (!ik.reachable) {
-    robotArmWarning = 'Unerreichbar';
+    robotArmWarning = 'Unreachable';
     updateArmCollisionVisual(true);
   } else {
     const col = checkArmTableCollision();
     if (col.collides) {
-      robotArmWarning = `Tisch-Kollision: ${col.details}`;
+      robotArmWarning = `Table collision: ${col.details}`;
       updateArmCollisionVisual(true);
     } else {
       updateArmCollisionVisual(false);
@@ -1536,7 +1536,7 @@ function updateReplayInfo(replay) {
     <div class="info-row"><span>Paddle Z</span><span>${pa.paddle_z.toFixed(3)} m</span></div>
     <div class="info-row"><span>Swing</span><span>${pa.swing_speed.toFixed(1)} m/s ↗${elevDeg}°</span></div>
     <div class="info-row">
-      <span>Schläger</span>
+      <span>Paddle tilt</span>
       <span style="color:${tiltColor}; font-weight:bold;">${tiltDeg}° ${tiltLabel}</span>
     </div>
   `;
@@ -1574,9 +1574,9 @@ function updateReplayInfo(replay) {
   // Marker legend
   html += `
     <div style="margin-top:6px; font-size:10px; color:#888; line-height:1.5">
-      <span style="color:#00ffff">●</span> Paddle-Ziel &nbsp;
-      <span style="color:#ff00ff">●</span> Ballkontakt &nbsp;
-      <span style="color:#ff8800">→</span> Schwung
+      <span style="color:#00ffff">●</span> Paddle target &nbsp;
+      <span style="color:#ff00ff">●</span> Ball contact &nbsp;
+      <span style="color:#ff8800">→</span> Swing
     </div>
   `;
 

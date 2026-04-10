@@ -6,7 +6,12 @@
 
 ## Language Policy
 
-All code comments, documentation files, CLI output, and UI strings **must be in English**. Do not use German or any other language in the codebase.
+All code comments, documentation files, CLI output, UI strings, and commit messages **must be in English**. Do not use German or any other language in the codebase.
+
+## Commit Policy
+
+- Do **not** add `Co-authored-by` trailers to commit messages.
+- Keep commit messages concise and descriptive in English.
 
 ## Architecture
 
