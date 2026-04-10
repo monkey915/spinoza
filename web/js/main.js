@@ -751,6 +751,8 @@ let robotUpperArm = null;      // mesh
 let robotElbow = null;         // φ3: elbow bend (0-180°)
 let robotForearm = null;       // mesh
 let robotWrist = null;         // φ4: wrist tilt (paddle orientation)
+let robotPaddleGroup = null;   // disc group — for FK debug (world position readout)
+let robotFKDiscWorld = null;   // last FK-verified disc world pos (Three.js coords)
 let robotVisible = true;
 
 function createRobotArm() {
@@ -891,6 +893,7 @@ function createRobotArm() {
   paddleGroup.add(edge);
 
   robotWrist.add(paddleGroup);
+  robotPaddleGroup = paddleGroup;
 
   // Position the whole group at the robot base in Three.js coords
   group.position.copy(s2t(ROBOT.baseX, ROBOT.baseY, ROBOT.baseZ));
@@ -978,8 +981,6 @@ function paddleFrameSim(tiltX, tiltZ) {
  * Compute wrist quaternion so paddle face matches the physics normal.
  * Uses a full rotation frame: local +Y → N (paddle normal),
  * local +X → R (radial direction in disc plane).
- *
- * Includes collision avoidance clamp (min 50° between N and forearm).
  */
 function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
   const { nx, ny, nz, rx, ry, rz } = paddleFrameSim(tiltX, tiltZ);
@@ -996,29 +997,6 @@ function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
     new THREE.Vector3(1, 0, 0), phi2 + phi3 - Math.PI / 2
   );
   const parentQuat = qYaw.clone().multiply(qPE);
-
-  // Collision avoidance: angle between N and forearm must be ≤ MAX_WRIST_ANGLE.
-  // When angle > 90°, the hand points BACKWARD into the forearm → disc clips arm.
-  // Clamp to 90° so the paddle can face sideways but never backward.
-  const forearmDir = new THREE.Vector3(0, 1, 0).applyQuaternion(parentQuat);
-  const MAX_WRIST_ANGLE = 90 * Math.PI / 180;
-  const cosAngle = N.dot(forearmDir);
-  const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle)));
-
-  if (angle > MAX_WRIST_ANGLE) {
-    // Clamp: rotate N toward forearm until angle = MAX_WRIST_ANGLE
-    const axis = new THREE.Vector3().crossVectors(forearmDir, N);
-    if (axis.lengthSq() > 1e-8) {
-      axis.normalize();
-      const clampQuat = new THREE.Quaternion().setFromAxisAngle(axis, MAX_WRIST_ANGLE);
-      N = forearmDir.clone().applyQuaternion(clampQuat).normalize();
-      // Recompute R perpendicular to clamped N
-      R.crossVectors(N, new THREE.Vector3(0, 1, 0)).normalize();
-      if (R.lengthSq() < 1e-6) {
-        R.crossVectors(N, new THREE.Vector3(0, 0, 1)).normalize();
-      }
-    }
-  }
 
   // Build full world frame: X=R, Y=N, Z=R×N (right-handed)
   const F = new THREE.Vector3().crossVectors(R, N).normalize();
@@ -1098,6 +1076,22 @@ function setRobotTarget(paddleX, paddleY, paddleZ, tiltX, tiltZ, contactTime) {
   robotTargetAngles = { yaw, pitch, elbow, wristQuat };
   robotCurrentAngles = { ...ROBOT_REST, wristQuat: ROBOT_REST.wristQuat.clone() };
   robotContactTime = contactTime || 0.3;
+
+  // FK verification: check disc world position at target pose
+  applyRobotAngles(robotTargetAngles);
+  robotGroup.updateMatrixWorld(true);
+  robotFKDiscWorld = null;
+  if (robotPaddleGroup) {
+    const discWorld = new THREE.Vector3();
+    robotPaddleGroup.getWorldPosition(discWorld);
+    const expected = s2t(paddleX, paddleY, paddleZ);
+    const err = discWorld.distanceTo(expected) * 1000;
+    console.log(`🎯 FK check: disc at (${discWorld.x.toFixed(3)}, ${discWorld.y.toFixed(3)}, ${discWorld.z.toFixed(3)})` +
+      ` expected (${expected.x.toFixed(3)}, ${expected.y.toFixed(3)}, ${expected.z.toFixed(3)}) error=${err.toFixed(1)}mm`);
+    if (err > 5) console.warn(`⚠️ FK mismatch: ${err.toFixed(1)}mm!`);
+    // Store for green debug sphere (added AFTER clearDebugMarkers in loadReplay)
+    robotFKDiscWorld = discWorld.clone();
+  }
 
   // Start from rest pose
   applyRobotAngles(robotCurrentAngles);
@@ -1323,6 +1317,10 @@ function loadReplay(replay) {
     }
     const wrist = paddleToWrist(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z);
     addDebugSphere(wrist.x, wrist.y, wrist.z, 0xffff00, 0.010); // yellow = IK wrist target
+    // Green = ACTUAL disc center from scene graph FK (should overlap cyan if IK is correct)
+    if (robotFKDiscWorld) {
+      addDebugSphere(robotFKDiscWorld.x, robotFKDiscWorld.z, robotFKDiscWorld.y, 0x00ff00, 0.018);
+    }
 
     // Swing direction arrow: shows the swing vector (direction + speed)
     // Sim coords: swing is in -Y direction (toward opponent), elevated by swing_elevation
