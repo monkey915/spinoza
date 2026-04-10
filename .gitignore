@@ -31,3 +31,4 @@ nohup.out
 .idea/
 *.swp
 *.swo
+node_modules/

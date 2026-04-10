@@ -661,6 +661,9 @@ function animate(time) {
     }
   }
 
+  // Pulse arm warning (red flash)
+  pulseArmWarning(time);
+
   // Autoplay: pause between replays then advance
   if (replayAutoplay && !animPlaying && replayPauseTimer > 0) {
     replayPauseTimer -= 0.016; // ~60fps frame time
@@ -1111,12 +1114,32 @@ function applyRobotAngles(angles) {
 const ARM_NORMAL_COLOR = 0x2266aa;
 const ARM_WARN_COLOR = 0xff4422;
 
-/** Tint arm segments red/orange when table collision was avoided */
+/** Tint arm segments red/orange when table collision detected */
 function updateArmCollisionVisual(hasCollision) {
   if (!robotUpperArm || !robotForearm) return;
   const color = hasCollision ? ARM_WARN_COLOR : ARM_NORMAL_COLOR;
   robotUpperArm.material.color.setHex(color);
   robotForearm.material.color.setHex(hasCollision ? 0xff6633 : 0x2288cc);
+  // Show/hide the 3D viewport warning banner
+  const banner = document.getElementById('arm-warning-banner');
+  if (banner) {
+    banner.style.display = hasCollision ? 'block' : 'none';
+    banner.textContent = robotArmWarning ? `⚠️ ${robotArmWarning}` : '';
+  }
+}
+
+/** Pulse arm red when warning active (call each frame) */
+function pulseArmWarning(time) {
+  if (!robotArmWarning || !robotUpperArm || !robotForearm) return;
+  const t = Math.sin(time * 0.006) * 0.5 + 0.5; // 0..1 pulsing
+  const r1 = Math.floor(0x22 + t * (0xff - 0x22));
+  const g1 = Math.floor(0x66 + t * (0x22 - 0x66));
+  const b1 = Math.floor(0xaa + t * (0x22 - 0xaa));
+  robotUpperArm.material.color.setRGB(r1/255, g1/255, b1/255);
+  const r2 = Math.floor(0x22 + t * (0xff - 0x22));
+  const g2 = Math.floor(0x88 + t * (0x33 - 0x88));
+  const b2 = Math.floor(0xcc + t * (0x33 - 0xcc));
+  robotForearm.material.color.setRGB(r2/255, g2/255, b2/255);
 }
 
 // --- Joint angle labels (canvas-based sprites) ---
