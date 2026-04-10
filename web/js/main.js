@@ -831,27 +831,37 @@ function createRobotArm() {
   wristJoint.castShadow = true;
   robotWrist.add(wristJoint);
 
-  // === Paddle assembly: hand/grip + offset disc ===
-  // The hand extends from wrist along local +Y for handLen.
-  // The disc is offset by paddleR in local +X so the arm connects
-  // at the disc EDGE (the handle), not through the disc center.
+  // === Paddle assembly: handle + throat + offset disc ===
+  // Paddle handle extends from disc edge toward the wrist.
+  // Disc center is offset by paddleR in local +X from the forearm axis.
   const paddleR = 0.085;
-  const handleMat = new THREE.MeshStandardMaterial({ color: 0x664422, roughness: 0.8 });
+  const handleLen = 0.09;   // visible paddle handle length
+  const handleMat = new THREE.MeshStandardMaterial({ color: 0x8B6914, roughness: 0.7 }); // light wood
+  const throatMat = new THREE.MeshStandardMaterial({ color: 0x6B4F12, roughness: 0.6 }); // darker wood
 
-  // Hand/grip: cylinder from wrist (0,0,0) to (0, handLen, 0)
-  const handGeo = new THREE.CylinderGeometry(0.018, 0.014, ROBOT.handLen, 8);
-  const handMesh = new THREE.Mesh(handGeo, handleMat);
-  handMesh.position.y = ROBOT.handLen / 2;
-  handMesh.castShadow = true;
-  robotWrist.add(handMesh);
+  // Paddle handle: flat wooden piece from disc edge toward wrist
+  // Goes from (0, handLen, 0) down to (0, handLen - handleLen, 0)
+  const handleGeo = new THREE.BoxGeometry(0.032, handleLen, 0.022);
+  const handleMesh = new THREE.Mesh(handleGeo, handleMat);
+  handleMesh.position.set(0, ROBOT.handLen - handleLen / 2, 0);
+  handleMesh.castShadow = true;
+  robotWrist.add(handleMesh);
 
-  // Grip cap at hand tip (where disc edge meets hand)
-  const gripCap = new THREE.Mesh(
-    new THREE.SphereGeometry(0.016, 8, 8),
-    new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.6, roughness: 0.3 })
+  // Handle butt cap (rounded end at bottom of handle)
+  const buttCap = new THREE.Mesh(
+    new THREE.SphereGeometry(0.017, 8, 8),
+    throatMat
   );
-  gripCap.position.set(0, ROBOT.handLen, 0);
-  robotWrist.add(gripCap);
+  buttCap.scale.set(1.0, 0.4, 0.7);
+  buttCap.position.set(0, ROBOT.handLen - handleLen, 0);
+  robotWrist.add(buttCap);
+
+  // Throat: flared transition from handle to blade (at disc edge)
+  const throatGeo = new THREE.CylinderGeometry(0.028, 0.018, 0.025, 8);
+  const throatMesh = new THREE.Mesh(throatGeo, throatMat);
+  throatMesh.position.set(0, ROBOT.handLen - 0.012, 0);
+  throatMesh.castShadow = true;
+  robotWrist.add(throatMesh);
 
   // Paddle disc — center OFFSET by paddleR in +X (edge at hand tip)
   const paddleGroup = new THREE.Group();
@@ -984,17 +994,20 @@ function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
   );
   const parentQuat = qYaw.clone().multiply(qPE);
 
-  // Collision avoidance: angle between N and forearm must be ≥ MIN_WRIST_ANGLE
+  // Collision avoidance: angle between N and forearm must be ≤ MAX_WRIST_ANGLE.
+  // When angle > 90°, the hand points BACKWARD into the forearm → disc clips arm.
+  // Clamp to 90° so the paddle can face sideways but never backward.
   const forearmDir = new THREE.Vector3(0, 1, 0).applyQuaternion(parentQuat);
-  const MIN_WRIST_ANGLE = 50 * Math.PI / 180;
+  const MAX_WRIST_ANGLE = 90 * Math.PI / 180;
   const cosAngle = N.dot(forearmDir);
   const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle)));
 
-  if (angle < MIN_WRIST_ANGLE) {
+  if (angle > MAX_WRIST_ANGLE) {
+    // Clamp: rotate N toward forearm until angle = MAX_WRIST_ANGLE
     const axis = new THREE.Vector3().crossVectors(forearmDir, N);
     if (axis.lengthSq() > 1e-8) {
       axis.normalize();
-      const clampQuat = new THREE.Quaternion().setFromAxisAngle(axis, MIN_WRIST_ANGLE);
+      const clampQuat = new THREE.Quaternion().setFromAxisAngle(axis, MAX_WRIST_ANGLE);
       N = forearmDir.clone().applyQuaternion(clampQuat).normalize();
       // Recompute R perpendicular to clamped N
       R.crossVectors(N, new THREE.Vector3(0, 1, 0)).normalize();
