@@ -2153,3 +2153,6 @@ onResize();
 updateValueDisplays();
 runSimulation();
 requestAnimationFrame(animate);
+
+// Expose for automated capture (Puppeteer)
+Object.assign(window, { camera, controls, s2t, showReplay, replayData: null });
