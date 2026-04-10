@@ -740,7 +740,8 @@ const ROBOT = {
   baseZ: TABLE.height,        // shoulder at table height
   upperArmLen: 0.40,          // shoulder → elbow
   forearmLen: 0.35,           // elbow → wrist
-  handLen: 0.10,              // wrist → paddle center
+  handleLen: 0.10,            // paddle handle length (in disc plane, ~100mm real)
+  paddleR: 0.085,             // paddle disc radius
 };
 
 let robotGroup = null;
@@ -831,41 +832,43 @@ function createRobotArm() {
   wristJoint.castShadow = true;
   robotWrist.add(wristJoint);
 
-  // === Paddle assembly: handle + throat + offset disc ===
-  // Paddle handle extends from disc edge toward the wrist.
-  // Disc center is offset by paddleR in local +X from the forearm axis.
-  const paddleR = 0.085;
-  const handleLen = 0.09;   // visible paddle handle length
-  const handleMat = new THREE.MeshStandardMaterial({ color: 0x8B6914, roughness: 0.7 }); // light wood
-  const throatMat = new THREE.MeshStandardMaterial({ color: 0x6B4F12, roughness: 0.6 }); // darker wood
+  // === Paddle: handle + blade, both COPLANAR in wrist local XZ plane ===
+  // Y = paddle normal direction. Handle and disc lie in the XZ plane (Y≈0).
+  // Handle extends from wrist (0,0,0) in +X direction for handleLen.
+  // Disc edge meets handle at (handleLen, 0, 0).
+  // Disc center at (handleLen + paddleR, 0, 0).
+  const paddleR = ROBOT.paddleR;
+  const handleLen = ROBOT.handleLen;
+  const woodMat = new THREE.MeshStandardMaterial({ color: 0x8B6914, roughness: 0.65 });
+  const darkWoodMat = new THREE.MeshStandardMaterial({ color: 0x6B4F12, roughness: 0.6 });
 
-  // Paddle handle: flat wooden piece from disc edge toward wrist
-  // Goes from (0, handLen, 0) down to (0, handLen - handleLen, 0)
-  const handleGeo = new THREE.BoxGeometry(0.032, handleLen, 0.022);
-  const handleMesh = new THREE.Mesh(handleGeo, handleMat);
-  handleMesh.position.set(0, ROBOT.handLen - handleLen / 2, 0);
+  // Handle: flat wooden piece lying along +X in the disc plane
+  // Real TT handle: ~100mm long, ~25mm wide, ~23mm thick
+  const handleGeo = new THREE.BoxGeometry(handleLen, 0.023, 0.025);
+  const handleMesh = new THREE.Mesh(handleGeo, woodMat);
+  handleMesh.position.set(handleLen / 2, 0, 0);
   handleMesh.castShadow = true;
   robotWrist.add(handleMesh);
 
-  // Handle butt cap (rounded end at bottom of handle)
+  // Handle butt cap (rounded end at grip bottom, near wrist)
   const buttCap = new THREE.Mesh(
-    new THREE.SphereGeometry(0.017, 8, 8),
-    throatMat
+    new THREE.SphereGeometry(0.014, 8, 8),
+    darkWoodMat
   );
-  buttCap.scale.set(1.0, 0.4, 0.7);
-  buttCap.position.set(0, ROBOT.handLen - handleLen, 0);
+  buttCap.scale.set(0.5, 0.8, 0.9);
+  buttCap.position.set(0, 0, 0);
   robotWrist.add(buttCap);
 
-  // Throat: flared transition from handle to blade (at disc edge)
-  const throatGeo = new THREE.CylinderGeometry(0.028, 0.018, 0.025, 8);
-  const throatMesh = new THREE.Mesh(throatGeo, throatMat);
-  throatMesh.position.set(0, ROBOT.handLen - 0.012, 0);
+  // Throat: flared transition from handle to blade
+  const throatGeo = new THREE.BoxGeometry(0.025, 0.020, 0.032);
+  const throatMesh = new THREE.Mesh(throatGeo, darkWoodMat);
+  throatMesh.position.set(handleLen + 0.005, 0, 0);
   throatMesh.castShadow = true;
   robotWrist.add(throatMesh);
 
-  // Paddle disc — center OFFSET by paddleR in +X (edge at hand tip)
+  // Paddle disc — center at (handleLen + paddleR, 0, 0), in the disc plane
   const paddleGroup = new THREE.Group();
-  paddleGroup.position.set(paddleR, ROBOT.handLen, 0);
+  paddleGroup.position.set(handleLen + paddleR, 0, 0);
 
   // Red rubber side (hitting side, faces +Y)
   const discGeo = new THREE.CylinderGeometry(paddleR, paddleR, 0.008, 32);
@@ -1031,18 +1034,18 @@ function computeWristQuat(phi1, phi2, phi3, tiltX, tiltZ) {
 
 /**
  * Compute wrist position from paddle position and orientation.
- * The disc center is offset from the wrist by:
- *   handLen along the paddle normal N, plus
- *   paddleR along the radial direction R (disc is to the side).
- * So: wrist = paddle_pos - handLen * N - paddleR * R (in sim coords)
+ * Handle and disc are coplanar (in the disc plane). The wrist is at the
+ * handle butt, offset from disc center by (handleLen + paddleR) in the
+ * radial direction R. No offset along the normal N.
+ * wrist = paddle_pos - (handleLen + paddleR) * R (in sim coords)
  */
 function paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
-  const { nx, ny, nz, rx, ry, rz } = paddleFrameSim(tiltX, tiltZ);
-  const paddleR = 0.085;
+  const { rx, ry, rz } = paddleFrameSim(tiltX, tiltZ);
+  const totalR = ROBOT.handleLen + ROBOT.paddleR;
   return {
-    x: paddleX - ROBOT.handLen * nx - paddleR * rx,
-    y: paddleY - ROBOT.handLen * ny - paddleR * ry,
-    z: paddleZ - ROBOT.handLen * nz - paddleR * rz,
+    x: paddleX - totalR * rx,
+    y: paddleY - totalR * ry,
+    z: paddleZ - totalR * rz,
   };
 }
 
