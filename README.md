@@ -1,14 +1,37 @@
 # 🏓 spinoza
 
-A physics-based table tennis ball flight & bounce simulator, written in Rust. Spinoza models aerodynamic drag, the Magnus effect (spin-induced forces), gravity, and realistic bounce mechanics on an ITTF-standard table.
+A physics-based table tennis simulator with ML-powered return prediction, written in Rust with Python bindings. Spinoza models aerodynamic drag, the Magnus effect, gravity, and realistic bounce mechanics — then trains a reinforcement learning agent to return serves with an optimal paddle position.
 
-Includes a **3D web visualization** built with Three.js for interactive exploration of trajectories.
+Includes a **3D web visualization** with a 4-DOF robot arm that animates the return stroke in real time.
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Topspin serve simulation – side view" width="720">
+  <img src="docs/demo.gif" alt="Robot arm returning a serve — 3D replay" width="720">
 </p>
 
+## Features
+
+- **Physics engine** — RK4 integration at 0.5ms timesteps with drag, Magnus effect, and spin-dependent bounce model
+- **Python bindings** — Rust physics exposed via PyO3/maturin for ML training
+- **PPO training pipeline** — Train a return agent that selects paddle position, tilt, and swing parameters
+- **Trajectory prediction** — LSTM-based predictor estimates ball trajectory from partial observations
+- **Paddle optimizer** — Physics-based computation of optimal return paddle placement (83%+ return rate)
+- **3D replay viewer** — Three.js visualization with animated robot arm, trajectory trails, bounce markers
+- **4-DOF robot arm** — Shoulder yaw/pitch, elbow, and wrist with analytical IK and smooth animation
+- **Collision detection** — Table collision warnings with pulsing visual feedback
+- **Joint angle labels** — Real-time φ1–φ4 angle display at each joint during animation
+
 ## Quick Start
+
+### Web Visualization
+
+Start a local server and open the replay viewer:
+
+```bash
+cd web && python3 -m http.server 8000
+# Open http://localhost:8000 in your browser
+```
+
+Load replays, scrub the timeline, and watch the robot arm animate to the return position.
 
 ### CLI
 
@@ -28,9 +51,16 @@ Impact point:    x=0.7625 m  y=1.4498 m  (z=0.7600 m)
 ...
 ```
 
-### Web Visualization
+### ML Training
 
-Open `web/index.html` in a browser — no build step required. Adjust launch parameters, spin, and camera angle interactively.
+```bash
+pip install -e .             # Build Rust → Python bindings via maturin
+cd training
+python train.py              # PPO training with live progress
+python export_replays.py     # Export replays for web viewer
+```
+
+See [`training/README.md`](training/README.md) for the full training guide.
 
 ## CLI Arguments
 
@@ -82,25 +112,53 @@ Based on the Gardin / Haake & Goodwill model:
 
 For a detailed derivation of the differential equations and numerical methods, see [`web/PHYSICS.md`](web/PHYSICS.md).
 
+## Robot Arm
+
+The visualization includes a 4-DOF articulated robot arm mounted behind the table:
+
+| Joint | Symbol | Description |
+|-------|--------|-------------|
+| Shoulder yaw | φ1 | Rotation around vertical axis to face the ball |
+| Shoulder pitch | φ2 | Arm elevation in the vertical plane |
+| Elbow | φ3 | Forearm bend (0–180°) |
+| Wrist | φ4 | Paddle orientation (quaternion, computed from paddle tilt) |
+
+- **Analytical IK** solves the 2-link arm (upper arm 0.35m + forearm 0.40m) with elbow-up/down options
+- **Smooth animation** interpolates from rest pose to hit position using smoothstep easing
+- **Paddle geometry** — realistic table tennis paddle with coplanar disc and radial handle
+- **Collision detection** — arm segments checked against table volume each frame; violations shown as pulsing red arm + viewport warning banner
+
 ## Project Structure
 
 ```
 src/
-  main.rs                CLI entry point (clap argument parsing, output)
-  simulation.rs          Simulation loop (RK4 stepping, bounce detection)
+  main.rs                CLI entry point
+  simulation.rs          Simulation loop (RK4, bounce detection)
   table.rs               ITTF table geometry
+  lib.rs                 Library exports + PyO3 feature gate
+  pymodule.rs            Python bindings (simulate, apply_paddle_hit, ...)
   physics/
     state.rs             Vec3 and BallState types
     constants.rs         Physical constants
     forces.rs            Gravity + drag + Magnus; spin decay
     integrator.rs        RK4 integrator
     bounce.rs            Bounce model (restitution, friction, spin transfer)
+    paddle.rs            Paddle physics (normal, swing velocity, hit)
+training/
+  train.py               PPO training with live progress
+  env.py                 Gymnasium environment wrapping Rust physics
+  paddle.py              Paddle optimizer (physics-based return)
+  predict.py             LSTM trajectory predictor
+  export_replays.py      Export replays for web viewer
+  evaluate.py            Evaluate trained models
 web/
-  index.html             Three.js 3D visualization
+  index.html             Main UI (replay controls, camera presets)
   PHYSICS.md             Physics documentation
   js/
-    main.js              Scene, controls, animation
+    main.js              Three.js scene, robot arm, IK, animation, replay system
     physics.js           JS port of the physics engine
+scripts/
+  capture_demo.js        Puppeteer-based GIF capture for README
 ```
 
 ## Building
@@ -109,6 +167,12 @@ Requires Rust 2024 edition (1.85+):
 
 ```bash
 cargo build --release
+```
+
+For Python bindings:
+
+```bash
+pip install -e .     # Uses maturin to build with PyO3
 ```
 
 ## License
