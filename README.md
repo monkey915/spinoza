@@ -5,7 +5,9 @@ A physics-based table tennis simulator with ML-powered return prediction, writte
 Includes a **3D web visualization** with a 4-DOF robot arm that animates the return stroke in real time.
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Robot arm returning a serve — 3D replay" width="720">
+  <video src="docs/demo.mp4" width="720" autoplay loop muted playsinline>
+    Your browser does not support the video tag.
+  </video>
 </p>
 
 ## Features
