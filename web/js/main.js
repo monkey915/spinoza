@@ -1096,10 +1096,15 @@ function addDebugSphere(simX, simY, simZ, color, radius) {
 }
 
 // Robot arm animation state
-let robotTargetAngles = null;   // { yaw, pitch, elbow, wristQuat }
-let robotCurrentAngles = null;  // same shape, for interpolation
-let robotContactTime = 0;       // time when arm should reach target
+let robotTargetAngles = null;     // { yaw, pitch, elbow, wristQuat } — at contact point
+let robotPreSwingAngles = null;   // angles at pre-swing position (backswing)
+let robotFollowAngles = null;     // angles at follow-through position
+let robotCurrentAngles = null;    // same shape, for interpolation
+let robotContactTime = 0;         // time when arm should reach target
 const ROBOT_REST = { yaw: 0, pitch: -0.3, elbow: -0.8, wristQuat: new THREE.Quaternion() };
+const SWING_BACKSWING = 0.15;     // backswing distance (m) along -swingDir
+const SWING_FOLLOWTHRU = 0.20;    // follow-through distance (m) along +swingDir
+const SWING_DURATION = 0.12;      // swing phase duration (seconds)
 
 /** Apply raw joint angles to the robot arm meshes */
 function applyRobotAngles(angles) {
@@ -1202,42 +1207,74 @@ function updateJointLabels() {
 }
 
 /**
- * Set up robot arm animation target for a paddle action.
- * The arm will animate from rest to hit position during the serve.
+ * Compute IK angles for a given paddle position and tilt.
+ * Returns the joint angles object or null if unreachable.
  */
-function setRobotTarget(paddleX, paddleY, paddleZ, tiltX, tiltZ, contactTime) {
-  if (!robotGroup || !robotVisible) return;
-
+function computeArmAngles(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
   const wrist = paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ);
   const ik = solveIK(wrist.x, wrist.y, wrist.z);
-
-  robotTargetAngles = {
+  return {
     yaw: -ik.phi1,
     pitch: -(Math.PI / 2 - ik.phi2),
     elbow: ik.phi3,
     wristQuat: computeWristQuat(ik.phi1, ik.phi2, ik.phi3, tiltX, tiltZ),
+    reachable: ik.reachable,
   };
+}
+
+/**
+ * Set up robot arm animation target for a paddle action.
+ * Computes three poses: pre-swing (backswing), contact, follow-through.
+ * The arm moves from rest → pre-swing → swings through contact → follow-through.
+ */
+function setRobotTarget(paddleX, paddleY, paddleZ, tiltX, tiltZ, contactTime, swingSpeed, swingElev) {
+  if (!robotGroup || !robotVisible) return;
+
+  // Contact pose
+  const contactAngles = computeArmAngles(paddleX, paddleY, paddleZ, tiltX, tiltZ);
+
+  // Swing direction in sim coords: forward (-Y) + upward (Z)
+  const elev = swingElev || 0;
+  const sdx = 0;
+  const sdy = -Math.cos(elev);
+  const sdz = Math.sin(elev);
+
+  // Pre-swing: offset paddle backward along swing direction
+  const backDist = SWING_BACKSWING * Math.min(1, (swingSpeed || 5) / 8);
+  const preX = paddleX - sdx * backDist;
+  const preY = paddleY - sdy * backDist;
+  const preZ = paddleZ - sdz * backDist;
+  robotPreSwingAngles = computeArmAngles(preX, preY, preZ, tiltX, tiltZ);
+
+  // Follow-through: offset paddle forward along swing direction
+  const followDist = SWING_FOLLOWTHRU * Math.min(1, (swingSpeed || 5) / 8);
+  const postX = paddleX + sdx * followDist;
+  const postY = paddleY + sdy * followDist;
+  const postZ = paddleZ + sdz * followDist;
+  robotFollowAngles = computeArmAngles(postX, postY, postZ, tiltX, tiltZ);
+
+  robotTargetAngles = contactAngles;
   robotCurrentAngles = { ...ROBOT_REST, wristQuat: ROBOT_REST.wristQuat.clone() };
   robotContactTime = contactTime || 0.3;
 
-  // Check reachability and table collision at target pose
+  // Check reachability and table collision at contact pose
   applyRobotAngles(robotTargetAngles);
   robotGroup.updateMatrixWorld(true);
 
   robotArmWarning = '';
-  if (!ik.reachable) {
+  if (!contactAngles.reachable) {
     robotArmWarning = 'Unreachable';
     updateArmCollisionVisual(true);
   } else {
     const col = checkArmTableCollision();
     if (col.collides) {
-      robotArmWarning = `Table collision: ${col.details}`;
+      robotArmWarning = 'Table collision: ' + col.details;
       updateArmCollisionVisual(true);
     } else {
       updateArmCollisionVisual(false);
     }
   }
-  if (robotArmWarning) console.warn(`⚠️ ${robotArmWarning}`);
+  if (robotArmWarning) console.warn('\u26a0\ufe0f ' + robotArmWarning);
 
   // Start from rest pose
   applyRobotAngles(robotCurrentAngles);
@@ -1249,24 +1286,52 @@ function smoothstep(t) {
   return t * t * (3 - 2 * t);
 }
 
-/** Update robot arm animation (called each frame) */
+/** Interpolate between two angle sets */
+function lerpAngles(a, b, f) {
+  const lerp = (x, y, t) => x + (y - x) * t;
+  return {
+    yaw: lerp(a.yaw, b.yaw, f),
+    pitch: lerp(a.pitch, b.pitch, f),
+    elbow: lerp(a.elbow, b.elbow, f),
+    wristQuat: a.wristQuat.clone().slerp(b.wristQuat, f),
+  };
+}
+
+/**
+ * Update robot arm animation (called each frame).
+ * Three phases:
+ *   1. Rest → Pre-swing  (smoothstep, 0 to contactTime - swingDuration)
+ *   2. Pre-swing → Contact (linear, quick swing through the ball)
+ *   3. Contact → Follow-through (ease-out, deceleration after hit)
+ */
 function updateRobotAnimation(currentTime) {
   if (!robotTargetAngles || !robotGroup || !robotVisible) return;
 
-  // Arm starts moving from t=0, arrives at contactTime
-  // Use 80% of serve time so arm arrives slightly early (more natural)
-  const moveTime = robotContactTime * 0.8;
-  const startDelay = robotContactTime * 0.1; // small delay before moving
-  const t = (currentTime - startDelay) / moveTime;
-  const progress = smoothstep(Math.max(0, Math.min(1, t)));
+  const swingStart = Math.max(0.05, robotContactTime - SWING_DURATION);
+  const followEnd = robotContactTime + SWING_DURATION * 1.5;
+  const preSwing = robotPreSwingAngles || robotTargetAngles;
+  const followThru = robotFollowAngles || robotTargetAngles;
 
-  const lerp = (a, b, f) => a + (b - a) * f;
-  const angles = {
-    yaw: lerp(ROBOT_REST.yaw, robotTargetAngles.yaw, progress),
-    pitch: lerp(ROBOT_REST.pitch, robotTargetAngles.pitch, progress),
-    elbow: lerp(ROBOT_REST.elbow, robotTargetAngles.elbow, progress),
-    wristQuat: ROBOT_REST.wristQuat.clone().slerp(robotTargetAngles.wristQuat, progress),
-  };
+  let angles;
+
+  if (currentTime <= swingStart) {
+    // Phase 1: Rest → Pre-swing (smooth approach)
+    const t = currentTime / swingStart;
+    const p = smoothstep(Math.max(0, Math.min(1, t)));
+    angles = lerpAngles(ROBOT_REST, preSwing, p);
+  } else if (currentTime <= robotContactTime) {
+    // Phase 2: Pre-swing → Contact (linear = constant velocity swing)
+    const t = (currentTime - swingStart) / (robotContactTime - swingStart);
+    angles = lerpAngles(preSwing, robotTargetAngles, Math.max(0, Math.min(1, t)));
+  } else if (currentTime <= followEnd) {
+    // Phase 3: Contact → Follow-through (ease-out deceleration)
+    const t = (currentTime - robotContactTime) / (followEnd - robotContactTime);
+    const p = 1 - (1 - Math.min(1, t)) * (1 - Math.min(1, t)); // ease-out quad
+    angles = lerpAngles(robotTargetAngles, followThru, p);
+  } else {
+    // Hold follow-through
+    angles = followThru;
+  }
 
   applyRobotAngles(angles);
 }
@@ -1312,6 +1377,8 @@ function clearReturnVisualization() {
   clearDebugMarkers();
   updateArmCollisionVisual(false);
   robotArmWarning = '';
+  robotPreSwingAngles = null;
+  robotFollowAngles = null;
   robotRestPose();
 }
 
@@ -1455,8 +1522,9 @@ function loadReplay(replay) {
 
     paddleMesh.visible = !robotVisible; // hide floating paddle when robot arm has its own
 
-    // Set up robot arm animation — arm will move from rest to hit position during serve
-    setRobotTarget(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z, serveEndTime);
+    // Set up robot arm animation with swing
+    setRobotTarget(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z,
+      serveEndTime, pa.swing_speed, pa.swing_elevation);
 
     // Debug markers: cyan = paddle target, magenta = ball contact
     clearDebugMarkers();
