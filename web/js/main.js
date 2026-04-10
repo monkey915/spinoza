@@ -545,6 +545,7 @@ document.getElementById("timeline").addEventListener("input", (e) => {
   document.getElementById("btn-play").textContent = "▶";
   updateBallPosition(animTime);
   updateRobotAnimation(animTime);
+  updateJointLabels();
   document.getElementById("time-display").textContent =
     `t = ${animTime.toFixed(3)} s`;
 });
@@ -648,6 +649,7 @@ function animate(time) {
     updateBallPosition(animTime);
     updateTimeline();
     updateRobotAnimation(animTime);
+    updateJointLabels();
   }
 
   // Pulse bounce markers
@@ -752,7 +754,7 @@ let robotElbow = null;         // φ3: elbow bend (0-180°)
 let robotForearm = null;       // mesh
 let robotWrist = null;         // φ4: wrist tilt (paddle orientation)
 let robotPaddleGroup = null;   // disc group — for FK debug (world position readout)
-let robotFKDiscWorld = null;   // last FK-verified disc world pos (Three.js coords)
+let robotArmWarning = '';      // warning text for unreachable/collision
 let robotVisible = true;
 
 function createRobotArm() {
@@ -913,7 +915,7 @@ function createRobotArm() {
  * The IK reduces to a 2D problem in the arm plane after yaw rotation.
  * Returns { phi1, phi2, phi3, reachable }
  */
-function solveIK(targetX, targetY, targetZ) {
+function solveIK(targetX, targetY, targetZ, elbowUp = false) {
   const L1 = ROBOT.upperArmLen;
   const L2 = ROBOT.forearmLen; // IK targets the wrist, not the paddle tip
 
@@ -948,11 +950,12 @@ function solveIK(targetX, targetY, targetZ) {
   const beta = Math.acos(Math.max(-1, Math.min(1,
     (L1 * L1 + clampedD * clampedD - L2 * L2) / (2 * L1 * clampedD)
   )));
-  // Elbow-up configuration (α - β): arm reaches forward, elbow above arm plane
-  // This is the standard 2-link IK q1 for elbow-up (q2 positive)
-  const phi2 = alpha - beta;
+  // elbowUp=false: standard (α - β), elbow can dip below shoulder
+  // elbowUp=true:  raised (α + β, -φ3), elbow stays above shoulder — avoids table collision
+  const phi2 = elbowUp ? alpha + beta : alpha - beta;
+  const phi3Final = elbowUp ? -phi3 : phi3;
 
-  return { phi1, phi2, phi3, reachable };
+  return { phi1, phi2, phi3: phi3Final, reachable };
 }
 
 /**
@@ -1027,6 +1030,52 @@ function paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ) {
   };
 }
 
+/**
+ * Check if any arm joint/segment violates the allowed workspace.
+ * Rule: no arm point may be inside the table volume (below surface, within XY footprint).
+ * Samples 6 points per segment. Returns { collides, details[] }.
+ */
+let lastCollisionResult = { collides: false, details: '' };
+
+function checkArmTableCollision() {
+  if (!robotGroup || !robotShoulderYaw) {
+    lastCollisionResult = { collides: false, details: '' };
+    return lastCollisionResult;
+  }
+  robotGroup.updateMatrixWorld(true);
+
+  const nodes = [robotShoulderYaw, robotElbow, robotWrist, robotPaddleGroup];
+  const segNames = ['Oberarm', 'Unterarm', 'Schläger'];
+  const positions = nodes.map(n => {
+    const v = new THREE.Vector3();
+    n.getWorldPosition(v);
+    return { x: v.x, y: v.z, z: v.y }; // Three.js → sim
+  });
+
+  const M = 0.025; // margin (arm radius)
+  const violations = [];
+  for (let s = 0; s < positions.length - 1; s++) {
+    const a = positions[s], b = positions[s + 1];
+    for (let t = 0; t <= 1.0; t += 0.2) {
+      const px = a.x + t * (b.x - a.x);
+      const py = a.y + t * (b.y - a.y);
+      const pz = a.z + t * (b.z - a.z);
+      if (px >= -M && px <= TABLE.width + M &&
+          py >= -M && py <= TABLE.length + M &&
+          pz < TABLE.height - M) {
+        violations.push(segNames[s]);
+        break; // one violation per segment is enough
+      }
+    }
+  }
+
+  lastCollisionResult = {
+    collides: violations.length > 0,
+    details: violations.join(', '),
+  };
+  return lastCollisionResult;
+}
+
 // Debug markers for IK verification
 let debugMarkers = [];
 function clearDebugMarkers() {
@@ -1035,7 +1084,7 @@ function clearDebugMarkers() {
 }
 function addDebugSphere(simX, simY, simZ, color, radius) {
   const geo = new THREE.SphereGeometry(radius || 0.015, 12, 12);
-  const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8 });
+  const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7 });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.position.copy(s2t(simX, simY, simZ));
   scene.add(mesh);
@@ -1059,6 +1108,76 @@ function applyRobotAngles(angles) {
   robotGroup.visible = robotVisible;
 }
 
+const ARM_NORMAL_COLOR = 0x2266aa;
+const ARM_WARN_COLOR = 0xff4422;
+
+/** Tint arm segments red/orange when table collision was avoided */
+function updateArmCollisionVisual(hasCollision) {
+  if (!robotUpperArm || !robotForearm) return;
+  const color = hasCollision ? ARM_WARN_COLOR : ARM_NORMAL_COLOR;
+  robotUpperArm.material.color.setHex(color);
+  robotForearm.material.color.setHex(hasCollision ? 0xff6633 : 0x2288cc);
+}
+
+// --- Joint angle labels (canvas-based sprites) ---
+let jointLabels = []; // { sprite, node, name }
+function createJointLabels() {
+  removeJointLabels();
+  const joints = [
+    { node: robotShoulderYaw,   name: 'φ1' },
+    { node: robotShoulderPitch, name: 'φ2' },
+    { node: robotElbow,         name: 'φ3' },
+    { node: robotWrist,         name: 'φ4' },
+  ];
+  for (const j of joints) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128; canvas.height = 48;
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.minFilter = THREE.LinearFilter;
+    const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true });
+    const sprite = new THREE.Sprite(mat);
+    sprite.scale.set(0.12, 0.045, 1);
+    sprite.renderOrder = 999;
+    scene.add(sprite);
+    jointLabels.push({ sprite, node: j.node, name: j.name, canvas, tex });
+  }
+}
+function removeJointLabels() {
+  for (const l of jointLabels) { scene.remove(l.sprite); l.tex.dispose(); l.sprite.material.dispose(); }
+  jointLabels = [];
+}
+function updateJointLabels() {
+  if (!robotGroup || !robotVisible || jointLabels.length === 0) return;
+  robotGroup.updateMatrixWorld(true);
+  const deg = r => (r * 180 / Math.PI).toFixed(0) + '°';
+  const angleVals = [
+    robotShoulderYaw.rotation.y,
+    robotShoulderPitch.rotation.x,
+    robotElbow.rotation.x,
+    // For wrist, show Euler Y (approx tilt)
+    new THREE.Euler().setFromQuaternion(robotWrist.quaternion, 'XYZ').y,
+  ];
+  for (let i = 0; i < jointLabels.length; i++) {
+    const l = jointLabels[i];
+    const pos = new THREE.Vector3();
+    l.node.getWorldPosition(pos);
+    l.sprite.position.copy(pos);
+    l.sprite.position.y += 0.04; // slightly above joint
+    const ctx = l.canvas.getContext('2d');
+    ctx.clearRect(0, 0, 128, 48);
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.beginPath();
+    ctx.rect(0, 0, 128, 48);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${l.name}=${deg(angleVals[i])}`, 64, 24);
+    l.tex.needsUpdate = true;
+  }
+}
+
 /**
  * Set up robot arm animation target for a paddle action.
  * The arm will animate from rest to hit position during the serve.
@@ -1068,30 +1187,34 @@ function setRobotTarget(paddleX, paddleY, paddleZ, tiltX, tiltZ, contactTime) {
 
   const wrist = paddleToWrist(paddleX, paddleY, paddleZ, tiltX, tiltZ);
   const ik = solveIK(wrist.x, wrist.y, wrist.z);
-  const yaw = -ik.phi1;
-  const pitch = -(Math.PI / 2 - ik.phi2);
-  const elbow = ik.phi3;
-  const wristQuat = computeWristQuat(ik.phi1, ik.phi2, ik.phi3, tiltX, tiltZ);
 
-  robotTargetAngles = { yaw, pitch, elbow, wristQuat };
+  robotTargetAngles = {
+    yaw: -ik.phi1,
+    pitch: -(Math.PI / 2 - ik.phi2),
+    elbow: ik.phi3,
+    wristQuat: computeWristQuat(ik.phi1, ik.phi2, ik.phi3, tiltX, tiltZ),
+  };
   robotCurrentAngles = { ...ROBOT_REST, wristQuat: ROBOT_REST.wristQuat.clone() };
   robotContactTime = contactTime || 0.3;
 
-  // FK verification: check disc world position at target pose
+  // Check reachability and table collision at target pose
   applyRobotAngles(robotTargetAngles);
   robotGroup.updateMatrixWorld(true);
-  robotFKDiscWorld = null;
-  if (robotPaddleGroup) {
-    const discWorld = new THREE.Vector3();
-    robotPaddleGroup.getWorldPosition(discWorld);
-    const expected = s2t(paddleX, paddleY, paddleZ);
-    const err = discWorld.distanceTo(expected) * 1000;
-    console.log(`🎯 FK check: disc at (${discWorld.x.toFixed(3)}, ${discWorld.y.toFixed(3)}, ${discWorld.z.toFixed(3)})` +
-      ` expected (${expected.x.toFixed(3)}, ${expected.y.toFixed(3)}, ${expected.z.toFixed(3)}) error=${err.toFixed(1)}mm`);
-    if (err > 5) console.warn(`⚠️ FK mismatch: ${err.toFixed(1)}mm!`);
-    // Store for green debug sphere (added AFTER clearDebugMarkers in loadReplay)
-    robotFKDiscWorld = discWorld.clone();
+
+  robotArmWarning = '';
+  if (!ik.reachable) {
+    robotArmWarning = 'Unerreichbar';
+    updateArmCollisionVisual(true);
+  } else {
+    const col = checkArmTableCollision();
+    if (col.collides) {
+      robotArmWarning = `Tisch-Kollision: ${col.details}`;
+      updateArmCollisionVisual(true);
+    } else {
+      updateArmCollisionVisual(false);
+    }
   }
+  if (robotArmWarning) console.warn(`⚠️ ${robotArmWarning}`);
 
   // Start from rest pose
   applyRobotAngles(robotCurrentAngles);
@@ -1153,6 +1276,7 @@ function robotRestPose() {
 
 robotGroup = createRobotArm();
 robotRestPose();
+createJointLabels();
 
 function clearReturnVisualization() {
   if (returnTrajectoryLine) {
@@ -1163,6 +1287,8 @@ function clearReturnVisualization() {
   paddleMesh.visible = false;
   if (swingArrow) swingArrow.visible = false;
   clearDebugMarkers();
+  updateArmCollisionVisual(false);
+  robotArmWarning = '';
   robotRestPose();
 }
 
@@ -1309,17 +1435,11 @@ function loadReplay(replay) {
     // Set up robot arm animation — arm will move from rest to hit position during serve
     setRobotTarget(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z, serveEndTime);
 
-    // Debug markers: paddle target (cyan), contact pos (magenta), wrist target (yellow)
+    // Debug markers: cyan = paddle target, magenta = ball contact
     clearDebugMarkers();
-    addDebugSphere(pa.paddle_x, pa.paddle_y, pa.paddle_z, 0x00ffff, 0.012); // cyan = paddle action pos
+    addDebugSphere(pa.paddle_x, pa.paddle_y, pa.paddle_z, 0x00ffff, 0.010);
     if (replay.contact_pos && replay.contact_pos.length === 3) {
-      addDebugSphere(replay.contact_pos[0], replay.contact_pos[1], replay.contact_pos[2], 0xff00ff, 0.012); // magenta = actual contact
-    }
-    const wrist = paddleToWrist(pa.paddle_x, pa.paddle_y, pa.paddle_z, pa.tilt_x, pa.tilt_z);
-    addDebugSphere(wrist.x, wrist.y, wrist.z, 0xffff00, 0.010); // yellow = IK wrist target
-    // Green = ACTUAL disc center from scene graph FK (should overlap cyan if IK is correct)
-    if (robotFKDiscWorld) {
-      addDebugSphere(robotFKDiscWorld.x, robotFKDiscWorld.z, robotFKDiscWorld.y, 0x00ff00, 0.018);
+      addDebugSphere(replay.contact_pos[0], replay.contact_pos[1], replay.contact_pos[2], 0xff00ff, 0.010);
     }
 
     // Swing direction arrow: shows the swing vector (direction + speed)
@@ -1417,6 +1537,25 @@ function updateReplayInfo(replay) {
       </div>
     `;
   }
+
+  // Arm warning (collision or unreachable)
+  if (robotArmWarning) {
+    html += `
+      <div class="info-row">
+        <span>⚠️ Arm</span>
+        <span style="color:#ff4422; font-weight:bold;">${robotArmWarning}</span>
+      </div>
+    `;
+  }
+
+  // Marker legend
+  html += `
+    <div style="margin-top:6px; font-size:10px; color:#888; line-height:1.5">
+      <span style="color:#00ffff">●</span> Paddle-Ziel &nbsp;
+      <span style="color:#ff00ff">●</span> Ballkontakt &nbsp;
+      <span style="color:#ff8800">→</span> Schwung
+    </div>
+  `;
 
   info.innerHTML = html;
 }
