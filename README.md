@@ -13,7 +13,7 @@ Includes a **3D web visualization** with a 4-DOF robot arm that animates the ret
 - **Physics engine** — RK4 integration at 0.5ms timesteps with drag, Magnus effect, and spin-dependent bounce model
 - **Python bindings** — Rust physics exposed via PyO3/maturin for ML training
 - **PPO training pipeline** — Train a return agent that selects paddle position, tilt, and swing parameters
-- **Trajectory prediction** — LSTM-based predictor estimates ball trajectory from partial observations
+- **Trajectory prediction** — 1D-CNN predictor estimates ball trajectory from partial observations
 - **Paddle optimizer** — Physics-based computation of optimal return paddle placement (83%+ return rate)
 - **3D replay viewer** — Three.js visualization with animated robot arm, trajectory trails, bounce markers
 - **4-DOF robot arm** — Shoulder yaw/pitch, elbow, and wrist with analytical IK and smooth animation
@@ -221,7 +221,7 @@ training/
   train.py               PPO training with live progress
   env.py                 Gymnasium environment wrapping Rust physics
   paddle.py              Paddle optimizer (physics-based return)
-  predict.py             LSTM trajectory predictor
+  predict.py             1D-CNN trajectory predictor
   export_replays.py      Export replays for web viewer
   evaluate.py            Evaluate trained models
 web/
