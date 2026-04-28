@@ -17,9 +17,41 @@ adapted for table tennis (4-DOF + paddle holder instead of 5-DOF + gripper).
 | 4 | **Power Supply** 5V/5A or 7.4V/3A barrel jack | 1 | €15.70 | €15.70 | [Amazon DE](https://www.amazon.de/dp/B01HRR9GY4) |
 | 5 | **3-pin TTL servo cables** 200mm (for daisy-chain) | 5 | €1.50 | €7.50 | Comes with motors usually |
 
-> **Note on servo gear ratios**: We use 4× C001 (1/345 gear, 16.5 kg·cm) for all joints.
-> The 1/345 gear gives best torque-to-speed balance for table tennis ranges.
-> If you want more swing speed at the cost of torque, the 1/147 gear (C046) works for the wrist.
+### ⚡ Speed vs. Torque — Gear Ratio Choice
+
+**This is the most important decision in the BOM.** The STS3215 comes in multiple gear
+ratios with very different speed/torque tradeoffs:
+
+| Gear ratio | Max speed (no-load, 7.4V) | Stall torque | 90° move | Good for |
+|-----------|---------------------------|--------------|----------|----------|
+| **1/345** (C001) | 50 RPM ≈ 300°/s ≈ 5.2 rad/s | 16.5 kg·cm | ~300 ms | High torque, slow defensive returns |
+| **1/191** (C046) | 90 RPM ≈ 540°/s ≈ 9.4 rad/s | 9.2 kg·cm | ~170 ms | **Recommended for table tennis** ⭐ |
+| **1/147** | 110 RPM ≈ 660°/s ≈ 11.5 rad/s | 7.0 kg·cm | ~135 ms | Wrist only — too weak for shoulder |
+
+**Reality check for table tennis:**
+- A human topspin swing: ~8–15 rad/s at the hand
+- A pingpong ball needs ~400 ms reaction after our prediction kicks in
+- 1/345 → robot can barely return slow balls; no real "swinging" motion
+- 1/191 → can reach prediction in time and add some swing momentum
+- Pro-grade speed (15+ rad/s) requires Dynamixel XM430 / Robstride at ~€200/servo
+
+**Recommended configurations:**
+
+1. **Cheap-and-slow (€155)**: 4× 1/345 — first prototype, prove the pipeline works.
+   Robot will only do passive returns, no real shots.
+
+2. **⭐ Balanced for pingpong (€155)**: 4× 1/191 — same price, same Waveshare adapter,
+   same `robot/servos.py` driver. Order with `gear_ratio=191` from Alibaba.
+   You lose ~45% torque but gain ~80% speed. **This is what we'd recommend.**
+
+3. **Mixed build (€155)**: 1/345 for shoulder pitch (joint 2 fights gravity), 1/191
+   for the rest. Best torque-where-needed, fastest-where-it-matters compromise.
+
+4. **Pro upgrade (€800+)**: Dynamixel XM430-W350 or Robstride 01 for the two distal
+   joints. Driver code would need rewriting. Only worth it if you want offensive shots.
+
+**At 5V instead of 7.4V**, all speeds drop ~30% and torque drops ~25%. Plan for 7.4V
+if you care about performance.
 
 > **Note on power**: The 7.4V STS3215 can run at 5V (reduced torque ~12 kg·cm) or 7.4V
 > (full torque). Start with 5V — easier to source and safer. Upgrade later if needed.
