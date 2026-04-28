@@ -166,7 +166,11 @@ with RobotArm() as arm:
     arm.move_to_position(0.76, 2.5, 1.0)  # IK target in sim coords
 ```
 
-See [`robot/README.md`](robot/README.md) for setup and calibration.
+See [`robot/README.md`](robot/README.md) for software setup and calibration.
+
+For the **physical build** (BOM, 3D printing, assembly), see [`hardware/README.md`](hardware/README.md).
+The arm is based on the open-source [SO-ARM101](https://github.com/TheRobotStudio/SO-ARM100) Follower
+adapted to 4-DOF with a custom paddle holder. Total cost: ~€155.
 
 ## Real-Time Pipeline
 
