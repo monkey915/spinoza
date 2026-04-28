@@ -28,11 +28,24 @@ Rust (speed)                          Python (ML ecosystem)
 └──────────────────────┘
          │
          ▼
-┌──────────────────────┐
-│ web/ (Three.js)      │
-│   AI Replay viewer   │
-│   Physics sim viewer │
-└──────────────────────┘
+┌──────────────────────┐    ┌──────────────────────┐
+│ web/ (Three.js)      │    │ camera/ (OpenCV)      │
+│   AI Replay viewer   │    │   Stereo calibration  │
+│   Physics sim viewer │    │   Ball detection      │
+│   Robot arm + IK     │    │   3D tracking         │
+└──────────────────────┘    └──────────┬───────────┘
+                                       │
+                            ┌──────────▼───────────┐
+                            │ bridge.py             │
+                            │   Camera → Predict →  │
+                            │   IK → Servo          │
+                            └──────────┬───────────┘
+                                       │
+                            ┌──────────▼───────────┐
+                            │ robot/ (scservo_sdk)  │
+                            │   Feetech STS3215 bus │
+                            │   4-DOF arm control   │
+                            └──────────────────────┘
 ```
 
 ## Coordinate System

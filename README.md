@@ -19,6 +19,9 @@ Includes a **3D web visualization** with a 4-DOF robot arm that animates the ret
 - **4-DOF robot arm** — Shoulder yaw/pitch, elbow, and wrist with analytical IK and smooth animation
 - **Collision detection** — Table collision warnings with pulsing visual feedback
 - **Joint angle labels** — Real-time φ1–φ4 angle display at each joint during animation
+- **Stereo camera tracking** — Real-time 3D ball detection via stereo vision, HSV filtering, and Kalman filter
+- **Robot arm control** — Feetech STS3215 servo bus driver with IK-based positioning
+- **Real-time bridge** — Camera → trajectory prediction → IK → servo pipeline at 30 Hz
 
 ## Quick Start
 
@@ -123,10 +126,69 @@ The visualization includes a 4-DOF articulated robot arm mounted behind the tabl
 | Elbow | φ3 | Forearm bend (0–180°) |
 | Wrist | φ4 | Paddle orientation (quaternion, computed from paddle tilt) |
 
-- **Analytical IK** solves the 2-link arm (upper arm 0.35m + forearm 0.40m) with elbow-up/down options
-- **Smooth animation** interpolates from rest pose to hit position using smoothstep easing
+- **Analytical IK** solves the 2-link arm (upper arm 0.30m + forearm 0.25m) with elbow-up/down options
+- **Smooth animation** — 3-phase swing: backswing → contact → follow-through with eased interpolation
 - **Paddle geometry** — realistic table tennis paddle with coplanar disc and radial handle
 - **Collision detection** — arm segments checked against table volume each frame; violations shown as pulsing red arm + viewport warning banner
+
+## Stereo Camera Tracking
+
+Real-time 3D ball tracking using a stereo USB camera:
+
+- **Hardware**: ELP stereo camera (62 mm baseline, 640×480 @ 30 FPS)
+- **Pipeline**: Rectify → HSV threshold → contour detection → stereo triangulation → Kalman filter
+- **Output**: 3D position (metres) + velocity (m/s) in simulation coordinates
+- **Calibration**: Chessboard-based intrinsic + stereo calibration with outlier rejection
+
+```bash
+# Calibrate
+python -m camera.calibrate
+
+# Track ball (standalone GUI)
+python -m camera.detect
+```
+
+See [`camera/README.md`](camera/README.md) for details.
+
+## Robot Arm Hardware
+
+The physical arm uses 4× Feetech STS3215 servos on a serial TTL bus:
+
+| Servo | Joint | Torque | Speed |
+|-------|-------|--------|-------|
+| STS3215 × 4 | φ1–φ4 | 15 kg·cm | ~19 rad/s |
+
+```python
+from robot.arm import RobotArm
+
+with RobotArm() as arm:
+    arm.home()
+    arm.move_to_position(0.76, 2.5, 1.0)  # IK target in sim coords
+```
+
+See [`robot/README.md`](robot/README.md) for setup and calibration.
+
+## Real-Time Pipeline
+
+```
+Stereo Camera ─→ Ball Detection ─→ Kalman Filter ─→ 3D Position
+                                                        ↓
+                                          Trajectory Buffer (30 frames)
+                                                        ↓
+                                          Bounce Detection (2nd bounce)
+                                                        ↓
+                                          Paddle Prediction (NN / analytical)
+                                                        ↓
+                                          Inverse Kinematics
+                                                        ↓
+                                          Servo Bus ─→ Robot Arm
+```
+
+```bash
+python bridge.py              # full pipeline
+python bridge.py --no-arm     # prediction only (no servos)
+python bridge.py --test-arm   # test arm movement
+```
 
 ## Project Structure
 
@@ -144,6 +206,17 @@ src/
     integrator.rs        RK4 integrator
     bounce.rs            Bounce model (restitution, friction, spin transfer)
     paddle.rs            Paddle physics (normal, swing velocity, hit)
+camera/
+  config.py              Camera device paths, HSV thresholds, offsets
+  utils.py               Stereo camera open, calibration load, coord transform
+  calibrate.py           Interactive capture + offline stereo calibration
+  detect.py              Real-time ball tracker (GUI + BallTracker class)
+  calibration_data/      Calibration NPZ + chessboard patterns
+robot/
+  config.py              Servo IDs, joint limits, arm dimensions
+  servos.py              Feetech STS3215 serial bus driver
+  arm.py                 4-DOF arm controller with IK
+bridge.py                Real-time pipeline: camera → prediction → arm
 training/
   train.py               PPO training with live progress
   env.py                 Gymnasium environment wrapping Rust physics
@@ -173,6 +246,12 @@ For Python bindings:
 
 ```bash
 pip install -e .     # Uses maturin to build with PyO3
+```
+
+### Camera + Robot Dependencies
+
+```bash
+pip install opencv-python numpy scservo_sdk
 ```
 
 ## License

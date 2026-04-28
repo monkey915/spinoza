@@ -32,3 +32,6 @@ nohup.out
 *.swp
 *.swo
 node_modules/
+
+# Camera calibration captures (too large for git)
+camera/calibration_data/captures/
