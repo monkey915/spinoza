@@ -9,6 +9,7 @@ use crate::rally::{
     RallyOutcome, OBS_FRAMES,
 };
 use crate::serve::{random_serve, Difficulty, Rng};
+use crate::simulation::simulate_full;
 use crate::table::Table;
 
 /// The RL environment exposed to Python.
@@ -724,9 +725,79 @@ impl SimEnv {
     }
 }
 
+/// Forward-simulate a ball flight from an arbitrary state (real-time bridge).
+///
+/// ball_state: [x, y, z, vx, vy, vz, ωx, ωy, ωz] in simulation coordinates.
+/// max_bounces: stop after this many table bounces (0 = pure flight).
+/// sample_dt: trajectory sampling interval in seconds (e.g. 0.005).
+///
+/// Returns a list of [t, x, y, z, vx, vy, vz] samples at `sample_dt` spacing,
+/// plus the final entry at the simulation end. Stops early on floor/net/
+/// play-area exit/timeout — the outcome is returned as the last element.
+#[pyfunction]
+fn simulate_forward(
+    py: Python<'_>,
+    ball_state: Vec<f64>,
+    max_bounces: usize,
+    sample_dt: f64,
+) -> PyResult<PyObject> {
+    if ball_state.len() != 9 {
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "ball_state must have 9 elements: [x,y,z, vx,vy,vz, ωx,ωy,ωz]",
+        ));
+    }
+    let sample_dt = if sample_dt > 0.0 { sample_dt } else { 0.01 };
+
+    let ball = BallState {
+        pos: Vec3::new(ball_state[0], ball_state[1], ball_state[2]),
+        vel: Vec3::new(ball_state[3], ball_state[4], ball_state[5]),
+        omega: Vec3::new(ball_state[6], ball_state[7], ball_state[8]),
+    };
+
+    let table = Table::standard();
+    let result = simulate_full(ball, &table, max_bounces);
+
+    let mut samples: Vec<Vec<f64>> = Vec::new();
+    let mut next_sample = 0.0_f64;
+    for &(t, s) in &result.trajectory {
+        if t >= next_sample {
+            samples.push(vec![
+                t, s.pos.x, s.pos.y, s.pos.z, s.vel.x, s.vel.y, s.vel.z,
+            ]);
+            next_sample = t + sample_dt;
+        }
+    }
+    // Ensure the exact end state is present
+    if let Some(&(t_end, s_end)) = result.trajectory.last() {
+        match samples.last() {
+            Some(last) if last[0] >= t_end - 1e-9 => {}
+            _ => samples.push(vec![
+                t_end, s_end.pos.x, s_end.pos.y, s_end.pos.z,
+                s_end.vel.x, s_end.vel.y, s_end.vel.z,
+            ]),
+        }
+    }
+
+    let outcome_str = match &result.outcome {
+        crate::simulation::SimOutcome::MaxBounces => "max_bounces",
+        crate::simulation::SimOutcome::HitFloor => "hit_floor",
+        crate::simulation::SimOutcome::MissedTable(_) => "missed_table",
+        crate::simulation::SimOutcome::LeftPlayArea => "left_play_area",
+        crate::simulation::SimOutcome::HitNet => "hit_net",
+        crate::simulation::SimOutcome::Timeout => "timeout",
+    };
+
+    let out = PyDict::new(py);
+    out.set_item("trajectory", samples)?;
+    out.set_item("outcome", outcome_str)?;
+    out.set_item("final_time", result.final_time)?;
+    Ok(out.into_any().unbind())
+}
+
 /// Python module definition
 #[pymodule]
 pub fn spinoza(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SimEnv>()?;
+    m.add_function(wrap_pyfunction!(simulate_forward, m)?)?;
     Ok(())
 }

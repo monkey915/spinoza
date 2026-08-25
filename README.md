@@ -255,7 +255,7 @@ pip install -e .     # Uses maturin to build with PyO3
 ### Camera + Robot Dependencies
 
 ```bash
-pip install opencv-python numpy scservo_sdk
+pip install opencv-python numpy feetech-servo-sdk
 ```
 
 ## License

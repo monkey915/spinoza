@@ -50,5 +50,5 @@ After assembling the arm, update `robot/config.py`:
 ## Dependencies
 
 ```
-scservo_sdk
+feetech-servo-sdk   # provides the scservo_sdk module
 ```

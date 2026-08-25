@@ -45,11 +45,29 @@ PLOT_WIDTH = 600
 # Ball detection
 # ---------------------------------------------------------------------------
 
-def detect_ball(frame, hsv_lower, hsv_upper, min_radius):
+def detect_ball(frame, hsv_lower, hsv_upper, min_radius, roi=None):
     """Detect the ball in a single frame.
 
+    roi: optional (x0, y0, x1, y1) search window. Detection runs on the
+    crop only and returned coordinates are mapped back to full-frame.
     Returns (center_x, center_y, radius) with sub-pixel precision, or None.
     """
+    if roi is not None:
+        x0, y0, x1, y1 = roi
+        x0 = max(0, int(x0)); y0 = max(0, int(y0))
+        x1 = min(frame.shape[1], int(x1)); y1 = min(frame.shape[0], int(y1))
+        if x1 - x0 < 8 or y1 - y0 < 8:
+            return None
+        frame = frame[y0:y1, x0:x1]
+
+    found = _detect_ball_full(frame, hsv_lower, hsv_upper, min_radius)
+    if found is None or roi is None:
+        return found
+    return (found[0] + x0, found[1] + y0, found[2])
+
+
+def _detect_ball_full(frame, hsv_lower, hsv_upper, min_radius):
+    """Full detection pipeline on the given (sub-)image."""
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, np.array(hsv_lower), np.array(hsv_upper))
 
@@ -111,70 +129,164 @@ def triangulate_point(P1, P2, pt_left, pt_right):
 # Kalman filter
 # ---------------------------------------------------------------------------
 
+GRAVITY_MM = 9810.0  # mm/s²
+
+
 class BallKalman:
-    """6-DOF Kalman filter for 3D ball tracking (position + velocity)."""
+    """9-state constant-acceleration Kalman filter for 3D ball tracking.
 
-    def __init__(self, process_noise=500.0, measurement_noise=20.0):
-        self.kf = cv2.KalmanFilter(6, 3, 0)
-        self.kf.transitionMatrix = np.eye(6, dtype=np.float32)
-        self.kf.measurementMatrix = np.zeros((3, 6), dtype=np.float32)
-        self.kf.measurementMatrix[0, 0] = 1
-        self.kf.measurementMatrix[1, 1] = 1
-        self.kf.measurementMatrix[2, 2] = 1
+    States: [x, y, z, vx, vy, vz, ax, ay, az] (mm, mm/s, mm/s²).
+    A gravity feedforward on Z lets the acceleration states stay near zero
+    during free flight instead of having to learn -g every rally, which
+    removes the systematic vz undershoot of a constant-velocity model.
+    Measurements are 3D positions from stereo triangulation (mm).
+    """
 
-        self.kf.processNoiseCov = np.eye(6, dtype=np.float32) * process_noise
-        self.kf.processNoiseCov[3, 3] = process_noise * 2
-        self.kf.processNoiseCov[4, 4] = process_noise * 2
-        self.kf.processNoiseCov[5, 5] = process_noise * 2
+    def __init__(self, process_noise=500.0, measurement_noise=20.0,
+                 gate_distance=250.0):
+        # Tuning (units: mm, s)
+        q_pos = process_noise * 0.01      # position jitter
+        q_vel = process_noise * 0.5       # velocity change per frame
+        q_acc = process_noise * 2.0       # acceleration change
+        self.q = np.diag([q_pos] * 3 + [q_vel] * 3 + [q_acc] * 3)
+        self.r = np.eye(3) * measurement_noise
+        # Reject measurements farther than this from the prediction (mm)
+        self.gate_distance = gate_distance
+        # NIS threshold above which we assume a manoeuvre (table bounce):
+        # chi2(3 dof, p=0.01) = 11.34. On trigger the covariance is inflated
+        # so the filter snaps to measurements within a frame or two.
+        self.nis_threshold = 11.34
+        self.cov_inflation = 25.0
 
-        self.kf.measurementNoiseCov = np.eye(3, dtype=np.float32) * measurement_noise
-        self.kf.errorCovPost = np.eye(6, dtype=np.float32) * 1000
-
+        self.x = None          # state vector (9,)
+        self.P = np.eye(9) * 1000.0
         self.initialized = False
         self.last_time = None
         self.frames_without_measurement = 0
-        self.max_predict_frames = 10
+        self.max_predict_frames = 15
+
+    def _transition(self, dt):
+        """Constant-acceleration transition matrix and gravity control."""
+        F = np.eye(9)
+        F[0:3, 3:6] = np.eye(3) * dt
+        F[0:3, 6:9] = np.eye(3) * 0.5 * dt * dt
+        F[3:6, 6:9] = np.eye(3) * dt
+        u = np.array([0.0, 0.0, -GRAVITY_MM])
+        B = np.zeros((9, 3))
+        B[0:3, :] = np.eye(3) * 0.5 * dt * dt
+        B[3:6, :] = np.eye(3) * dt
+        return F, B @ u
 
     def update(self, measurement_3d, timestamp):
         """Update with a new 3D measurement (or None to predict only).
 
-        Returns (position, velocity) as 3-element arrays, or (None, None).
+        Returns (position, velocity) as 3-element numpy arrays in mm,
+        or (None, None).
         """
         if not self.initialized:
             if measurement_3d is None:
                 return None, None
-            self.kf.statePost = np.array(
-                [measurement_3d[0], measurement_3d[1], measurement_3d[2],
-                 0, 0, 0], dtype=np.float32)
+            # Gravity enters via the control input, so accel states start at
+            # zero and only absorb deviations (drag) from free fall.
+            self.x = np.array([measurement_3d[0], measurement_3d[1],
+                               measurement_3d[2], 0.0, 0.0, 0.0,
+                               0.0, 0.0, 0.0])
             self.last_time = timestamp
             self.initialized = True
             self.frames_without_measurement = 0
-            return measurement_3d.copy(), np.zeros(3)
+            return self.x[:3].copy(), self.x[3:6].copy()
 
-        dt = timestamp - self.last_time if self.last_time else 1.0 / 30.0
-        dt = np.clip(dt, 0.001, 0.5)
+        dt = float(np.clip(timestamp - self.last_time, 0.001, 0.5)) \
+            if self.last_time is not None else 1.0 / 30.0
         self.last_time = timestamp
 
-        self.kf.transitionMatrix[0, 3] = dt
-        self.kf.transitionMatrix[1, 4] = dt
-        self.kf.transitionMatrix[2, 5] = dt
+        # Predict
+        F, gravity = self._transition(dt)
+        self.x = F @ self.x + gravity
+        self.P = F @ self.P @ F.T + self.q
 
-        predicted = self.kf.predict()
-
+        # Gate: reject outliers far from the prediction
+        accepted = False
         if measurement_3d is not None:
-            meas = np.array(measurement_3d, dtype=np.float32).reshape(3, 1)
-            corrected = self.kf.correct(meas)
-            self.frames_without_measurement = 0
-            pos = corrected[:3].flatten()
-            vel = corrected[3:6].flatten()
-        else:
+            z = np.asarray(measurement_3d[:3], dtype=np.float64)
+            innovation = z - self.x[:3]
+            if np.linalg.norm(innovation) <= self.gate_distance:
+                H = np.zeros((3, 9))
+                H[0, 0] = H[1, 1] = H[2, 2] = 1.0
+                S = H @ self.P @ H.T + self.r
+                nis = float(innovation @ np.linalg.solve(S, innovation))
+                if nis > self.nis_threshold:
+                    # Abrupt change (table bounce): inflate covariance and
+                    # recompute the gain so the filter follows the manoeuvre.
+                    self.P *= self.cov_inflation
+                    S = H @ self.P @ H.T + self.r
+                K = self.P @ H.T @ np.linalg.inv(S)
+                self.x = self.x + K @ innovation
+                self.P = (np.eye(9) - K @ H) @ self.P
+                self.frames_without_measurement = 0
+                accepted = True
+
+        if not accepted:
             self.frames_without_measurement += 1
             if self.frames_without_measurement > self.max_predict_frames:
+                self.initialized = False
                 return None, None
-            pos = predicted[:3].flatten()
-            vel = predicted[3:6].flatten()
 
-        return pos, vel
+        return self.x[:3].copy(), self.x[3:6].copy()
+
+
+# ---------------------------------------------------------------------------
+# Search-window tracking
+# ---------------------------------------------------------------------------
+
+class RoiWindow:
+    """Search window for one camera view.
+
+    Follows the last detection and progressively widens on misses until the
+    full frame is searched again. Keeps per-frame detection cost roughly
+    constant instead of scanning the whole image.
+    """
+
+    def __init__(self, frame_w, frame_h, base_size=160, grow=1.7,
+                 max_misses=4):
+        self.frame_w = frame_w
+        self.frame_h = frame_h
+        self.base_size = base_size
+        self.grow = grow
+        self.max_misses = max_misses
+        self.size = float(base_size)
+        self.center = None       # (cx, cy) of last detection
+        self.misses = 0
+
+    def reset(self):
+        self.size = float(self.base_size)
+        self.center = None
+        self.misses = 0
+
+    def on_detection(self, cx, cy, radius):
+        self.center = (cx, cy)
+        self.misses = 0
+        self.size = float(np.clip(radius * 10.0, self.base_size,
+                                  min(self.frame_w, self.frame_h)))
+
+    def on_miss(self):
+        self.misses += 1
+        self.size *= self.grow
+        if self.misses > self.max_misses:
+            self.reset()
+
+    @property
+    def active(self) -> bool:
+        return self.center is not None
+
+    def rect(self):
+        """Return (x0, y0, x1, y1) or None for a full-frame search."""
+        if self.center is None:
+            return None
+        half = self.size / 2.0
+        cx, cy = self.center
+        return (int(cx - half), int(cy - half),
+                int(cx + half), int(cy + half))
 
 
 # ---------------------------------------------------------------------------
@@ -199,6 +311,7 @@ class BallTracker:
         self._velocity = None   # (vx, vy, vz) or None
         self._timestamp = 0.0
         self._position_cam_mm = None  # raw camera coords for debugging
+        self._process_latency_ms = 0.0  # grab -> processed
 
     def start(self):
         """Start capture + detection in a background thread."""
@@ -231,6 +344,15 @@ class BallTracker:
         with self._lock:
             return self._position_cam_mm
 
+    def get_timing(self):
+        """Return timing diagnostics: (capture_timestamp, observation_age_ms,
+        process_latency_ms). observation_age is time since the frame was
+        grabbed — the latency budget every downstream stage has to pay."""
+        now = time.time()
+        with self._lock:
+            age_ms = (now - self._timestamp) * 1000.0 if self._timestamp else 0.0
+            return self._timestamp, age_ms, self._process_latency_ms
+
     def _loop(self):
         """Background capture loop."""
         try:
@@ -250,12 +372,18 @@ class BallTracker:
         P1 = calib["P1"]
         P2 = calib["P2"]
         kalman = BallKalman(process_noise=500.0, measurement_noise=20.0)
+        roi_l = RoiWindow(config.FRAME_WIDTH, config.FRAME_HEIGHT)
+        roi_r = RoiWindow(config.FRAME_WIDTH, config.FRAME_HEIGHT)
         t_start = time.time()
 
         try:
             while self._running:
                 if not cap_left.grab() or not cap_right.grab():
                     continue
+                # Timestamp the capture, not the processing — using the
+                # post-processing clock biases velocity estimates.
+                t_grab = time.time() - t_start
+
                 ret_l, frame_l = cap_left.retrieve()
                 ret_r, frame_r = cap_right.retrieve()
                 if not ret_l or not ret_r:
@@ -264,9 +392,13 @@ class BallTracker:
                 rect_l, rect_r = rectify_pair(frame_l, frame_r, calib)
 
                 ball_l = detect_ball(rect_l, config.BALL_HSV_LOWER,
-                                     config.BALL_HSV_UPPER, config.BALL_MIN_RADIUS)
+                                     config.BALL_HSV_UPPER,
+                                     config.BALL_MIN_RADIUS,
+                                     roi=roi_l.rect())
                 ball_r = detect_ball(rect_r, config.BALL_HSV_LOWER,
-                                     config.BALL_HSV_UPPER, config.BALL_MIN_RADIUS)
+                                     config.BALL_HSV_UPPER,
+                                     config.BALL_MIN_RADIUS,
+                                     roi=roi_r.rect())
 
                 pos_3d_mm = None
                 if ball_l is not None and ball_r is not None:
@@ -276,11 +408,22 @@ class BallTracker:
                         (ball_r[0], ball_r[1]),
                     )
 
-                t_now = time.time() - t_start
-                k_pos, k_vel = kalman.update(pos_3d_mm, t_now)
+                k_pos, k_vel = kalman.update(pos_3d_mm, t_grab)
 
+                # Update per-view search windows
+                if not kalman.initialized:
+                    roi_l.reset()
+                    roi_r.reset()
+                for win, det in ((roi_l, ball_l), (roi_r, ball_r)):
+                    if det is not None:
+                        win.on_detection(det[0], det[1], det[2])
+                    else:
+                        win.on_miss()
+
+                t_processed = time.time() - t_start
                 with self._lock:
-                    self._timestamp = t_now
+                    self._timestamp = t_grab
+                    self._process_latency_ms = (t_processed - t_grab) * 1000.0
                     if k_pos is not None:
                         sx, sy, sz = camera_to_sim(k_pos[0], k_pos[1], k_pos[2])
                         # Velocity: same axis swap, mm/s -> m/s

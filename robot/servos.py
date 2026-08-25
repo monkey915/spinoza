@@ -1,6 +1,8 @@
 """Low-level Feetech STS3215 serial bus communication.
 
-Requires the ``scservo_sdk`` package (pip install scservo_sdk).
+Requires the Feetech SDK (pip install feetech-servo-sdk), which provides
+the ``scservo_sdk`` module. Note: the package name on PyPI is
+``feetech-servo-sdk`` — there is no ``scservo_sdk`` package.
 """
 
 from __future__ import annotations
@@ -43,7 +45,7 @@ class FeetechBus:
     def __init__(self, port: str | None = None, baudrate: int | None = None):
         if scs is None:
             raise RuntimeError(
-                "scservo_sdk not installed. Run: pip install scservo_sdk"
+                "scservo_sdk not installed. Run: pip install feetech-servo-sdk"
             )
         self.port = port or config.SERIAL_PORT
         self.baudrate = baudrate or config.BAUDRATE
@@ -163,6 +165,59 @@ class FeetechBus:
     # ------------------------------------------------------------------
     # Bulk operations
     # ------------------------------------------------------------------
+
+    def _sync_available(self) -> bool:
+        return hasattr(self._packet_handler, "GroupSyncWrite") or (
+            scs is not None and hasattr(scs, "GroupSyncWrite")
+        )
+
+    def _make_sync_group(self, start_addr: int, data_len: int):
+        return scs.GroupSyncWrite(
+            self._port_handler, self._packet_handler, start_addr, data_len
+        )
+
+    def write_speeds_sync(self, speeds: dict[int, int]):
+        """Set goal speed for multiple servos simultaneously.
+
+        Falls back to sequential writes when GroupSyncWrite is unavailable.
+        """
+        if self._sync_available():
+            group = self._make_sync_group(_ADDR_GOAL_SPEED, 2)
+            for sid, value in speeds.items():
+                v = min(max(value, 0), 4095)
+                if not group.addParam(sid, list(int(v).to_bytes(2, "little"))):
+                    raise RuntimeError(f"SyncWrite addParam failed [servo {sid}]")
+            result = group.txPacket()
+            if result != scs.COMM_SUCCESS:
+                raise RuntimeError(
+                    f"Speed SyncWrite failed: {self._packet_handler.getTxRxResult(result)}"
+                )
+            return
+
+        for sid, value in speeds.items():
+            self._write2(sid, _ADDR_GOAL_SPEED, min(max(value, 0), 4095))
+
+    def write_positions_sync(self, positions: dict[int, int]):
+        """Command multiple servos to a raw position simultaneously.
+
+        All servos start moving in the same control cycle — sequential
+        writes would stagger the joint starts by milliseconds each.
+        """
+        if self._sync_available():
+            group = self._make_sync_group(_ADDR_GOAL_POSITION, 2)
+            for sid, value in positions.items():
+                v = min(max(value, 0), 4095)
+                if not group.addParam(sid, list(int(v).to_bytes(2, "little"))):
+                    raise RuntimeError(f"SyncWrite addParam failed [servo {sid}]")
+            result = group.txPacket()
+            if result != scs.COMM_SUCCESS:
+                raise RuntimeError(
+                    f"Position SyncWrite failed: {self._packet_handler.getTxRxResult(result)}"
+                )
+            return
+
+        for sid, value in positions.items():
+            self._write2(sid, _ADDR_GOAL_POSITION, min(max(value, 0), 4095))
 
     def ping_all(self) -> dict[str, bool]:
         """Ping all configured servos. Returns {name: reachable}."""

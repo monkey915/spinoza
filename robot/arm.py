@@ -129,6 +129,9 @@ class RobotArm:
     def __init__(self, bus: FeetechBus | None = None):
         self.bus = bus or FeetechBus()
         self._connected = False
+        # Last commanded joint angles (degrees) — used as the arm-state
+        # estimate for travel-time feasibility without bus reads.
+        self._commanded_angles: dict[str, float] | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -179,23 +182,36 @@ class RobotArm:
         phi4_deg: float,
         speed: int | None = None,
     ):
-        """Drive all joints to the given angles (degrees).
+        """Drive all joints to the given angles (degrees) simultaneously.
 
-        Angles are clamped to the configured joint limits.
+        Angles are clamped to the configured joint limits. Speeds and
+        positions go out as SyncWrite bursts so all joints start moving
+        in the same control cycle.
         """
         speed = speed or config.MOVE_SPEED
-        angles = {
+        targets = {
             "shoulder_yaw":   phi1_deg,
             "shoulder_pitch": phi2_deg,
             "elbow":          phi3_deg,
             "wrist":          phi4_deg,
         }
+        raw_positions = {}
         for name in self.JOINT_NAMES:
             lo, hi = config.JOINT_LIMITS_DEG[name]
-            angle = max(lo, min(hi, angles[name]))
-            raw = _angle_to_raw(name, angle)
-            sid = config.SERVO_IDS[name]
-            self.bus.write_position(sid, raw, speed=speed)
+            angle = max(lo, min(hi, targets[name]))
+            raw_positions[config.SERVO_IDS[name]] = _angle_to_raw(name, angle)
+            targets[name] = angle
+
+        self.bus.write_speeds_sync(
+            {sid: speed for sid in config.SERVO_IDS.values()}
+        )
+        self.bus.write_positions_sync(raw_positions)
+        self._commanded_angles = dict(targets)
+
+    def get_commanded_angles(self) -> dict[str, float] | None:
+        """Return the last commanded joint angles (degrees), or None."""
+        return None if self._commanded_angles is None \
+            else dict(self._commanded_angles)
 
     def read_angles(self) -> dict[str, float]:
         """Read current joint angles (degrees) from all servos."""
@@ -230,9 +246,58 @@ class RobotArm:
         self.move_to_angles(phi1, phi2, phi3, phi4, speed=speed)
         return True
 
+    def travel_time_to(self, x: float, y: float, z: float) -> float | None:
+        """Estimated worst-case joint travel time in seconds to reach a
+        simulation-coordinate target from the last commanded pose.
+
+        Uses IK + per-joint speed limits from config; no bus reads.
+        Returns None if the target is unreachable.
+        """
+        result = solve_ik(x, y, z)
+        if result is None:
+            return None
+
+        phi1, phi2, phi3, phi4 = ik_angles_to_degrees(*result)
+        target = {
+            "shoulder_yaw":   phi1,
+            "shoulder_pitch": phi2,
+            "elbow":          phi3,
+            "wrist":          phi4,
+        }
+        # Clamp exactly like move_to_angles — unclamped wrist angles
+        # (phi4 compensates shoulder+elbow and can exceed the limits)
+        # would otherwise report huge impossible travels.
+        current = self._commanded_angles or {
+            k: v for k, v in config.READY_ANGLES_DEG.items()   # ready stance
+        }
+        worst = 0.0
+        for name in self.JOINT_NAMES:
+            lo, hi = config.JOINT_LIMITS_DEG[name]
+            goal = max(lo, min(hi, target[name]))
+            worst = max(worst, abs(goal - current[name]) /
+                        config.MAX_JOINT_SPEED_DEG_S[name])
+        return worst
+
     def home(self, speed: int | None = None):
-        """Move arm to the home / rest position (straight, neutral)."""
-        self.move_to_angles(0.0, 45.0, 0.0, -45.0, speed=speed or 300)
+        """Move arm to the neutral rest position (straight, safe for startup)."""
+        h = config.HOME_ANGLES_DEG
+        self.move_to_angles(
+            h["shoulder_yaw"], h["shoulder_pitch"],
+            h["elbow"], h["wrist"], speed=speed or 300,
+        )
+
+    def ready(self, speed: int | None = None):
+        """Move arm to the ready stance near the paddle plane.
+
+        Waiting here instead of the neutral pose cuts intercept travel
+        time to a fraction — the equivalent of a player keeping the
+        racket up between shots.
+        """
+        r = config.READY_ANGLES_DEG
+        self.move_to_angles(
+            r["shoulder_yaw"], r["shoulder_pitch"],
+            r["elbow"], r["wrist"], speed=speed or 400,
+        )
 
     # ------------------------------------------------------------------
     # Diagnostics

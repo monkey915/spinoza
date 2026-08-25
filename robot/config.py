@@ -60,11 +60,43 @@ JOINT_LIMITS_DEG = {
 }
 
 # ---------------------------------------------------------------------------
+# Ready pose
+# ---------------------------------------------------------------------------
+# Joint angles (simulation degrees) for the waiting stance between rallies:
+# arm folded up near the paddle plane so intercepts require only small,
+# fast corrections instead of travelling from the neutral home pose.
+READY_ANGLES_DEG = {
+    "shoulder_yaw":   0.0,
+    "shoulder_pitch": 120.0,
+    "elbow":          135.0,
+    "wrist":          -90.0,
+}
+
+HOME_ANGLES_DEG = {
+    "shoulder_yaw":   0.0,
+    "shoulder_pitch": 45.0,
+    "elbow":          0.0,
+    "wrist":          -45.0,
+}
+
+# ---------------------------------------------------------------------------
 # Speed / safety
 # ---------------------------------------------------------------------------
 MAX_SPEED = 1000       # raw speed units (0-4095, higher = faster)
 MOVE_SPEED = 600       # default movement speed
+STREAM_SPEED = 800     # speed for continuous pursuit moves in the bridge
 TORQUE_LIMIT = 800     # raw torque limit (0-1000)
+
+# Estimated maximum joint speeds (deg/s), used by the bridge for
+# travel-time feasibility checks when selecting an intercept point.
+# Conservative values for the 1/345 gear ratio at 7.4V (hardware/BOM.md);
+# roughly double them for the recommended 1/191 gears.
+MAX_JOINT_SPEED_DEG_S = {
+    "shoulder_yaw":   250.0,
+    "shoulder_pitch": 220.0,
+    "elbow":          250.0,
+    "wrist":          300.0,
+}
 
 # ---------------------------------------------------------------------------
 # Arm segment lengths (metres — must match simulation)
